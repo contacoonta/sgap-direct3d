@@ -373,13 +373,9 @@
   </ItemDefinitionGroup>
   <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="Basics.cpp" />
+    <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <CLInclude Include="resource.h" />
-    <ResourceCompile Include="Basics.rc" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
