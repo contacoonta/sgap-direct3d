@@ -373,7 +373,7 @@
   </ItemDefinitionGroup>
   <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="WinMain.cpp" />
+    <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
