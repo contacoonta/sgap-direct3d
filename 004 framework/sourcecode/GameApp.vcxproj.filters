@@ -2,9 +2,20 @@
 <Project ToolsVersion="4.0" xmlns:atg="http://atg.xbox.com" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="winmain.cpp" />
-    <ClCompile Include="application.cpp" />
+    <ClCompile Include="gameApp.cpp" />
+    <ClCompile Include="base\application.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application.h" />
+    <ClInclude Include="gameApp.h" />
+    <ClInclude Include="base\application.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Base">
+      <UniqueIdentifier>{02982813-2dbd-4e03-8ba8-92326c8812eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
