@@ -6,10 +6,16 @@
     <ClCompile Include="base\application.cpp">
       <Filter>Base</Filter>
     </ClCompile>
+    <ClCompile Include="Base\input.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameApp.h" />
     <ClInclude Include="base\application.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\input.h">
       <Filter>Base</Filter>
     </ClInclude>
   </ItemGroup>

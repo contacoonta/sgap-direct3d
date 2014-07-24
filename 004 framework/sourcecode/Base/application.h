@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Windows.h>
-
 #define WIN32_LEAN_AND_MEAN
+
+#include <Windows.h>
+#include "input.h"
 
 #define SINGLETON(x) public : static x& instance() { static x inst; return inst; }
 
@@ -18,6 +19,9 @@ public:
 	HINSTANCE	hinst() const	{ return m_hInst;	}
 	HWND		hwnd() const	{ return m_hWnd;	}
 	LPCWSTR		appname() const	{ return m_nameApp; }
+
+	INPUT&		input() const	{ return *m_input;	}
+	
 
 	void Initialize(LPCWSTR appname, LRESULT(CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM));
 	void Run();
@@ -35,5 +39,7 @@ private:
 	HINSTANCE	m_hInst = NULL;
 	HWND		m_hWnd = NULL;
 	LPCWSTR		m_nameApp = L"";
+
+	INPUT*		m_input = nullptr;
 };
 

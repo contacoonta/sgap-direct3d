@@ -373,10 +373,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="base\application.h" />
+    <ClInclude Include="Base\input.h" />
     <ClInclude Include="gameApp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\application.cpp" />
+    <ClCompile Include="Base\input.cpp" />
     <ClCompile Include="gameApp.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>

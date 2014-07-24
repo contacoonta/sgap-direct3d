@@ -77,6 +77,9 @@ void application::Initialize(LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND,
 	SetForegroundWindow(m_hWnd);
 	SetFocus(m_hWnd);
 
+	// input 생성 및 초기화.
+	INPUT::CreateInput(&m_input);
+
 	// 상속 클래스의 초기화
 	OnInit();
 }
@@ -105,12 +108,19 @@ void application::Run()
 
 bool application::Mainframe()
 {
+	if (m_input->GetKeyDown(VK_ESCAPE))
+	{
+		return false;
+	}
 
 	return OnUpdate();
 }
 
 void application::Release()
 {
+	// 인풋 제거
+	INPUT::ReleaseInput(&m_input);
+
 	// 전체화면 모드 기능 
 	if (FULLSCREEN)
 	{
@@ -131,6 +141,14 @@ LRESULT CALLBACK application::MsgHandler(HWND hWnd, UINT message, WPARAM wParam,
 {
 	switch (message)
 	{
+	case WM_KEYDOWN:
+		m_input->KeyDown((UINT)wParam);
+		return 0;
+
+	case WM_KEYUP:
+		m_input->KeyUp((UINT)wParam);
+		return 0;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
