@@ -3,12 +3,11 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
+#include "basedef.h"
 #include "input.h"
+#include "graphics.h"
 
-#define SINGLETON(x) public : static x& instance() { static x inst; return inst; }
-
-// global values
-const bool FULLSCREEN = false;
+SGAP_BEGIN
 
 class application
 {
@@ -16,11 +15,12 @@ public:
 			application();
 	virtual ~application();
 
-	HINSTANCE	hinst() const	{ return m_hInst;	}
-	HWND		hwnd() const	{ return m_hWnd;	}
-	LPCWSTR		appname() const	{ return m_nameApp; }
+	HINSTANCE	Hinst() const	{ return m_hInst;	}
+	HWND		Hwnd() const	{ return m_hWnd;	}
+	LPCWSTR		Appname() const	{ return m_nameApp; }
 
-	INPUT&		input() const	{ return *m_input;	}
+	iINPUT*		Input() const		{ return m_input; }
+	GRAPHICS*	Graphics() const	{ return m_graphics; }
 	
 
 	void Initialize(LPCWSTR appname, LRESULT(CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM));
@@ -36,10 +36,12 @@ protected:
 	virtual void OnDestroy()	= 0;
 
 private:
-	HINSTANCE	m_hInst = NULL;
-	HWND		m_hWnd = NULL;
-	LPCWSTR		m_nameApp = L"";
+	HINSTANCE	m_hInst			= NULL;
+	HWND		m_hWnd			= NULL;
+	LPCWSTR		m_nameApp		= L"";
 
-	INPUT*		m_input = nullptr;
+	iINPUT*		m_input			= nullptr;
+	GRAPHICS*	m_graphics		= nullptr;
 };
 
+SGAP_END

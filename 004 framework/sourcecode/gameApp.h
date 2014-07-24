@@ -2,6 +2,8 @@
 
 #include "Base/application.h"
 
+using sgap::application;
+
 class GameApp : public application
 {
 SINGLETON(GameApp)

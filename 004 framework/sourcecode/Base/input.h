@@ -1,26 +1,46 @@
 #pragma once
 
-typedef unsigned int UINT;
+#include "basedef.h"
 
-typedef class input
+SGAP_BEGIN
+
+
+typedef class iInput
 {
 public:
-	static bool CreateInput(input** ppinput);
-	static void ReleaseInput(input** ppinput);
+			iInput() {}	
+	virtual ~iInput() {}
+public:
+	virtual void initialize() = 0;
+
+	virtual void KeyDown(UINT ukey) = 0;
+	virtual void KeyUp(UINT ukey) = 0;
+	virtual bool GetKeyDown(UINT ukey) = 0;
+}iINPUT;
+
+
+/*
+	키 입력 클래스
+*/
+typedef class KeyInput : public iInput
+{
+public:
+	static bool CreateInput(iInput** ppinput);
+	static void ReleaseInput(iInput** ppinput);
 
 public:
-	input();
-	input(const input&);
-	~input();
+	KeyInput();
+	~KeyInput();
 
 	void initialize();
 
-	virtual void KeyDown(UINT ukey);
-	virtual void KeyUp(UINT ukey);
-	virtual bool GetKeyDown(UINT ukey);
+	void KeyDown(UINT ukey);
+	void KeyUp(UINT ukey);
+	bool GetKeyDown(UINT ukey);
 
 private:
 	bool m_keys[256];
 
-}INPUT;
+}KEYINPUT;
 
+SGAP_END

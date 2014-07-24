@@ -9,6 +9,9 @@
     <ClCompile Include="Base\input.cpp">
       <Filter>Base</Filter>
     </ClCompile>
+    <ClCompile Include="Base\graphics.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameApp.h" />
@@ -16,6 +19,12 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\input.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\basedef.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\graphics.h">
       <Filter>Base</Filter>
     </ClInclude>
   </ItemGroup>

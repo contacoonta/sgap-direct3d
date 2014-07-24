@@ -1,18 +1,19 @@
 #include "input.h"
 
+SGAP_BEGIN
 
-bool input::CreateInput(input** ppinput)
+bool KeyInput::CreateInput(iInput** ppinput)
 {
 	if (*ppinput != nullptr)
 		return false;
 	
-	*ppinput = new input;
+	*ppinput = new KeyInput;
 	(*ppinput)->initialize();	
 
 	return true;
 }
 
-void input::ReleaseInput(input** ppinput)
+void KeyInput::ReleaseInput(iInput** ppinput)
 {
 	if (*ppinput)
 	{
@@ -22,20 +23,16 @@ void input::ReleaseInput(input** ppinput)
 }
 
 
-input::input()
+KeyInput::KeyInput()
 {
 }
 
-input::input(const input& i)
-{
-}
-
-input::~input()
+KeyInput::~KeyInput()
 {
 }
 
 
-void input::initialize()
+void KeyInput::initialize()
 {
 	// 모든키를 false 즉, 안 누른 상태로 초기화
 	for (bool & x : m_keys)
@@ -45,20 +42,22 @@ void input::initialize()
 }
 
 
-void input::KeyDown(UINT ukey)
+void KeyInput::KeyDown(UINT ukey)
 {
-	// 키 배열에 누른 상태로 저장
+	// 키 배열에 키 눌렀음을 저장
 	m_keys[ukey] = true;
 }
 
-void input::KeyUp(UINT ukey)
+void KeyInput::KeyUp(UINT ukey)
 {
-	// 키 배열에 뗀 상태로 저장
+	// 키 배열에 키 뗐음을 저장
 	m_keys[ukey] = false;
 }
 
-bool input::GetKeyDown(UINT ukey)
+bool KeyInput::GetKeyDown(UINT ukey)
 {
 	// 현재 키 상태 false / true 반환 ( 안눌림 / 눌림 ) 
 	return m_keys[ukey];
 }
+
+SGAP_END

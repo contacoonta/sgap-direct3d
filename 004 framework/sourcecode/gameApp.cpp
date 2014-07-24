@@ -12,7 +12,6 @@ GameApp::~GameApp()
 */
 void GameApp::OnInit()
 {
-
 }
 
 bool GameApp::OnUpdate()
@@ -22,7 +21,6 @@ bool GameApp::OnUpdate()
 
 void GameApp::OnDestroy()
 {
-
 }
 
 /*
@@ -33,6 +31,9 @@ LRESULT CALLBACK GameApp::MsgHandler(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 	switch (message)
 	{
+	case WM_NULL:
+		return 0;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
