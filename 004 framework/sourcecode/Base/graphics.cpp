@@ -43,12 +43,12 @@ graphics::~graphics()
 
 /*
 */
-bool Initialize()
+bool graphics::Initialize()
 {
 	return true;
 }
 
-bool Frame()
+bool graphics::Frame()
 {
 	if (Render() == false)
 		return false; 
@@ -56,12 +56,12 @@ bool Frame()
 	return true;
 }
 
-void Release()
+void graphics::Release()
 {
 
 }
 
-bool Render()
+bool graphics::Render()
 {
 	return true;
 }
