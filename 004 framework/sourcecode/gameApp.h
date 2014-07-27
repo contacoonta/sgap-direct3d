@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _GAMEAPP_H_
+#define _GMAEAPP_H_
 
 #include "Base/application.h"
 
@@ -8,10 +9,11 @@ class GameApp : public application
 {
 SINGLETON(GameApp)
 
-public:
+private:
 	GameApp();
+	GameApp(const GameApp&);
 	~GameApp();
-
+public:
 	LRESULT CALLBACK MsgHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
@@ -21,3 +23,5 @@ private:
 };
 
 #define GAMEAPP GameApp::instance()
+
+#endif

@@ -6,14 +6,14 @@ bool KeyInput::CreateInput(iInput** ppinput)
 {
 	if (*ppinput != nullptr)
 		return false;
-	
+
 	*ppinput = new KeyInput;
 	(*ppinput)->initialize();	
 
 	return true;
 }
 
-void KeyInput::ReleaseInput(iInput** ppinput)
+void KeyInput::DestroyInput(iInput** ppinput)
 {
 	if (*ppinput)
 	{
@@ -24,6 +24,10 @@ void KeyInput::ReleaseInput(iInput** ppinput)
 
 
 KeyInput::KeyInput()
+{
+}
+
+KeyInput::KeyInput(const KeyInput&)
 {
 }
 

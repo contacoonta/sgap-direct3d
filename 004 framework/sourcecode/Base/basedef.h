@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _BASEDEF_H_
+#define _BASEDEF_H_
 
 #pragma warning(disable: 4127) // warning C4127: 조건식이 상수입니다.
 
@@ -15,3 +16,5 @@ typedef unsigned int UINT;
 #define SINGLETON(x) public : static x& instance() { static x inst; return inst; }
 
 SGAP_END
+
+#endif

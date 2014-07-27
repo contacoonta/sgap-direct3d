@@ -9,7 +9,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     UNREFERENCED_PARAMETER( lpCmdLine );
 	UNREFERENCED_PARAMETER( nCmdShow );
 
-	GAMEAPP.Initialize(L"GameApp", WndProc);
+	GAMEAPP.Initialize(&GAMEAPP, L"GameApp", WndProc);
 	GAMEAPP.Run();
 	GAMEAPP.Release();
 

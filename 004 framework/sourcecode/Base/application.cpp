@@ -2,7 +2,13 @@
 
 SGAP_BEGIN
 
+application* g_app = nullptr;
+
 application::application()
+{
+}
+
+application::application(const application& a)
 {
 }
 
@@ -10,11 +16,13 @@ application::~application()
 {
 }
 
-void application::Initialize(LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM))
+void application::Initialize(application* papp, LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM))
 {
 	DEVMODE dmScreenSettings;
-	int screenWidth, screenHeight;
 	int posX, posY;
+
+	//자식의 싱글톤 포인터를 부모세대 포인터에 전달.
+	g_app = papp;
 
 	// Get the instance of this application.
 	m_hInst		= GetModuleHandle(NULL);
@@ -42,14 +50,14 @@ void application::Initialize(LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND,
 	if (FULLSCREEN)
 	{
 		// 사용자 시스템 스크린 해상도 크기로 설정
-		screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		m_screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		m_screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 		// 전체화면이면 최대화면 크기로 설정 하고 32비트 픽셀로 설정
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+		dmScreenSettings.dmPelsWidth = (unsigned long)m_screenWidth;
+		dmScreenSettings.dmPelsHeight = (unsigned long)m_screenHeight;
 		dmScreenSettings.dmBitsPerPel = 32;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -63,17 +71,17 @@ void application::Initialize(LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND,
 	{
 		// 창 모드 일때,
 		// 윈도우를 화면 중앙에 설정
-		screenWidth = 800;
-		screenHeight = 600;
+		m_screenWidth = 800;
+		m_screenHeight = 600;
 
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		posX = (GetSystemMetrics(SM_CXSCREEN) - m_screenWidth) / 2;
+		posY = (GetSystemMetrics(SM_CYSCREEN) - m_screenHeight) / 2;
 	}
 	// 윈도우 Ex 생성
 	m_hWnd = CreateWindowEx(WS_EX_APPWINDOW, m_nameApp, m_nameApp, 
 							WS_OVERLAPPEDWINDOW,
 							//WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-							posX, posY, screenWidth, screenHeight, NULL, NULL, m_hInst, NULL);
+							posX, posY, m_screenWidth, m_screenHeight, NULL, NULL, m_hInst, NULL);
 
 	ShowWindow(m_hWnd, SW_SHOW);
 	SetForegroundWindow(m_hWnd);
@@ -123,8 +131,8 @@ bool application::Mainframe()
 void application::Release()
 {
 	// 각종 컴포넌트들 제거
-	GRAPHICS::ReleaseGraphic(&m_graphics);
-	KEYINPUT::ReleaseInput(&m_input);
+	GRAPHICS::DestroyGraphic(&m_graphics);
+	KEYINPUT::DestroyInput(&m_input);
 
 	// 전체화면 모드 기능 
 	if (FULLSCREEN)

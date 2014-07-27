@@ -4,6 +4,10 @@ GameApp::GameApp()
 {
 }
 
+GameApp::GameApp(const GameApp& ga)
+{
+}
+
 GameApp::~GameApp()
 {
 }

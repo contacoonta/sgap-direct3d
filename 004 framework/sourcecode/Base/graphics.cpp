@@ -1,4 +1,6 @@
 #include "graphics.h"
+#include "application.h"
+#include "../gameApp.h"
 
 SGAP_BEGIN
 
@@ -14,7 +16,7 @@ bool graphics::CreateGraphic(graphics** ppgraphic)
 	return (*ppgraphic)->Initialize();
 }
 
-void graphics::ReleaseGraphic(graphics** ppgraphic)
+void graphics::DestroyGraphic(graphics** ppgraphic)
 {
 	if (*ppgraphic)
 	{
@@ -45,6 +47,12 @@ graphics::~graphics()
 */
 bool graphics::Initialize()
 {
+	if (graphicD3d::CreateGraphicD3d(&m_d3d, g_app->Width(), g_app->Height(), VERTICALSYNC, g_app->Hwnd(), FULLSCREEN, SCREENDEPTH, SCREENNEAR) == FALSE)
+	{
+		MessageBox(g_app->Hwnd(), L"Direct3D initialize FAILED", L"ERROR", MB_OK);
+		return false;
+	}
+	
 	return true;
 }
 
@@ -58,11 +66,19 @@ bool graphics::Frame()
 
 void graphics::Release()
 {
-
+	graphicD3d::DestroyGraphicD3d(&m_d3d);
 }
 
 bool graphics::Render()
 {
+	if (m_d3d == nullptr)
+		return FALSE;
+
+	m_d3d->BegineScene();
+	
+
+	m_d3d->EndScene();
+
 	return true;
 }
 

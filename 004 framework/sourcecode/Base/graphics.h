@@ -1,18 +1,23 @@
-#pragma once
+#ifndef _GRAPHIC_H_
+#define _GRAPHIC_H_
 
 #include "basedef.h"
+#include "graphicD3d.h"
 
 SGAP_BEGIN
 
 //TEMP VALUES
-const bool FULLSCREEN = false;
+const BOOL	FULLSCREEN	= FALSE;
+const BOOL	VERTICALSYNC = FALSE;
+const FLOAT	SCREENDEPTH = 1000.0f;
+const FLOAT	SCREENNEAR = 0.1f;
 
 
 typedef class graphics
 {
 public:
 	static bool CreateGraphic(graphics** ppgraphic);
-	static void ReleaseGraphic(graphics** ppgraphic);
+	static void DestroyGraphic(graphics** ppgraphic);
 
 public:
 	graphics();
@@ -27,7 +32,10 @@ private:
 	bool Render();
 
 private:
+	LPGRAPHICD3D	m_d3d = nullptr;
 	
-}GRAPHICS;
+}GRAPHICS, *LPGRAPHICS;
 
 SGAP_END
+
+#endif

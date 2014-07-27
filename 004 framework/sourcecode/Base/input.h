@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _INPUT_H_
+#define _INPUT_H_
 
 #include "basedef.h"
 
@@ -9,6 +10,7 @@ typedef class iInput
 {
 public:
 			iInput() {}	
+			iInput(const iInput&) {}
 	virtual ~iInput() {}
 public:
 	virtual void initialize() = 0;
@@ -16,20 +18,21 @@ public:
 	virtual void KeyDown(UINT ukey) = 0;
 	virtual void KeyUp(UINT ukey) = 0;
 	virtual bool GetKeyDown(UINT ukey) = 0;
-}iINPUT;
+}iINPUT, *LPINPUT;
 
 
 /*
-	키 입력 클래스
+	윈도 메시지 기반 키 입력 클래스
 */
 typedef class KeyInput : public iInput
 {
 public:
 	static bool CreateInput(iInput** ppinput);
-	static void ReleaseInput(iInput** ppinput);
+	static void DestroyInput(iInput** ppinput);
 
 public:
 	KeyInput();
+	KeyInput(const KeyInput&);
 	~KeyInput();
 
 	void initialize();
@@ -44,3 +47,5 @@ private:
 }KEYINPUT;
 
 SGAP_END
+
+#endif

@@ -374,12 +374,14 @@
   <ItemGroup>
     <ClInclude Include="base\application.h" />
     <ClInclude Include="Base\basedef.h" />
+    <ClInclude Include="Base\graphicD3d.h" />
     <ClInclude Include="Base\graphics.h" />
     <ClInclude Include="Base\input.h" />
     <ClInclude Include="gameApp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\application.cpp" />
+    <ClCompile Include="Base\graphicD3d.cpp" />
     <ClCompile Include="Base\graphics.cpp" />
     <ClCompile Include="Base\input.cpp" />
     <ClCompile Include="gameApp.cpp" />
