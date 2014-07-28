@@ -76,6 +76,7 @@ bool graphics::Render()
 
 	m_d3d->BegineScene();
 	
+	//draw to anything...
 
 	m_d3d->EndScene();
 

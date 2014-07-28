@@ -8,21 +8,21 @@ application::application()
 {
 }
 
-application::application(const application& a)
-{
+application::application(const application&)
+{	
 }
 
 application::~application()
 {
 }
 
-void application::Initialize(application* papp, LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM))
+void application::Initialize(LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM))
 {
 	DEVMODE dmScreenSettings;
 	int posX, posY;
 
 	//자식의 싱글톤 포인터를 부모세대 포인터에 전달.
-	g_app = papp;
+	g_app = this;
 
 	// Get the instance of this application.
 	m_hInst		= GetModuleHandle(NULL);
@@ -31,17 +31,17 @@ void application::Initialize(application* papp, LPCWSTR appname, LRESULT (CALLBA
 	// Register class
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wcex.lpfnWndProc = pWndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = m_hInst;
 	wcex.hIcon = LoadIcon(m_hInst, IDI_WINLOGO);
+	wcex.hIconSm = wcex.hIcon;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = m_nameApp;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, NULL);
 	
 	RegisterClassEx(&wcex);
 
@@ -82,7 +82,7 @@ void application::Initialize(application* papp, LPCWSTR appname, LRESULT (CALLBA
 							WS_OVERLAPPEDWINDOW,
 							//WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 							posX, posY, m_screenWidth, m_screenHeight, NULL, NULL, m_hInst, NULL);
-
+	
 	ShowWindow(m_hWnd, SW_SHOW);
 	SetForegroundWindow(m_hWnd);
 	SetFocus(m_hWnd);

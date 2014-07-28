@@ -29,7 +29,7 @@ public:
 	GRAPHICS*	Graphics() const	{ return m_graphics; }
 	
 
-	void Initialize(application* papp, LPCWSTR appname, LRESULT(CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM));
+	void Initialize(LPCWSTR appname, LRESULT(CALLBACK *pWndProc)(HWND, UINT, WPARAM, LPARAM));
 	void Run();
 	void Release();	
 	bool Mainframe();	// app 의 주요 업데이트가 일어나는 곳
