@@ -48,4 +48,5 @@ void CreateData(void ** ppdat, T val)
 void ReleaseData(void ** ppdat)
 {
 	delete *ppdat;
+	*ppdat = nullptr;
 }
