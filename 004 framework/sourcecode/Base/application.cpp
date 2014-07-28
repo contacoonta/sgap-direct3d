@@ -161,9 +161,6 @@ LRESULT CALLBACK application::MsgHandler(HWND hWnd, UINT message, WPARAM wParam,
 	case WM_KEYUP:
 		m_input->KeyUp((UINT)wParam);
 		return 0;
-
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 }
 

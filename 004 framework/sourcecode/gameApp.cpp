@@ -37,8 +37,7 @@ LRESULT CALLBACK GameApp::MsgHandler(HWND hWnd, UINT message, WPARAM wParam, LPA
 	{
 	case WM_NULL:
 		return 0;
-
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
+
+	return 0;
 }

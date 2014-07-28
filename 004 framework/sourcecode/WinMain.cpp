@@ -18,6 +18,9 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	// app 의 메시지 핸들러에 전달
+	GAMEAPP.MsgHandler(hWnd, message, wParam, lParam);
+
 	switch (message)
 	{
 	case WM_CREATE:
@@ -28,8 +31,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 
-		// 기타 다른 메시지는 app 의 메시지 핸들러에 전달
 	default:
-		return GAMEAPP.MsgHandler(hWnd, message, wParam, lParam);
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 }
