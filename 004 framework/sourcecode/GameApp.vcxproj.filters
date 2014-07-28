@@ -15,6 +15,9 @@
     <ClCompile Include="Base\graphicD3d.cpp">
       <Filter>Base</Filter>
     </ClCompile>
+    <ClCompile Include="Base\graphicFont.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameApp.h" />
@@ -31,6 +34,9 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\graphicD3d.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\graphicFont.h">
       <Filter>Base</Filter>
     </ClInclude>
   </ItemGroup>

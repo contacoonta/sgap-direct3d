@@ -6,7 +6,7 @@ SGAP_BEGIN
 
 /*
 */
-bool graphics::CreateGraphic(graphics** ppgraphic)
+bool graphics::Create(graphics** ppgraphic)
 {
 	if (*ppgraphic != nullptr)
 		return false;
@@ -16,7 +16,7 @@ bool graphics::CreateGraphic(graphics** ppgraphic)
 	return (*ppgraphic)->Initialize();
 }
 
-void graphics::DestroyGraphic(graphics** ppgraphic)
+void graphics::Destroy(graphics** ppgraphic)
 {
 	if (*ppgraphic)
 	{
@@ -47,9 +47,16 @@ graphics::~graphics()
 */
 bool graphics::Initialize()
 {
-	if (graphicD3d::CreateGraphicD3d(&m_d3d, g_app->Width(), g_app->Height(), VERTICALSYNC, g_app->Hwnd(), FULLSCREEN, SCREENDEPTH, SCREENNEAR) == FALSE)
+	if (graphicD3d::Create(&m_d3d, g_app->Width(), g_app->Height(), VERTICALSYNC, g_app->Hwnd(), FULLSCREEN, SCREENDEPTH, SCREENNEAR) == FALSE)
 	{
 		MessageBox(g_app->Hwnd(), L"Direct3D initialize FAILED", L"ERROR", MB_OK);
+		return false;
+	}
+
+	// DirectWrite 폰트 생성
+	if (graphicFont::Create(&m_font, m_d3d) == FALSE)
+	{
+		MessageBox(g_app->Hwnd(), L"Direct Write Font create FAILED", L"ERROR", MB_OK);
 		return false;
 	}
 	
@@ -66,7 +73,8 @@ bool graphics::Frame()
 
 void graphics::Release()
 {
-	graphicD3d::DestroyGraphicD3d(&m_d3d);
+	graphicFont::Destroy(&m_font);
+	graphicD3d::Destroy(&m_d3d);
 }
 
 bool graphics::Render()
@@ -75,9 +83,10 @@ bool graphics::Render()
 		return FALSE;
 
 	m_d3d->BegineScene();
-	
-	//draw to anything...
-
+	{	
+		m_font->DrawString(L"Direct Write with D3d11", 10.0f, 100.0f);
+		m_font->DrawString(L"다이렉트 라이트 디3디11", 10.0f, 200.0f);		
+	}
 	m_d3d->EndScene();
 
 	return true;

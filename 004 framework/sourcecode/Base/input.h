@@ -27,8 +27,8 @@ public:
 typedef class KeyInput : public iInput
 {
 public:
-	static bool CreateInput(iInput** ppinput);
-	static void DestroyInput(iInput** ppinput);
+	static bool Create(iInput** ppinput);
+	static void Destroy(iInput** ppinput);
 
 public:
 	KeyInput();

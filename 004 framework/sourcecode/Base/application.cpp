@@ -88,8 +88,8 @@ void application::Initialize(LPCWSTR appname, LRESULT (CALLBACK *pWndProc)(HWND,
 	SetFocus(m_hWnd);
 
 	// 각종 컴포넌트들 생성 및 초기화
-	KEYINPUT::CreateInput(&m_input);
-	GRAPHICS::CreateGraphic(&m_graphics);
+	KEYINPUT::Create(&m_input);
+	GRAPHICS::Create(&m_graphics);
 
 	// 상속 클래스의 초기화
 	OnInit();
@@ -131,8 +131,8 @@ bool application::Mainframe()
 void application::Release()
 {
 	// 각종 컴포넌트들 제거
-	GRAPHICS::DestroyGraphic(&m_graphics);
-	KEYINPUT::DestroyInput(&m_input);
+	GRAPHICS::Destroy(&m_graphics);
+	KEYINPUT::Destroy(&m_input);
 
 	// 전체화면 모드 기능 
 	if (FULLSCREEN)

@@ -3,6 +3,8 @@
 
 #include "basedef.h"
 #include "graphicD3d.h"
+#include "graphicFont.h"
+
 
 SGAP_BEGIN
 
@@ -16,13 +18,15 @@ const FLOAT	SCREENNEAR = 0.1f;
 typedef class graphics
 {
 public:
-	static bool CreateGraphic(graphics** ppgraphic);
-	static void DestroyGraphic(graphics** ppgraphic);
+	static bool Create(graphics** ppgraphic);
+	static void Destroy(graphics** ppgraphic);
 
 public:
 	graphics();
 	graphics(const graphics&);
 	~graphics();
+
+	LPGRAPHICD3D	getD3d() { return m_d3d; }
 
 	bool Initialize();
 	bool Frame();
@@ -33,6 +37,7 @@ private:
 
 private:
 	LPGRAPHICD3D	m_d3d = nullptr;
+	LPGRAPHICFONT	m_font = nullptr;
 	
 }GRAPHICS, *LPGRAPHICS;
 

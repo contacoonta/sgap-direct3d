@@ -2,7 +2,7 @@
 
 SGAP_BEGIN
 
-bool KeyInput::CreateInput(iInput** ppinput)
+bool KeyInput::Create(iInput** ppinput)
 {
 	if (*ppinput != nullptr)
 		return false;
@@ -13,7 +13,7 @@ bool KeyInput::CreateInput(iInput** ppinput)
 	return true;
 }
 
-void KeyInput::DestroyInput(iInput** ppinput)
+void KeyInput::Destroy(iInput** ppinput)
 {
 	if (*ppinput)
 	{

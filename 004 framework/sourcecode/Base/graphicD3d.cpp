@@ -5,7 +5,7 @@ SGAP_BEGIN
 
 /*
 */
-bool graphicD3d::CreateGraphicD3d(graphicD3d** ppgd3d, int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
+bool graphicD3d::Create(graphicD3d** ppgd3d, int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
 {
 	if (*ppgd3d != nullptr)
 		return false;
@@ -14,7 +14,7 @@ bool graphicD3d::CreateGraphicD3d(graphicD3d** ppgd3d, int screenWidth, int scre
 	return (*ppgd3d)->Initialize(screenWidth, screenHeight, vsync, hwnd, fullscreen, screenDepth, screenNear);
 }
 
-void graphicD3d::DestroyGraphicD3d(graphicD3d** ppgd3d)
+void graphicD3d::Destroy(graphicD3d** ppgd3d)
 {
 	if (*ppgd3d)
 	{

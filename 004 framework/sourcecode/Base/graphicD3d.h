@@ -20,8 +20,13 @@ SGAP_BEGIN
 typedef class graphicD3d
 {
 public:
-	static bool CreateGraphicD3d(graphicD3d** ppgd3d, int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear);
-	static void DestroyGraphicD3d(graphicD3d** ppgd3d);
+	static bool Create(graphicD3d** ppgd3d, int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear);
+	static void Destroy(graphicD3d** ppgd3d);
+
+public:
+	graphicD3d();
+	graphicD3d(const graphicD3d& d3d);
+	~graphicD3d();
 
 public:
 	ID3D11Device*			GetDevice()		{ return m_device; }
@@ -32,12 +37,7 @@ public:
 	D3DXMATRIX			GetMatrixOrtho()	{ return m_orthoMatrix; }
 
 	UINT				GetVideoMemory()	{ return m_videoMemory; }
-
-public:
-	graphicD3d();
-	graphicD3d(const graphicD3d& d3d);
-	~graphicD3d();
-
+	
 	bool Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear);
 	void Release();
 
