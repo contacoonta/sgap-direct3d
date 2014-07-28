@@ -42,17 +42,37 @@ int main(int argc, char* argv[])
 	//(*event3)(&dat);
 	
 	
-	EventSender sender;
-	sender.RegisterListener(event1);
-	sender.RegisterListener(event2);
+	EventSender sender;	
+	//sender.RegisterListener(event1);
+	//sender.RegisterListener(event2);
+
+	//오퍼레이터로 이벤트 등록
+	sender += event1;
+	sender += event2;
 	
 	data dat;
 	dat.posx = 3;
 	dat.posy = 14;
 	sender.Invoke(&dat);
 
-	delete event1;
-	delete event2;
+	std::cout << "------------------" << std::endl;
+
+	//오퍼레이터로 이벤트 삭제
+	sender -= &event1;
+	sender.Invoke(&dat);
+
+	//삭제한 이벤트는 생략
+	if (event1)
+	{
+		delete event1;
+		event1 = nullptr;
+	}
+
+	if (event2)
+	{
+		delete event2;
+		event2 = nullptr;
+	}
 
 	return 0;
 }
