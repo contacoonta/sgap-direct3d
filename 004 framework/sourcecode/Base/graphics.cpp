@@ -59,6 +59,12 @@ bool graphics::Initialize()
 		MessageBox(g_app->Hwnd(), L"Direct Write Font create FAILED", L"ERROR", MB_OK);
 		return false;
 	}
+
+	if (graphicCamera::Create(&m_camera) == FALSE)
+		return false;
+
+	m_camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -10.0f));
+
 	
 	return true;
 }
@@ -73,6 +79,7 @@ bool graphics::Frame()
 
 void graphics::Release()
 {
+	graphicCamera::Destroy(&m_camera);
 	graphicFont::Destroy(&m_font);
 	graphicD3d::Destroy(&m_d3d);
 }
@@ -82,10 +89,21 @@ bool graphics::Render()
 	if (m_d3d == nullptr)
 		return FALSE;
 
+
+	XMMATRIX worldMtx, viewMtx, projMtx;
+
 	m_d3d->BegineScene();
 	{	
-		m_font->DrawString(L"Direct Write with D3d11", 10.0f, 100.0f);
-		m_font->DrawString(L"다이렉트 라이트 디3디11", 10.0f, 200.0f);		
+		if (m_d3d && m_camera)
+		{
+			m_camera->render();
+			// Get the world, view, and projection matrices from the camera and d3d objects.
+			viewMtx = m_camera->GetMatrixView();
+			worldMtx = m_d3d->GetMatrixWorld();
+			projMtx = m_d3d->GetMatrixProj();
+		}
+
+		m_font->DrawString(L"다이렉트라이트 with D3d11", 10.0f, 10.0f);
 	}
 	m_d3d->EndScene();
 

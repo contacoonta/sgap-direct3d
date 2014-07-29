@@ -6,17 +6,20 @@
     <ClCompile Include="base\application.cpp">
       <Filter>Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\input.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\graphics.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
     <ClCompile Include="Base\graphicD3d.cpp">
-      <Filter>Base</Filter>
+      <Filter>Base\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Base\graphicFont.cpp">
-      <Filter>Base</Filter>
+      <Filter>Base\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\graphics.cpp">
+      <Filter>Base\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\graphicCamera.cpp">
+      <Filter>Base\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\input.cpp">
+      <Filter>Base\Inputs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -24,25 +27,34 @@
     <ClInclude Include="base\application.h">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="Base\input.h">
-      <Filter>Base</Filter>
-    </ClInclude>
     <ClInclude Include="Base\basedef.h">
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\graphics.h">
-      <Filter>Base</Filter>
+      <Filter>Base\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Base\graphicD3d.h">
-      <Filter>Base</Filter>
+      <Filter>Base\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Base\graphicFont.h">
-      <Filter>Base</Filter>
+      <Filter>Base\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\graphicCamera.h">
+      <Filter>Base\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\input.h">
+      <Filter>Base\Inputs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
       <UniqueIdentifier>{02982813-2dbd-4e03-8ba8-92326c8812eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Graphics">
+      <UniqueIdentifier>{5b512a48-2384-4baf-83b9-a38287ef009c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Inputs">
+      <UniqueIdentifier>{9ebc525f-f8f1-4e23-8a44-ad6127a16784}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,17 +1,6 @@
 #ifndef _GRAPHICD3D_H_
 #define _GRAPHICD3D_H_
 
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dx11.lib")
-#pragma comment(lib, "d3dx10.lib")
-
-
-#include <dxgi.h>
-#include <d3dcommon.h>
-#include <d3d11.h>
-#include <d3dx10math.h>
-
 #include "basedef.h"
 
 
@@ -32,9 +21,9 @@ public:
 	ID3D11Device*			GetDevice()		{ return m_device; }
 	ID3D11DeviceContext*	GetDevContext()	{ return m_deviceContext; }
 
-	D3DXMATRIX			GetMatrixProj()		{ return m_projectionMatrix; }
-	D3DXMATRIX			GetMatrixWorld()	{ return m_worldMatrix; }
-	D3DXMATRIX			GetMatrixOrtho()	{ return m_orthoMatrix; }
+	XMMATRIX			GetMatrixProj()		{ return m_projectionMatrix; }
+	XMMATRIX			GetMatrixWorld()	{ return m_worldMatrix; }
+	XMMATRIX			GetMatrixOrtho()	{ return m_orthoMatrix; }
 
 	UINT				GetVideoMemory()	{ return m_videoMemory; }
 	
@@ -60,9 +49,9 @@ private:
 	ID3D11DepthStencilView*		m_depthStencilView	= NULL; //
 	ID3D11RasterizerState*		m_rasterState		= NULL; //
 
-	D3DXMATRIX	 m_projectionMatrix;
-	D3DXMATRIX	 m_worldMatrix;
-	D3DXMATRIX	 m_orthoMatrix;
+	XMMATRIX	 m_projectionMatrix;
+	XMMATRIX	 m_worldMatrix;
+	XMMATRIX	 m_orthoMatrix;
 
 }GRAPHICD3D, *LPGRAPHICD3D;
 

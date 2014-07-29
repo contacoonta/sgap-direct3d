@@ -360,10 +360,10 @@ bool graphicD3d::Initialize(int screenWidth, int screenHeight, bool vsync, HWND 
 		- 3d 화면을 2d 뷰포트 공간으로 변환
 		- 복사본으로 셰이더에서 사용 할 수 있게 한다.
 	*/
-	float fieldOfView = (float)D3DX_PI / 4.0f;
+	float fieldOfView = (float)XM_PI / 4.0f;
 	float screenAspect = (float)screenWidth / (float)screenHeight;
 
-	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
+	m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
 
 
 	/*
@@ -373,7 +373,7 @@ bool graphicD3d::Initialize(int screenWidth, int screenHeight, bool vsync, HWND 
 		- 복사본으로 셰이더에 사용 할 수 있게 한다.
 	*/
 	// 월드 행렬을 단위 행렬로 초기화
-	D3DXMatrixIdentity(&m_worldMatrix);
+	m_worldMatrix = XMMatrixIdentity();
 
 
 	/*
@@ -388,7 +388,7 @@ bool graphicD3d::Initialize(int screenWidth, int screenHeight, bool vsync, HWND 
 		- 2d 이미지나 UI 등을 표현할 때 사용.
 	*/
 	// 2D 렌더링에 사용될 정사영 행렬을 생성.
-	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+	m_orthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
 	
 	return true;
 }

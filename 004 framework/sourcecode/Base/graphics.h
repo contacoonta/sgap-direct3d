@@ -4,7 +4,7 @@
 #include "basedef.h"
 #include "graphicD3d.h"
 #include "graphicFont.h"
-
+#include "graphicCamera.h"
 
 SGAP_BEGIN
 
@@ -38,6 +38,7 @@ private:
 private:
 	LPGRAPHICD3D	m_d3d = nullptr;
 	LPGRAPHICFONT	m_font = nullptr;
+	LPCAMERA		m_camera = nullptr;
 	
 }GRAPHICS, *LPGRAPHICS;
 

@@ -375,6 +375,7 @@
   <ItemGroup>
     <ClInclude Include="base\application.h" />
     <ClInclude Include="Base\basedef.h" />
+    <ClInclude Include="Base\graphicCamera.h" />
     <ClInclude Include="Base\graphicD3d.h" />
     <ClInclude Include="Base\graphicFont.h" />
     <ClInclude Include="Base\graphics.h" />
@@ -383,6 +384,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\application.cpp" />
+    <ClCompile Include="Base\graphicCamera.cpp" />
     <ClCompile Include="Base\graphicD3d.cpp" />
     <ClCompile Include="Base\graphicFont.cpp" />
     <ClCompile Include="Base\graphics.cpp" />
