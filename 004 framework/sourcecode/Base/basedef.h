@@ -2,6 +2,7 @@
 #define _BASEDEF_H_
 
 #pragma warning(disable: 4127) // warning C4127: 조건식이 상수입니다.
+#pragma warning(disable: 4005) // warning C4005: 조건식이 상수입니다.
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
