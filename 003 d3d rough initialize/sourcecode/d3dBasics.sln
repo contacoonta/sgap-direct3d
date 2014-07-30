@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Basics", "d3dBasics.vcxproj", "{06EDC280-1187-4614-A248-E640C095FA6B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 device Initialize", "01 device initialize\001 device initialize.vcxproj", "{8750AD48-593C-4748-9AD0-49EEDD331FAD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 draw triangle", "02 draw triangle\002 drawTriangle.vcxproj", "{06EDC280-1187-4614-A248-E640C095FA6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Debug|Win32.Build.0 = Debug|Win32
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Debug|x64.ActiveCfg = Debug|x64
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Debug|x64.Build.0 = Debug|x64
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Profile|Win32.ActiveCfg = Profile|Win32
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Profile|Win32.Build.0 = Profile|Win32
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Profile|x64.ActiveCfg = Profile|x64
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Profile|x64.Build.0 = Profile|x64
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Release|Win32.ActiveCfg = Release|Win32
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Release|Win32.Build.0 = Release|Win32
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Release|x64.ActiveCfg = Release|x64
+		{8750AD48-593C-4748-9AD0-49EEDD331FAD}.Release|x64.Build.0 = Release|x64
 		{06EDC280-1187-4614-A248-E640C095FA6B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{06EDC280-1187-4614-A248-E640C095FA6B}.Debug|Win32.Build.0 = Debug|Win32
 		{06EDC280-1187-4614-A248-E640C095FA6B}.Debug|x64.ActiveCfg = Debug|x64
