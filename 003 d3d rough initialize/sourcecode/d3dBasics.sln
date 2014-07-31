@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 device Initialize", "01
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 draw triangle", "02 draw triangle\002 drawTriangle.vcxproj", "{06EDC280-1187-4614-A248-E640C095FA6B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 transform", "03 transform\003 transform.vcxproj", "{D271681A-0AA2-4767-B821-DC40D7F02099}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -41,6 +43,18 @@ Global
 		{06EDC280-1187-4614-A248-E640C095FA6B}.Release|Win32.Build.0 = Release|Win32
 		{06EDC280-1187-4614-A248-E640C095FA6B}.Release|x64.ActiveCfg = Release|x64
 		{06EDC280-1187-4614-A248-E640C095FA6B}.Release|x64.Build.0 = Release|x64
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Debug|Win32.Build.0 = Debug|Win32
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Debug|x64.ActiveCfg = Debug|x64
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Debug|x64.Build.0 = Debug|x64
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Profile|Win32.ActiveCfg = Profile|Win32
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Profile|Win32.Build.0 = Profile|Win32
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Profile|x64.ActiveCfg = Profile|x64
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Profile|x64.Build.0 = Profile|x64
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|Win32.ActiveCfg = Release|Win32
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|Win32.Build.0 = Release|Win32
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|x64.ActiveCfg = Release|x64
+		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
