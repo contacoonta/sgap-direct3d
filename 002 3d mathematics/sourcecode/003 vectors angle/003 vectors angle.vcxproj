@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D231112E-6634-4CE1-BA00-162E7B442D2E}</ProjectGuid>
+    <ProjectGuid>{72FEE3A5-2DA8-4F1D-B1A2-0CF9BE647198}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>My001vectorsangle</RootNamespace>
   </PropertyGroup>
