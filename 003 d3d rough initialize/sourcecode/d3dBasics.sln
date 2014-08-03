@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 draw triangle", "02 dra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 transform", "03 transform\003 transform.vcxproj", "{D271681A-0AA2-4767-B821-DC40D7F02099}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 transform orbit", "04 transform orbit\004 transform orbit.vcxproj", "{32352D25-A737-4AB0-922A-DA84CB272173}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +57,18 @@ Global
 		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|Win32.Build.0 = Release|Win32
 		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|x64.ActiveCfg = Release|x64
 		{D271681A-0AA2-4767-B821-DC40D7F02099}.Release|x64.Build.0 = Release|x64
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Debug|Win32.ActiveCfg = Debug|Win32
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Debug|Win32.Build.0 = Debug|Win32
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Debug|x64.ActiveCfg = Debug|x64
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Debug|x64.Build.0 = Debug|x64
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Profile|Win32.ActiveCfg = Profile|Win32
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Profile|Win32.Build.0 = Profile|Win32
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Profile|x64.ActiveCfg = Profile|x64
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Profile|x64.Build.0 = Profile|x64
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|Win32.ActiveCfg = Release|Win32
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|Win32.Build.0 = Release|Win32
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|x64.ActiveCfg = Release|x64
+		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
