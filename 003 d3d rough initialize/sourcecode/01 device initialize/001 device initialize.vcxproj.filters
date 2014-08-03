@@ -6,9 +6,8 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="Basics.cpp" />
+    <ClCompile Include="initialize.cpp" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

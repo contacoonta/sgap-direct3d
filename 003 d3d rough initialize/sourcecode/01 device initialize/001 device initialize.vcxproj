@@ -371,9 +371,8 @@
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="Basics.cpp" />
+    <ClCompile Include="initialize.cpp" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

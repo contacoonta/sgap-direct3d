@@ -1,10 +1,10 @@
-//--------------------------------------------------------------------------------------
-// File: Basics.cpp
-//
-// This application demonstrates creating a Direct3D 11 device
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
-//--------------------------------------------------------------------------------------
+/*
+	D3d11 
+	- Device			持失
+	- Device Context	持失
+	- Swap Chain		持失
+	- Render Target		持失
+*/
 #include <windows.h>
 #include <d3d11.h>
 #include <d3dx11.h>
@@ -183,11 +183,8 @@ HRESULT InitDevice()
     sd.OutputWindow = g_hWnd;
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
-#ifdef _DEBUG
     sd.Windowed = TRUE;
-#else
-	sd.Windowed = FALSE;
-#endif
+
 
     for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
     {

@@ -521,9 +521,9 @@ HRESULT InitDevice()
 
 	//VIEW MATRIX
 	XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -10.0f, 0.0f);
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR LookAt = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	g_View = XMMatrixLookAtLH(Eye, At, Up);
+	g_View = XMMatrixLookAtLH(Eye, LookAt, Up);
 
 	//PROJECTION MATRIX
 	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / (FLOAT)height, 0.01f, 100.0f);
