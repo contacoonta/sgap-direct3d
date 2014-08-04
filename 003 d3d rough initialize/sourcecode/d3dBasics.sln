@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 transform", "03 transfo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 transform orbit", "04 transform orbit\004 transform orbit.vcxproj", "{32352D25-A737-4AB0-922A-DA84CB272173}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005 light", "05 light\005 light.vcxproj", "{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -69,6 +71,18 @@ Global
 		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|Win32.Build.0 = Release|Win32
 		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|x64.ActiveCfg = Release|x64
 		{32352D25-A737-4AB0-922A-DA84CB272173}.Release|x64.Build.0 = Release|x64
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Debug|Win32.Build.0 = Debug|Win32
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Debug|x64.ActiveCfg = Debug|x64
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Debug|x64.Build.0 = Debug|x64
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Profile|Win32.ActiveCfg = Profile|Win32
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Profile|Win32.Build.0 = Profile|Win32
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Profile|x64.ActiveCfg = Profile|x64
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Profile|x64.Build.0 = Profile|x64
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Release|Win32.ActiveCfg = Release|Win32
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Release|Win32.Build.0 = Release|Win32
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Release|x64.ActiveCfg = Release|x64
+		{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
