@@ -28,8 +28,8 @@ void main()
 		2. 두 벡터의 외적 ( cross product )
 		- 왼손 좌표계 기준으로 foward , side , up 순으로 연산
 	*/
-	XMVECTOR Vfwd	= XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	XMVECTOR Vside	= XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR Vfwd	= XMVectorSet(0.0f, 1.0f, -1.0f, 0.0f);
+	XMVECTOR Vside	= XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f);
 
 	XMVECTOR Vup = XMVector3Cross(Vfwd, Vside);
 
