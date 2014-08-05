@@ -1,28 +1,22 @@
-#include <iostream>
+#include <stdio.h>
 
-using std::cout;
-using std::endl;
 
-template < typename T >
-void CreateData(void ** ppdat, T val);
+void CreateData(void ** ppdat, int val);
 void ReleaseData(void ** ppdat);
 
 void main()
 {
 	void* pdat = nullptr;
 
-	// 1. main 함수에서 일반적으로 pdat 포인터를 사용한 경우.
 	/*pdat = new int(77);
 	{
 		printf("data = %d\n", *(int*)pdat);
 	}
 	delete pdat;*/
 
-	// 2. 함수 인자로 pdat 포인터의 주소를 전달하여 사용한 경우.
-	CreateData(&pdat, 'k');
+	CreateData(&pdat, 77);
 	{
-		//cout << "data = " << *(int*)pdat << endl;
-		cout << "data = " << *(char*)pdat << endl;
+		printf("data = %d\n", *(int*)pdat);
 	}
 	ReleaseData(&pdat);
 
@@ -37,16 +31,14 @@ void main()
 	//ReleaseData(&pdat);
 }
 
-template < typename T >
-void CreateData(void ** ppdat, T val)
+void CreateData(void ** ppdat, int val)
 {
-	*ppdat = new T;
+	*ppdat = new int(77);
 
-	*(T*)*ppdat = val;
+	*(int*)*ppdat = val;
 }
 
 void ReleaseData(void ** ppdat)
 {
 	delete *ppdat;
-	*ppdat = nullptr;
 }

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Callback.h">
+    <ClInclude Include="callback.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="EventSender.h">

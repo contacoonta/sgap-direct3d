@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 Event Callback", "002 Event Callback.vcxproj", "{1EA3EAC1-3096-452A-9C8E-EAF1B1BFB6CF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 function pointer", "001 function pointer\001 function pointer.vcxproj", "{084D5AF8-F532-4510-B43B-F7659369B870}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 event callback", "002 event callback\002 event callback.vcxproj", "{E2F94FF9-9857-4763-B396-147DDACD0FD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1EA3EAC1-3096-452A-9C8E-EAF1B1BFB6CF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1EA3EAC1-3096-452A-9C8E-EAF1B1BFB6CF}.Debug|Win32.Build.0 = Debug|Win32
-		{1EA3EAC1-3096-452A-9C8E-EAF1B1BFB6CF}.Release|Win32.ActiveCfg = Release|Win32
-		{1EA3EAC1-3096-452A-9C8E-EAF1B1BFB6CF}.Release|Win32.Build.0 = Release|Win32
+		{084D5AF8-F532-4510-B43B-F7659369B870}.Debug|Win32.ActiveCfg = Debug|Win32
+		{084D5AF8-F532-4510-B43B-F7659369B870}.Debug|Win32.Build.0 = Debug|Win32
+		{084D5AF8-F532-4510-B43B-F7659369B870}.Release|Win32.ActiveCfg = Release|Win32
+		{084D5AF8-F532-4510-B43B-F7659369B870}.Release|Win32.Build.0 = Release|Win32
+		{E2F94FF9-9857-4763-B396-147DDACD0FD2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E2F94FF9-9857-4763-B396-147DDACD0FD2}.Debug|Win32.Build.0 = Debug|Win32
+		{E2F94FF9-9857-4763-B396-147DDACD0FD2}.Release|Win32.ActiveCfg = Release|Win32
+		{E2F94FF9-9857-4763-B396-147DDACD0FD2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
