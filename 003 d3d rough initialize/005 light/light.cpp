@@ -509,7 +509,7 @@ HRESULT InitDevice()
 
 
 	//VIEW MATRIX
-	XMVECTOR Eye = XMVectorSet(3.0f, 5.0f, -10.0f, 0.0f);
+	XMVECTOR Eye = XMVectorSet(3.0f, 8.0f, -6.0f, 0.0f);
 	XMVECTOR At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	g_View = XMMatrixLookAtLH(Eye, At, Up);
@@ -578,23 +578,23 @@ void	Render()
 	*/
 	static float rot = 0.0f;
 	rot += 0.0001f;
-	g_ParentMat = XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
-	g_ParentMat = g_ParentMat * XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	g_ParentMat = XMMatrixRotationRollPitchYaw(0.0f, 0.0f, rot);
+	g_ParentMat = g_ParentMat * XMMatrixTranslation(2.0f, 0.0f, 0.0f);
 
 	//XMVECTOR vAxis = XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f);
 	//XMMATRIX morbit = XMMatrixRotationAxis(vAxis, rot);
 	XMMATRIX mscale = XMMatrixScaling(0.5f, 0.5f, 0.5f);
-	XMMATRIX mspin = XMMatrixRotationRollPitchYaw(-rot*20.0f, -rot*20.0f, 0.0f);
+	XMMATRIX mspin = XMMatrixRotationRollPitchYaw(-rot*5.0f, -rot, 0.0f);
 	XMMATRIX mtranslate = XMMatrixTranslation(0.0f, 3.0f, 0.0f);
 	//LOCAL( SCALE * ROTATION * TRANSLATE) * WORLD ( ORBIT )
-	g_ChildMat = (mscale * mspin * mtranslate); /** g_ParentMat;*/
+	g_ChildMat = (mscale * mspin * mtranslate) * g_ParentMat;
 
 
 	/*
 		조명 방향 과 색상 설정
 	*/
 	XMFLOAT4 LitDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
-	XMFLOAT4 LitCol = XMFLOAT4(0.1f, 0.2f, 0.1f, 1.0f);
+	XMFLOAT4 LitCol = XMFLOAT4(0.8f, 1.2f, 0.3f, 1.0f);
 
 
 	XMVECTOR vAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);

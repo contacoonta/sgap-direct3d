@@ -14,7 +14,7 @@ cbuffer CONSTANTBUFFER : register(b0)
 typedef struct vertexformat
 {
 	float4 pos	:	POSITION;
-	float4 nor	:	NORMAL;
+	float3 nor	:	NORMAL;
 
 }VERTEXFORM;
 
@@ -36,7 +36,7 @@ PIXELFORM VERTEXSHADER(VERTEXFORM input)
 	output.pos = mul(input.pos, world);
 	// world 좌표의 값을 카메라(눈) 좌표 값으로 변형
 	output.pos = mul(output.pos, view);
-	// view 좌표계에서 projection 자표계로 변형
+	// view 좌표계에서 projection 좌표계로 변형
 	output.pos = mul(output.pos, projection);
 
 	output.nor = mul(input.nor, world);
