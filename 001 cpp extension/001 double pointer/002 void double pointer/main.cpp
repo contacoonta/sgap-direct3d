@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-
-void CreateData(void ** ppdat, int val);
+template < typename T >
+void CreateData(void ** ppdat, T val);
 void ReleaseData(void ** ppdat);
 
 void main()
@@ -31,11 +31,12 @@ void main()
 	//ReleaseData(&pdat);
 }
 
-void CreateData(void ** ppdat, int val)
+template < typename T >
+void CreateData(void ** ppdat, T val)
 {
-	*ppdat = new int(77);
+	*ppdat = new T;
 
-	*(int*)*ppdat = val;
+	*(T*)*ppdat = val;
 }
 
 void ReleaseData(void ** ppdat)
