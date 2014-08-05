@@ -6,10 +6,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="light.cpp" />
+    <ClCompile Include="texturing.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="lightShader.fx">
+    <None Include="textureShader.fx">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

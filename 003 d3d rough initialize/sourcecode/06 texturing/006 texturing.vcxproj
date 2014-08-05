@@ -27,16 +27,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="light.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="lightShader.fx">
+    <None Include="textureShader.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="texturing.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>005 light</ProjectName>
-    <ProjectGuid>{79746CEE-8A08-41C8-93C5-ADD0BB8D7FA0}</ProjectGuid>
+    <ProjectName>006 texturing</ProjectName>
+    <ProjectGuid>{3662936D-062A-45B0-999E-732F43EE83FF}</ProjectGuid>
     <RootNamespace>Basics</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
