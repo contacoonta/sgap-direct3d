@@ -10,6 +10,23 @@ void main()
 {
 
 	/*
+		1. 크기 magnitude 
+		- 벡터의 거리
+	*/
+	XMVECTOR v1 = {1.0f, 1.0f, 1.0f};
+
+	XMVECTOR vR1 = XMVector3Length(v1);
+	wprintf(L"mag = %f\n", XMVectorGetX(vR1));
+
+	/*
+		2. 단위 벡터 normalized vector
+		- 길이가 1인 벡터
+	*/
+	XMVECTOR vR2 = XMVector3Normalize(v1);
+	wprintf(L"unit = %f\n", XMVectorGetX(vR2));
+
+
+	/*
 		1. 두 벡터의 합 과 차
 	*/
 	XMVECTOR v1 = { 1.0f, 0.0f, 0.0f };
