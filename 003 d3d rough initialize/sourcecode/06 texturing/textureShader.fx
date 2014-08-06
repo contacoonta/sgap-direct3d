@@ -7,7 +7,7 @@ SamplerState linSamp : register(s0);
 /*
 	CONSTANT BUFFER
 */
-cbuffer CBNverChanges : register (b0)
+cbuffer CBNeverChanges : register (b0)
 {
 	matrix view;	
 }
