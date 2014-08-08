@@ -16,7 +16,7 @@ CDXUTDialog                 g_GUI;
 
 
 #define IDC_GUI_STATIC		1
-#define IDC_GUI_BUTTON		1
+#define IDC_GUI_BUTTON		2
 
 
 
