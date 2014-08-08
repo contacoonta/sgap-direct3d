@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>002 sdkmesh</ProjectName>
+    <ProjectName>002 GUI</ProjectName>
     <ProjectGuid>{00107FDA-9AE2-4E11-829C-8E83B660148B}</ProjectGuid>
     <RootNamespace>EmptyProject11</RootNamespace>
     <Keyword>Win32Proj</Keyword>

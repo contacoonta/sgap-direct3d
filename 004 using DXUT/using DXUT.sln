@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 dxut", "01 usingDXUT\01 dxut.vcxproj", "{63D3F852-8000-4B12-A6DE-ABD03E237A80}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 sdkmesh", "02 sdkmesh\02 sdkmesh.vcxproj", "{00107FDA-9AE2-4E11-829C-8E83B660148B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 GUI", "02 GUI\02 GUI.vcxproj", "{00107FDA-9AE2-4E11-829C-8E83B660148B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

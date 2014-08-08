@@ -1,13 +1,54 @@
 /*
-	1. sdk mesh 불러오기
+	1. DXUT 의 GUI 를 활용하기.
+
+	2. STATIC, BUTTON, SLIDER ... 붙여보기
 
 */
 #include "DXUT.h"
 #include "DXUTgui.h"
 #include "SDKmisc.h"
 
-CDXUTDialogResourceManager  g_DialogResourceManager; // manager for shared resources of dialogs
+
+
+CDXUTDialogResourceManager  g_DialogResourceManager; 
 CDXUTTextHelper*            g_pTxtHelper = NULL;
+CDXUTDialog                 g_GUI;
+
+
+#define IDC_GUI_STATIC		1
+#define IDC_GUI_BUTTON		1
+
+
+
+
+
+/*
+	GUI 용 이벤트 처리
+*/
+void CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
+{
+	switch (nControlID)
+	{
+	case IDC_GUI_BUTTON:
+			DXUTToggleFullScreen();
+		break;
+	}
+}
+
+
+/*
+	GUI 만들기
+*/
+void GUIInit()
+{
+	g_GUI.Init(&g_DialogResourceManager);
+	g_GUI.SetCallback(OnGUIEvent);
+	g_GUI.AddStatic(IDC_GUI_STATIC, L"TEST", 0, 50, 150, 50);
+	g_GUI.AddButton(IDC_GUI_BUTTON, L"BUTTON", 0, 100, 100, 30);
+
+	/*CDXUTStatic* pstatic = g_GUI.GetStatic(IDC_GUI_STATIC);
+	pstatic->SetText(L"CHANGE STATUC");*/
+}
 
 
 //--------------------------------------------------------------------------------------
@@ -41,6 +82,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	V_RETURN(g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pdevcon));
 	g_pTxtHelper = new CDXUTTextHelper(pd3dDevice, pdevcon, &g_DialogResourceManager, 15);
 
+
     return S_OK;
 }
 
@@ -54,6 +96,9 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 	HRESULT hr;
 
 	V_RETURN(g_DialogResourceManager.OnD3D11ResizedSwapChain(pd3dDevice, pBackBufferSurfaceDesc));
+
+	g_GUI.SetLocation(10, 200);
+	g_GUI.SetSize(200, 300);
 
     return S_OK;
 }
@@ -81,6 +126,10 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     ID3D11DepthStencilView* pDSV = DXUTGetD3D11DepthStencilView();
     pd3dImmediateContext->ClearRenderTargetView( pRTV, ClearColor );
     pd3dImmediateContext->ClearDepthStencilView( pDSV, D3D11_CLEAR_DEPTH, 1.0, 0 );
+
+
+	g_GUI.OnRender(fElapsedTime);
+
 
 	DXUT_BeginPerfEvent(DXUT_PERFEVENTCOLOR, L"HUD / Stats");
 	
@@ -114,6 +163,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 //--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
+
 	g_DialogResourceManager.OnD3D11DestroyDevice();
 	SAFE_DELETE(g_pTxtHelper);
 }
@@ -128,6 +178,10 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 	// Pass messages to dialog resource manager calls so GUI state is updated correctly
 	*pbNoFurtherProcessing = g_DialogResourceManager.MsgProc(hWnd, uMsg, wParam, lParam);
+	if (*pbNoFurtherProcessing)
+		return 0;
+
+	*pbNoFurtherProcessing = g_GUI.MsgProc(hWnd, uMsg, wParam, lParam);
 	if (*pbNoFurtherProcessing)
 		return 0;
 
@@ -200,8 +254,13 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
     DXUTInit( true, true, NULL ); // Parse the command line, show msgboxes on error, no extra command line params
     DXUTSetCursorSettings( true, true ); // Show the cursor and clip it when in full screen
-    DXUTCreateWindow( L"007 using DXUT" );
-
+    
+	/*
+		GUI 생성 및 초기화
+	*/
+	GUIInit();
+	
+	DXUTCreateWindow( L"002 GUI" );
     // Only require 10-level hardware
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 1024, 768 );
     DXUTMainLoop(); // Enter into the DXUT ren  der loop
