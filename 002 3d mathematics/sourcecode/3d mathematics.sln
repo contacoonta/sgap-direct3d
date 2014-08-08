@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 vectors dot & cross", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 vectors angle", "003 vectors angle\003 vectors angle.vcxproj", "{72FEE3A5-2DA8-4F1D-B1A2-0CF9BE647198}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 matrices identity", "004 matrices identity\004 matrices identity.vcxproj", "{AC2DBC37-40B2-4F01-8378-DC41A3AAD9D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -27,6 +29,10 @@ Global
 		{72FEE3A5-2DA8-4F1D-B1A2-0CF9BE647198}.Debug|Win32.Build.0 = Debug|Win32
 		{72FEE3A5-2DA8-4F1D-B1A2-0CF9BE647198}.Release|Win32.ActiveCfg = Release|Win32
 		{72FEE3A5-2DA8-4F1D-B1A2-0CF9BE647198}.Release|Win32.Build.0 = Release|Win32
+		{AC2DBC37-40B2-4F01-8378-DC41A3AAD9D3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AC2DBC37-40B2-4F01-8378-DC41A3AAD9D3}.Debug|Win32.Build.0 = Debug|Win32
+		{AC2DBC37-40B2-4F01-8378-DC41A3AAD9D3}.Release|Win32.ActiveCfg = Release|Win32
+		{AC2DBC37-40B2-4F01-8378-DC41A3AAD9D3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
