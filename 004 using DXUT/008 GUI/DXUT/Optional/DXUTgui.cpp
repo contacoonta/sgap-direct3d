@@ -316,6 +316,22 @@ void CDXUTDialog::Init( CDXUTDialogResourceManager* pManager, bool bRegisterDial
     InitDefaultElements();
 }
 
+/*
+	GAME 용으로 새로 만들기
+*/
+void CDXUTDialog::Init(CDXUTDialogResourceManager* pManager, bool bRegisterDialog, LPCWSTR pszControlTextureFilename, bool bInitDefault)
+{
+	m_pManager = pManager;
+	if (bRegisterDialog)
+		pManager->RegisterDialog(this);
+	SetTexture(0, pszControlTextureFilename);
+	
+	if (bInitDefault)
+		InitDefaultElements();
+	else
+		InitElementsGame();
+}
+
 
 //--------------------------------------------------------------------------------------
 void CDXUTDialog::SetCallback( PCALLBACKDXUTGUIEVENT pCallback, void* pUserContext )
@@ -1838,6 +1854,32 @@ HRESULT CDXUTDialog::AddStatic( int ID, LPCWSTR strText, int x, int y, int width
 }
 
 
+HRESULT CDXUTDialog::AddStaticImg(int ID, int x, int y, int width, int height, bool bIsDefault, CDXUTStaticImg** ppCreated)
+{
+	HRESULT hr = S_OK;
+
+	CDXUTStaticImg* pStaticImg = new CDXUTStaticImg(this);
+
+	if (ppCreated != NULL)
+		*ppCreated = pStaticImg;
+
+	if (pStaticImg == NULL)
+		return E_OUTOFMEMORY;
+
+	hr = AddControl(pStaticImg);
+	if (FAILED(hr))
+		return hr;
+
+	// Set the ID and list index
+	pStaticImg->SetID(ID);
+	pStaticImg->SetLocation(x, y);
+	pStaticImg->SetSize(width, height);
+	pStaticImg->m_bIsDefault = bIsDefault;
+
+	return S_OK;
+}
+
+
 //--------------------------------------------------------------------------------------
 HRESULT CDXUTDialog::AddButton( int ID, LPCWSTR strText, int x, int y, int width, int height, UINT nHotkey,
                                 bool bIsDefault, CDXUTButton** ppCreated )
@@ -3150,6 +3192,35 @@ HRESULT CDXUTDialogResourceManager::CreateTexture11( UINT iTexture )
 }
 
 
+void CDXUTDialog::InitElementsGame()
+{
+	SetFont(0, L"Arial", 14, FW_NORMAL);
+
+	CDXUTElement Element;
+	RECT rcTexture;
+
+	m_CapElement.SetFont(0);
+	SetRect(&rcTexture, 17, 269, 241, 287);
+	m_CapElement.SetTexture(0, &rcTexture);
+	m_CapElement.TextureColor.States[DXUT_STATE_NORMAL] = D3DCOLOR_ARGB(255, 255, 255, 255);
+	m_CapElement.FontColor.States[DXUT_STATE_NORMAL] = D3DCOLOR_ARGB(255, 255, 255, 255);
+	m_CapElement.SetFont(0, D3DCOLOR_ARGB(255, 255, 255, 255), DT_LEFT | DT_VCENTER);
+	// Pre-blend as we don't need to transition the state
+	m_CapElement.TextureColor.Blend(DXUT_STATE_NORMAL, 10.0f);
+	m_CapElement.FontColor.Blend(DXUT_STATE_NORMAL, 10.0f);
+
+	//-------------------------------------
+	// CDXUTStaticImg
+	//-------------------------------------
+	SetRect(&rcTexture, 0, 260, 660, 342);
+	Element.SetTexture(0, &rcTexture, D3DCOLOR_ARGB(255, 255, 255, 255));
+	Element.TextureColor.States[DXUT_STATE_NORMAL] = D3DCOLOR_ARGB(150, 255, 255, 255);
+
+	// Assign the Element
+	SetDefaultElement(DXUT_CONTROL_STATICIMG, 0, &Element);
+
+}
+
 //--------------------------------------------------------------------------------------
 void CDXUTDialog::InitDefaultElements()
 {
@@ -3179,6 +3250,18 @@ void CDXUTDialog::InitDefaultElements()
 
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_STATIC, 0, &Element );
+
+
+	//-------------------------------------
+	// CDXUTStaticImg
+	//-------------------------------------
+	SetRect(&rcTexture, 0, 0, 136, 54);
+	Element.SetTexture(0, &rcTexture, D3DCOLOR_ARGB(255, 255, 255, 255));
+	Element.TextureColor.States[DXUT_STATE_NORMAL] = D3DCOLOR_ARGB(150, 255, 255, 255);
+
+	// Assign the Element
+	SetDefaultElement(DXUT_CONTROL_STATICIMG, 0, &Element);
+
 
 
     //-------------------------------------
@@ -3619,6 +3702,50 @@ HRESULT CDXUTStatic::SetText( LPCWSTR strText )
     wcscpy_s( m_strText, MAX_PATH, strText );
     return S_OK;
 }
+
+
+
+
+
+//--------------------------------------------------------------------------------------
+// CDXUTStatic Image class
+//--------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------
+CDXUTStaticImg::CDXUTStaticImg(CDXUTDialog* pDialog)
+{
+    m_Type = DXUT_CONTROL_STATICIMG;
+    m_pDialog = pDialog;
+
+	for( int i = 0; i < m_Elements.GetSize(); i++ )
+    {
+        CDXUTElement* pElement = m_Elements.GetAt( i );
+        SAFE_DELETE( pElement );
+    }
+
+    m_Elements.RemoveAll();
+}
+
+
+//--------------------------------------------------------------------------------------
+void CDXUTStaticImg::Render(float fElapsedTime)
+{
+    if( m_bVisible == false )
+        return;
+
+    DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
+
+    if( m_bEnabled == false )
+        iState = DXUT_STATE_DISABLED;
+
+    CDXUTElement* pElement = m_Elements.GetAt( 0 );
+	//pElement->TextureColor.Blend(iState, fElapsedTime, DXUT_NEAR_BUTTON_DEPTH);
+	pElement->TextureColor.Blend(iState, 1.0f, DXUT_NEAR_BUTTON_DEPTH);
+
+	m_pDialog->DrawSprite(pElement, &m_rcBoundingBox, DXUT_NEAR_BUTTON_DEPTH);
+}
+
+
 
 
 //--------------------------------------------------------------------------------------

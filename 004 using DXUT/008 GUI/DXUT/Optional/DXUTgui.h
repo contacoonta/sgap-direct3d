@@ -39,6 +39,7 @@ class CDXUTDialogResourceManager;
 class CDXUTControl;
 class CDXUTButton;
 class CDXUTStatic;
+class CDXUTStaticImg;
 class CDXUTCheckBox;
 class CDXUTRadioButton;
 class CDXUTComboBox;
@@ -61,6 +62,7 @@ enum DXUT_CONTROL_TYPE
 {
     DXUT_CONTROL_BUTTON,
     DXUT_CONTROL_STATIC,
+	DXUT_CONTROL_STATICIMG,
     DXUT_CONTROL_CHECKBOX,
     DXUT_CONTROL_RADIOBUTTON,
     DXUT_CONTROL_COMBOBOX,
@@ -137,6 +139,8 @@ public:
                               LPCWSTR pszControlTextureFilename );
     void                Init( CDXUTDialogResourceManager* pManager, bool bRegisterDialog,
                               LPCWSTR szControlTextureResourceName, HMODULE hControlTextureResourceModule );
+	void				Init(CDXUTDialogResourceManager* pManager, bool bRegisterDialog,
+							  LPCWSTR szControlTextureResourceName, bool bInitDefault );
 
     // Windows message handler
     bool                MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -144,6 +148,8 @@ public:
     // Control creation
     HRESULT             AddStatic( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault=false,
                                    CDXUTStatic** ppCreated=NULL );
+	HRESULT             AddStaticImg( int ID, int x, int y, int width, int height, bool bIsDefault=false,
+									CDXUTStaticImg** ppCreated = NULL);
     HRESULT             AddButton( int ID, LPCWSTR strText, int x, int y, int width, int height, UINT nHotkey=0,
                                    bool bIsDefault=false, CDXUTButton** ppCreated=NULL );
     HRESULT             AddCheckBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bChecked=false,
@@ -168,6 +174,12 @@ public:
     {
         return ( CDXUTStatic* )GetControl( ID, DXUT_CONTROL_STATIC );
     }
+
+	CDXUTStaticImg* GetStaticImg(int ID)
+	{
+		return (CDXUTStaticImg*)GetControl(ID, DXUT_CONTROL_STATICIMG);
+	}
+
     CDXUTButton* GetButton( int ID )
     {
         return ( CDXUTButton* )GetControl( ID, DXUT_CONTROL_BUTTON );
@@ -358,6 +370,7 @@ private:
 
     // Initialize default Elements
     void                InitDefaultElements();
+	void				InitElementsGame();
 
     // Windows message handlers
     void                OnMouseMove( POINT pt );
@@ -751,6 +764,23 @@ public:
 
 protected:
     WCHAR           m_strText[MAX_PATH];      // Window text  
+};
+
+
+
+//-----------------------------------------------------------------------------
+// Static Image control
+//-----------------------------------------------------------------------------
+class CDXUTStaticImg : public CDXUTControl
+{
+public:
+	CDXUTStaticImg(CDXUTDialog* pDialog = NULL);
+
+	virtual void    Render(float fElapsedTime);
+	virtual BOOL    ContainsPoint(POINT pt) {	return false; }
+
+protected:
+
 };
 
 

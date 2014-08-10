@@ -12,6 +12,7 @@
 CDXUTDialogResourceManager	g_ResourceManager;
 CDXUTTextHelper*			g_pTxtHelper = NULL;
 CDXUTDialog					g_GUI;
+CDXUTDialog					g_GameUI;
 
 
 #define GUI_BUTTON		2
@@ -19,6 +20,7 @@ CDXUTDialog					g_GUI;
 
 #define GUI_STATIC1		101
 #define GUI_STATIC2		102
+#define GUI_STATIC3		103
 
 /*
 	GUI 만들기
@@ -66,13 +68,25 @@ void GUIInit()
 
 	
 //과제 ] uidialog 로 texture 출력해보기
-	/*
-	int idx = g_ResourceManager.AddTexture(L"tile01.dds");
-	g_ResourceManager.CreateTexture11(idx);
-	g_ResourceManager.GetTextureNode(idx);
+	
 
-	g_GUI.DrawSprite();
-	*/
+	//HRESULT hr = g_GUI.SetTexture(101, L"tile01.dds");
+
+	//g_GUI.GetDefaultElement()
+
+	//int idx = g_ResourceManager.AddTexture(L"tile01.dds");
+	//g_ResourceManager.CreateTexture11(idx);
+	//DXUTTextureNode* ptexnode =  g_ResourceManager.GetTextureNode(idx);
+
+	//ptexnode->pTexture11
+	//g_GUI.DrawSprite()
+
+
+	//g_GameUI.Init(&g_ResourceManager, true, L"dxutcontrols.dds", false);
+
+//	g_GUI.SetTexture(1, L"dxutcontrols.dds");
+	g_GUI.AddStaticImg(GUI_STATIC3, 10, 300, 600, 100, true);
+	
 
 }
 
@@ -180,6 +194,10 @@ void CALLBACK OnFrameRender(ID3D11Device* pd3dDevice,
 		GUI render
 	*/
 	g_GUI.OnRender(fElapsedTime);
+	//g_GameUI.OnRender(fElapsedTime);
+
+	//CDXUTElement* pele = g_GameUI.GetStaticImg(GUI_STATIC3)->GetElement(0);	
+	//g_GameUI.GetStaticImg(GUI_STATIC3)->Render(fElapsedTime);
 
 
 	g_pTxtHelper->Begin();
