@@ -22,9 +22,10 @@ void MeshLoader::LoadModelFromFile(LPCWSTR wfilename)
 {
 	ifstream	fin;
 	char		dat;
+	char		datLine[128] = {};
 	XMFLOAT3	f3;
-
 	
+
 	fin.open(wfilename);
 
 	// 파일 읽기 실패
@@ -34,6 +35,12 @@ void MeshLoader::LoadModelFromFile(LPCWSTR wfilename)
 	fin.get(dat);
 	while (!fin.eof())
 	{
+		//
+		if (dat == '#')
+		{
+			fin.getline(datLine, 128);
+		}
+
 		//vertex 정보 읽기
 		if (dat == 'v')
 		{
