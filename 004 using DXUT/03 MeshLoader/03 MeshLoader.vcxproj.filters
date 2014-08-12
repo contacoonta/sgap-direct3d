@@ -86,7 +86,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="winmain.cpp" />
     <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="DXUTMain.cpp" />
   </ItemGroup>
 </Project>

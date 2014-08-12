@@ -410,7 +410,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MeshLoader.cpp" />
-    <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="DXUTMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="usingDXUT.rc" />
