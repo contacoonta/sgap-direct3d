@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 dxut", "01 usingDXUT\01
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 GUI", "02 GUI\02 GUI.vcxproj", "{00107FDA-9AE2-4E11-829C-8E83B660148B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 Mesh Loader", "03 MeshLoader\03 MeshLoader.vcxproj", "{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 Mesh", "03 Mesh\03 Mesh.vcxproj", "{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

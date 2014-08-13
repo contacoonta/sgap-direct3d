@@ -78,7 +78,8 @@
     <CLInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </CLInclude>
-    <ClInclude Include="MeshLoader.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="CompileShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="usingDXUT.rc">
@@ -86,7 +87,8 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MeshLoader.cpp" />
     <ClCompile Include="DXUTMain.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="CompileShader.cpp" />
   </ItemGroup>
 </Project>

@@ -15,109 +15,50 @@
 #include "DXUTgui.h"
 #include "SDKmisc.h"
 
-#include "MeshLoader.h"
+#include "Mesh.h"
 
 
-CDXUTDialogResourceManager  g_DialogResourceManager; 
-CDXUTDialog                 g_GUI;
-
-MeshLoader					g_mesh;
+Mesh	g_triangle;
 
 
-#define GUI_BTN_FULLSCREEN		1
-
-
-/* GUI 용 이벤트 처리 */
-void CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
-{
-	switch (nControlID)
-	{
-	case GUI_BTN_FULLSCREEN:
-			DXUTToggleFullScreen();
-		break;
-	}
-}
-
-
-/*
-	GUI 만들기
-*/
-void GUIInit()
-{
-	g_GUI.Init(&g_DialogResourceManager);
-	g_GUI.SetCallback(OnGUIEvent);
-	g_GUI.AddButton(GUI_BTN_FULLSCREEN, L"FullScreen", 0, 0, 100, 30);
-	
-	
-}
-
-
-//--------------------------------------------------------------------------------------
-// Reject any D3D11 devices that aren't acceptable by returning false
-//--------------------------------------------------------------------------------------
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
                                        DXGI_FORMAT BackBufferFormat, bool bWindowed, void* pUserContext )
 {
     return true;
 }
 
-
-//--------------------------------------------------------------------------------------
-// Called right before creating a D3D9 or D3D11 device, allowing the app to modify the device settings as needed
-//--------------------------------------------------------------------------------------
 bool CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, void* pUserContext )
 {
     return true;
 }
 
-
-//--------------------------------------------------------------------------------------
-// Create any D3D11 resources that aren't dependant on the back buffer
-//--------------------------------------------------------------------------------------
 HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
                                       void* pUserContext )
 {
 	HRESULT hr;
-
-	ID3D11DeviceContext* pdevcon = DXUTGetD3D11DeviceContext();
-	V_RETURN(g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pdevcon));
 	
-	g_mesh.LoadModelFromFile(L"sphere.obj");
-	g_mesh.Initialize();
+	g_triangle.Initialize();
 
     return S_OK;
 }
 
-
-//--------------------------------------------------------------------------------------
-// Create any D3D11 resources that depend on the back buffer
-//--------------------------------------------------------------------------------------
 HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
                                           const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext )
 {
 	HRESULT hr;
 
-	V_RETURN(g_DialogResourceManager.OnD3D11ResizedSwapChain(pd3dDevice, pBackBufferSurfaceDesc));
+	/*float fAspect = static_cast<float>(pBackBufferSurfaceDesc->Width) / static_cast<float>(pBackBufferSurfaceDesc->Height);
+	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PI * 0.25f, fAspect, 0.1f, 100.0f);*/
 
-	g_GUI.SetLocation(10, 50);
-	g_GUI.SetSize(200, 300);
 
     return S_OK;
 }
 
-
-//--------------------------------------------------------------------------------------
-// Handle updates to the scene.  This is called regardless of which D3D API is used
-//--------------------------------------------------------------------------------------
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
-
+	
 }
 
-
-//--------------------------------------------------------------------------------------
-// Render the scene using the D3D11 device
-//--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext,
                                   double fTime, float fElapsedTime, void* pUserContext )
 {
@@ -130,10 +71,8 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->ClearDepthStencilView( pDSV, D3D11_CLEAR_DEPTH, 1.0, 0 );
 	
 
-	g_mesh.Render();
-
-
-	g_GUI.OnRender(fElapsedTime);	
+	g_triangle.Render();
+	
 }
 
 
@@ -142,7 +81,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 //--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 {
-	g_DialogResourceManager.OnD3D11ReleasingSwapChain();
 }
 
 
@@ -151,9 +89,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 //--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
-	g_mesh.Release();
-
-	g_DialogResourceManager.OnD3D11DestroyDevice();
+	g_triangle.Release();
 }
 
 
@@ -163,15 +99,6 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
                           bool* pbNoFurtherProcessing, void* pUserContext )
 {
-
-	// Pass messages to dialog resource manager calls so GUI state is updated correctly
-	*pbNoFurtherProcessing = g_DialogResourceManager.MsgProc(hWnd, uMsg, wParam, lParam);
-	if (*pbNoFurtherProcessing)
-		return 0;
-
-	*pbNoFurtherProcessing = g_GUI.MsgProc(hWnd, uMsg, wParam, lParam);
-	if (*pbNoFurtherProcessing)
-		return 0;
 
     return 0;
 }
@@ -232,9 +159,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 	    
     DXUTInit( true, true, NULL );
     DXUTSetCursorSettings( true, true );
-    
-	/* GUI 생성 및 초기화 */
-	GUIInit();
+ 
 	
 	DXUTCreateWindow( L"003 Mesh Loader" );
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 1024, 768 );

@@ -1,21 +1,21 @@
 #include "DXUT.h"
-#include "MeshLoader.h"
+#include "ObjLoader.h"
 
 #include <fstream>
 
 using std::ifstream;
 
-MeshLoader::MeshLoader()
+ObjLoader::ObjLoader()
 {
 }
 
-MeshLoader::~MeshLoader()
+ObjLoader::~ObjLoader()
 {
 }
 
 /*
 */
-void MeshLoader::LoadModelFromFile(LPCWSTR wfilename)
+void ObjLoader::LoadModelFromFile(LPCWSTR wfilename)
 {
 	ifstream	fin;
 	char		dat;
@@ -48,6 +48,7 @@ void MeshLoader::LoadModelFromFile(LPCWSTR wfilename)
 		if (dat == 'f')
 		{
 			fin >> f3.x >> f3.y >> f3.z;
+			f3.x--;	f3.y--;	f3.z--;
 			indexList.push_back(f3);
 		}
 
@@ -59,7 +60,7 @@ void MeshLoader::LoadModelFromFile(LPCWSTR wfilename)
 
 /*
 */
-void MeshLoader::Initialize()
+void ObjLoader::Initialize()
 {
 	HRESULT hr = S_OK;
 
@@ -68,7 +69,7 @@ void MeshLoader::Initialize()
 	*/
 	ID3DBlob* pVSblob = nullptr;
 	// FX 파일 중 VertexShader 로드
-	hr = ComplieShaderFromFile(L"basicShader.fx", "VS", "vs_4_0", &pVSblob);
+	hr = ComplieShaderFromFile(L"meshShader.fx", "VS", "vs_4_0", &pVSblob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Load FX file FAILED", L"VERTEX SHADER ERROR", MB_OK);
@@ -108,7 +109,7 @@ void MeshLoader::Initialize()
 	*/
 	ID3DBlob* pPSblob = nullptr;
 	// FX 파일 중 PixelShader 로드
-	hr = ComplieShaderFromFile(L"basicShader.fx", "PS", "ps_4_0", &pPSblob);
+	hr = ComplieShaderFromFile(L"meshShader.fx", "PS", "ps_4_0", &pPSblob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Load FX file FAILED", L"PIXEL SHADER ERROR", MB_OK);
@@ -143,7 +144,49 @@ void MeshLoader::Initialize()
 	UINT offset = 0;
 	DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 
+	/*
+		INDEX BUFFER
+	*/
+	buffdesc.Usage = D3D11_USAGE_DEFAULT;
+	buffdesc.ByteWidth = sizeof(DWORD) * indexList.size() * 3;
+	buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	buffdesc.CPUAccessFlags = 0;
+	initData.pSysMem = &indexList[0];
+	// 인덱스 버퍼 생성
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &m_IndexBuffer);
+	if (FAILED(hr))
+		return;
+	// 인풋 어셈블러에 인덱스 버퍼 설정
+	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
 	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+	/*
+		CONSTANT BUFFER
+	*/
+	buffdesc.Usage = D3D11_USAGE_DYNAMIC; //D3D11_USAGE_DEFAULT;
+	buffdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	buffdesc.ByteWidth = sizeof(CONSTANTFORMAT);
+	// CPU ACCESS WRITE 로 설정
+	// 상수 버퍼 생성
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, NULL, &m_ConstantBuffer);
+	if (FAILED(hr))
+		return;
+	
+
+	/*
+		World, View, Projection 매트릭스 초기화
+	*/	
+	//WORLD MATRIX
+	m_World			= XMMatrixIdentity();
+
+	//VIEW MATRIX
+	static const XMVECTOR Eye		= XMVectorSet(2.0f, 5.0f, -10.0f, 0.0f);
+	static const XMVECTOR LookAt	= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	static const XMVECTOR Up		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	m_View					= XMMatrixLookAtLH(Eye, LookAt, Up);
 
 	return;
 }
@@ -151,19 +194,47 @@ void MeshLoader::Initialize()
 
 /*
 */
-void MeshLoader::Render()
+void ObjLoader::Update()
 {
+	/*static float rot = 0.0f;
+	rot += 0.0001f;
+	m_World = XMMatrixRotationRollPitchYaw(0.0f, 0.0f, rot);
+	m_World = m_World * XMMatrixTranslation(0.0f, 0.0f, 0.0f);*/
+}
+
+
+/*
+*/
+void ObjLoader::Render()
+{
+	/*
+		Constant Buffer 연결
+	*/
+	CONSTANTFORMAT cb;
+	cb.mworld = XMMatrixTranspose(m_World);
+	cb.mview = XMMatrixTranspose(m_View);
+	cb.mprojection = XMMatrixTranspose(m_Projection);
+
+	DXUTGetD3D11DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, NULL, &cb, 0, 0);
+
 	DXUTGetD3D11DeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
+	DXUTGetD3D11DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
+
 	DXUTGetD3D11DeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
-	DXUTGetD3D11DeviceContext()->Draw(vertexList.size(), 0);
+	DXUTGetD3D11DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
+
+	DXUTGetD3D11DeviceContext()->DrawIndexed(indexList.size()*3, 0, 0);
+
 }
 
 /*
 */
-void MeshLoader::Release()
+void ObjLoader::Release()
 {
+	if (m_ConstantBuffer) m_ConstantBuffer->Release();
 	if (m_VertexBuffer) m_VertexBuffer->Release();
 	if (m_VertexShader) m_VertexShader->Release();
+	if (m_IndexBuffer) m_IndexBuffer->Release();
 	if (m_PixelShader) m_PixelShader->Release();
 	if (m_VertexLayout) m_VertexLayout->Release();
 }
@@ -171,7 +242,7 @@ void MeshLoader::Release()
 
 /*
 */
-HRESULT MeshLoader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob)
+HRESULT ObjLoader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob)
 {
 	HRESULT hr = S_OK;
 

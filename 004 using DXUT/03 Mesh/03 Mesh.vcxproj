@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>003 Mesh Loader</ProjectName>
+    <ProjectName>003 Mesh</ProjectName>
     <ProjectGuid>{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}</ProjectGuid>
     <RootNamespace>EmptyProject11</RootNamespace>
     <Keyword>Win32Proj</Keyword>
@@ -385,10 +385,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="DXUT\Optional\directx.ico" />
+    <ClInclude Include="CompileShader.h" />
     <ClInclude Include="DXUT\Core\DXUT.h" />
     <ClInclude Include="DXUT\Core\DXUTDevice11.h" />
     <ClInclude Include="DXUT\Core\DXUTDevice9.h" />
     <ClInclude Include="DXUT\Core\DXUTmisc.h" />
+    <ClCompile Include="CompileShader.cpp" />
     <ClCompile Include="DXUT\Core\DXUT.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -409,17 +411,15 @@
     <ClCompile Include="DXUT\Optional\SDKmisc.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="DXUTMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="usingDXUT.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MeshLoader.h" />
+    <ClInclude Include="Mesh.h" />
     <CLInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
