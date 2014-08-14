@@ -32,6 +32,16 @@ void CompileShader::Delete(CompileShader** ppshader)
 	*ppshader = nullptr;
 }
 
+
+/*
+*/
+void CompileShader::RenderPrepare()
+{
+	DXUTGetD3D11DeviceContext()->VSSetShader(m_vertexshader, NULL, 0);
+	DXUTGetD3D11DeviceContext()->PSSetShader(m_pixelshader, NULL, 0);
+}
+
+
 /*
 */
 HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements)
@@ -94,6 +104,17 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 
 }
 
+
+/*
+*/
+void CompileShader::Release()
+{
+	if (m_vertexshader) m_vertexshader->Release();
+	if (m_vertexlayout) m_vertexlayout->Release();
+	if (m_pixelshader) m_pixelshader->Release();
+}
+
+
 /*
 */
 HRESULT CompileShader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob)
@@ -108,9 +129,9 @@ HRESULT CompileShader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, 
 
 	ID3DBlob* pErrorBlob = nullptr;
 
-	hr = D3DX11CompileFromFile(wFilename, NULL, NULL, 
-							strEntry, strShaderMdl, dwShaderFlags, 0,
-							NULL, ppblob, &pErrorBlob, NULL);
+	hr = D3DX11CompileFromFile(wFilename, NULL, NULL,
+		strEntry, strShaderMdl, dwShaderFlags, 0,
+		NULL, ppblob, &pErrorBlob, NULL);
 	if (FAILED(hr))
 	{
 		if (pErrorBlob)
@@ -118,29 +139,11 @@ HRESULT CompileShader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, 
 			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
 			pErrorBlob->Release();
 		}
-		return hr;		
+		return hr;
 	}
-	
-	if ( pErrorBlob )
+
+	if (pErrorBlob)
 		pErrorBlob->Release();
 
 	return S_OK;
-}
-
-
-/*
-*/
-void CompileShader::Render()
-{
-	DXUTGetD3D11DeviceContext()->VSSetShader(m_vertexshader, NULL, 0);
-	DXUTGetD3D11DeviceContext()->PSSetShader(m_pixelshader, NULL, 0);
-}
-
-/*
-*/
-void CompileShader::Release()
-{
-	if (m_vertexshader) m_vertexshader->Release();
-	if (m_vertexlayout) m_vertexlayout->Release();
-	if (m_pixelshader) m_pixelshader->Release();
 }
