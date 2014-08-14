@@ -18,7 +18,7 @@
 #include "Mesh.h"
 
 
-Mesh	g_triangle;
+Mesh	g_mesh;
 
 
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -37,7 +37,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 {
 	HRESULT hr;
 	
-	g_triangle.Initialize();
+	g_mesh.Initialize();
 
     return S_OK;
 }
@@ -56,7 +56,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
-	
+	g_mesh.Update();
 }
 
 void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext,
@@ -71,7 +71,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->ClearDepthStencilView( pDSV, D3D11_CLEAR_DEPTH, 1.0, 0 );
 	
 
-	g_triangle.Render();
+	g_mesh.Render();
 	
 }
 
@@ -89,7 +89,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 //--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
-	g_triangle.Release();
+	g_mesh.Release();
 }
 
 
@@ -162,7 +162,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
  
 	
 	DXUTCreateWindow( L"003 Mesh Loader" );
-    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 1024, 768 );
+    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
     
 	DXUTMainLoop(); 
     

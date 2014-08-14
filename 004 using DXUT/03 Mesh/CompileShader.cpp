@@ -35,10 +35,15 @@ void CompileShader::Delete(CompileShader** ppshader)
 
 /*
 */
-void CompileShader::RenderPrepare()
+void CompileShader::RenderPrepare( const void* psrcData )
 {
+	DXUTGetD3D11DeviceContext()->UpdateSubresource(m_constantbuffer, 0, NULL, psrcData, 0, 0);
+
 	DXUTGetD3D11DeviceContext()->VSSetShader(m_vertexshader, NULL, 0);
+	DXUTGetD3D11DeviceContext()->VSSetConstantBuffers(0, 1, &m_constantbuffer);
+
 	DXUTGetD3D11DeviceContext()->PSSetShader(m_pixelshader, NULL, 0);
+	DXUTGetD3D11DeviceContext()->PSSetConstantBuffers(0, 1, &m_constantbuffer);
 }
 
 
@@ -102,6 +107,22 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 		return hr;
 	}
 
+
+	/*
+		상수 버퍼 만들기 ( Constant buffer )
+	*/
+	D3D11_BUFFER_DESC buffdesc;
+	ZeroMemory(&buffdesc, sizeof(buffdesc));
+	buffdesc.Usage = D3D11_USAGE_DEFAULT;
+	buffdesc.ByteWidth = sizeof(CONSTANTBUFFER);
+	buffdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffdesc.CPUAccessFlags = 0;
+
+	// 상수 버퍼 생성
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, NULL, &m_constantbuffer);
+	if (FAILED(hr))
+		return hr;
+
 }
 
 
@@ -109,6 +130,7 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 */
 void CompileShader::Release()
 {
+	if (m_constantbuffer) m_constantbuffer->Release();
 	if (m_vertexshader) m_vertexshader->Release();
 	if (m_vertexlayout) m_vertexlayout->Release();
 	if (m_pixelshader) m_pixelshader->Release();

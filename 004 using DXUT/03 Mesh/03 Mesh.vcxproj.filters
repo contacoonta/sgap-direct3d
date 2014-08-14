@@ -73,6 +73,7 @@
     <ClCompile Include="DXUT\Optional\SDKmisc.cpp">
       <Filter>DXUT</Filter>
     </ClCompile>
+    <None Include="lightShader.fx" />
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">

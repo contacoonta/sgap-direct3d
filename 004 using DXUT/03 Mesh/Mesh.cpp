@@ -4,7 +4,60 @@
 #include "CompileShader.h"
 
 
+SIMPLEVERTEX vertices[] =
+{
+	{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+	{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 
+	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+	{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+
+	{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+
+	{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+
+	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+	{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+	{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+	{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+
+	{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+	{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+	{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+	{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+};
+
+
+WORD indices[] =
+{
+	3, 1, 0,
+	2, 1, 3,
+
+	6, 4, 5,
+	7, 4, 6,
+
+	11, 9, 8,
+	10, 9, 11,
+
+	14, 12, 13,
+	15, 12, 14,
+
+	19, 17, 16,
+	18, 17, 19,
+
+	22, 20, 21,
+	23, 20, 22
+};
 
 
 
@@ -35,40 +88,8 @@ HRESULT Mesh::Initialize()
 	
 
 	/*
-		vertex list 로 vertex buffer 만들기
+		VERTEX LIST 로 VERTEX BUFFER 만들기
 	*/
-	SIMPLEVERTEX vertices[] =
-	{
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-	};
 	UINT numVertices = ARRAYSIZE(vertices);
 
 	D3D11_BUFFER_DESC buffdesc;
@@ -91,28 +112,8 @@ HRESULT Mesh::Initialize()
 
 
 	/*
-		인덱스 버퍼 만들기
+		INDEX LIST 로 INDEX BUFFER 버퍼 만들기
 	*/
-	WORD indices[] =
-	{
-		3, 1, 0,
-		2, 1, 3,
-
-		6, 4, 5,
-		7, 4, 6,
-
-		11, 9, 8,
-		10, 9, 11,
-
-		14, 12, 13,
-		15, 12, 14,
-
-		19, 17, 16,
-		18, 17, 19,
-
-		22, 20, 21,
-		23, 20, 22
-	};
 	UINT numIndices = ARRAYSIZE(indices);
 
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
@@ -129,29 +130,13 @@ HRESULT Mesh::Initialize()
 	
 	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-
-	/*
-		상수 버퍼 만들기 ( Constant buffer )
-	*/
-	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(ConstantBuffer);
-	buffdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	buffdesc.CPUAccessFlags = 0;
-
-	// 상수 버퍼 생성
-	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, NULL, &m_constantbuffer);
-	if (FAILED(hr))
-		return hr;
-
-
-
+	
 	/*
 		World, View, Projection 매트릭스 초기화
 	*/
 	
 	//WORLD MATRIX
 	m_world			= XMMatrixIdentity();
-
 
 	//VIEW MATRIX
 	XMVECTOR Eye	= XMVectorSet(3.0f, 5.0f, -5.0f, 0.0f);
@@ -160,24 +145,34 @@ HRESULT Mesh::Initialize()
 	m_view			= XMMatrixLookAtLH(Eye, LookAt, Up);
 
 	//PROJECTION MATRIX
-	m_projection	= XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)1024 / (FLOAT)768, 0.01f, 100.0f);
-
+	LONG width		= DXUTGetWindowWidth();
+	LONG height		= DXUTGetWindowHeight();
+	m_projection	= XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / (FLOAT)height, 0.01f, 100.0f);
 }
 
 void Mesh::Update()
 {
-	XMFLOAT4 LitDir[] =
-	{
-		XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f)
-	};
-
-
 }
 
 void Mesh::Render()
 {
-	m_compileshader->RenderPrepare();
-	DXUTGetD3D11DeviceContext()->Draw(6, 0);
+	XMFLOAT4 LitDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
+	XMFLOAT4 LitCol = XMFLOAT4(0.9f, 0.2f, 0.3f, 1.0f);
+	
+	/*
+		Constant Buffer 연결
+	*/
+	ConstantBuffer cb;
+	cb.world = XMMatrixTranspose(m_world);
+	cb.view = XMMatrixTranspose(m_view);
+	cb.projection = XMMatrixTranspose(m_projection);
+	cb.litDir = LitDir;	
+	cb.litCol = LitCol;	
+	cb.colOutput = XMFLOAT4(0, 0, 0, 0);
+	
+	m_compileshader->RenderPrepare(&cb);
+	
+	DXUTGetD3D11DeviceContext()->DrawIndexed(36, 0, 0);
 }
 
 void Mesh::Release()
@@ -186,6 +181,5 @@ void Mesh::Release()
 	
 	if (m_vertexbuffer) m_vertexbuffer->Release();	
 	if (m_indexbuffer) m_indexbuffer->Release();
-	if (m_constantbuffer) m_constantbuffer->Release();
 	
 }

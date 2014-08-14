@@ -422,6 +422,9 @@
     <CLInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="lightShader.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
