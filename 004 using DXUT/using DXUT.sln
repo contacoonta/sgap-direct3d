@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 GUI", "02 GUI\02 GUI.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 Mesh", "03 Mesh\03 Mesh.vcxproj", "{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 ObjLoader", "04 ObjLoader\04 ObjLoader.vcxproj", "{1F625889-6C26-4F95-8096-A1CB55C86009}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +57,18 @@ Global
 		{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}.Release|Win32.Build.0 = Release|Win32
 		{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}.Release|x64.ActiveCfg = Release|x64
 		{A3204A77-8D45-4CF6-B553-E5AC075E0DCF}.Release|x64.Build.0 = Release|x64
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Debug|Win32.Build.0 = Debug|Win32
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Debug|x64.ActiveCfg = Debug|x64
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Debug|x64.Build.0 = Debug|x64
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Profile|Win32.ActiveCfg = Profile|Win32
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Profile|Win32.Build.0 = Profile|Win32
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Profile|x64.ActiveCfg = Profile|x64
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Profile|x64.Build.0 = Profile|x64
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Release|Win32.ActiveCfg = Release|Win32
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Release|Win32.Build.0 = Release|Win32
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Release|x64.ActiveCfg = Release|x64
+		{1F625889-6C26-4F95-8096-A1CB55C86009}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
