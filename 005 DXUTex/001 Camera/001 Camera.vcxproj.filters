@@ -2,5 +2,13 @@
 <Project ToolsVersion="4.0" xmlns:atg="http://atg.xbox.com" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="DXUTMain.cpp" />
+    <ClCompile Include="CompileShader.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ObjLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CompileShader.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ObjLoader.h" />
   </ItemGroup>
 </Project>

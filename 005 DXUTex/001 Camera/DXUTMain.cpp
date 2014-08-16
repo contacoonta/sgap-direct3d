@@ -1,10 +1,16 @@
 
 #include "DXUT.h"
+#include "DXUTcamera.h"
 #include "SDKmisc.h"
 
-#pragma warning( disable : 4100 )
+#include "Mesh.h"
 
+#pragma warning( disable : 4100 )
 using namespace DirectX;
+
+
+CModelViewerCamera	g_camera;
+Mesh				g_mesh;
 
 
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -34,11 +40,13 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 #endif
 
 
-	WCHAR strpathW[256] = {};
+	g_mesh.BuildFromObj(L"models\\teapot_vntf.obj");
 
-	// Find the path for the file
-	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), L"shaders\\lightShader.fx");
-    
+
+	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
+	static const XMVECTOR lookat = { 0.0f, 1.0f, 0.0f, 0.f };
+	g_camera.SetViewParams(eye, lookat);
+
     return S_OK;
 }
 
@@ -49,6 +57,13 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
                                           const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext )
 {
+
+	float fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
+	g_camera.SetProjParams(XM_PI / 4, fAspectRatio, 0.1f, 1000.0f);
+	g_camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
+	g_camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_RIGHT_BUTTON);
+
+
     return S_OK;
 }
 
@@ -58,7 +73,8 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 //--------------------------------------------------------------------------------------
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
- 
+	g_camera.FrameMove(fElapsedTime);
+	g_mesh.Update();
 }
 
 
@@ -71,6 +87,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::MidnightBlue);
 	pd3dImmediateContext->ClearDepthStencilView(DXUTGetD3D11DepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
 	
+	XMMATRIX mview = g_camera.GetViewMatrix();
+	XMMATRIX mproj = g_camera.GetProjMatrix();
+	g_mesh.Render(mview, mproj);
 }
 
 
@@ -87,6 +106,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 //--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
+	g_mesh.Release();
 }
 
 
@@ -96,6 +116,8 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
                           bool* pbNoFurtherProcessing, void* pUserContext )
 {
+	g_camera.HandleMessages(hWnd, uMsg, wParam, lParam);
+
     return 0;
 }
 
