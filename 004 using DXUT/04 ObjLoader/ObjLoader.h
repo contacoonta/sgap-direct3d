@@ -2,58 +2,35 @@
 
 #include <xnamath.h>
 #include <vector>
+#include "Mesh.h"
+
 using std::vector;
-
-
-typedef struct vertexformat
-{
-	XMFLOAT3 pos;
-
-}VERTEXFORMAT;
-
-typedef struct constantformat
-{
-	XMMATRIX mworld;
-	XMMATRIX mview;
-	XMMATRIX mprojection;
-
-}CONSTANTFORMAT;
-
 
 class ObjLoader
 {
 public:
-						ObjLoader();
-	virtual				~ObjLoader();
+	static HRESULT		CreateModelFromFile(ObjLoader** pploader, LPCWSTR wfilename, Mesh& mesh);
+	static void			Delete(ObjLoader** pploader);
 
-public:
-	void				LoadModelFromFile(LPCWSTR wfilename);
-
-	void				Initialize();
-	void				Update();
-	void				Render();
+private:
+	HRESULT				ParseFromObj(LPCWSTR wfilename, Mesh& mesh);
+	HRESULT				BuildMesh(Mesh& mesh);
+	HRESULT				BuildCube(Mesh& mesh);
 	void				Release();
-
-	void				SetProjection(XMMATRIX& matproj)	{ m_Projection = matproj; }
-
-private:
-	HRESULT				ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob);
 	
 private:
-	vector<XMFLOAT3>	vertexList;
-	vector<XMFLOAT3>	indexList;
 
-	ID3D11VertexShader*	m_VertexShader		= NULL;
-	ID3D11PixelShader*	m_PixelShader		= NULL;
-	
-	ID3D11InputLayout*	m_VertexLayout		= NULL;
-	ID3D11Buffer*		m_VertexBuffer		= NULL;
-	ID3D11Buffer*		m_IndexBuffer		= NULL;
-	ID3D11Buffer*		m_ConstantBuffer	= NULL;
+	typedef struct face
+	{
+		FLOAT pos[3];
+		FLOAT nor[3];
+	}FACE;
 
-	XMMATRIX			m_World;
-	XMMATRIX			m_View;
-	XMMATRIX			m_Projection;
+	vector<XMFLOAT3>	posList;
+	vector<XMFLOAT3>	norList;
+	vector<FACE>		faceList;
 
+	LPVERTEXpn			vertices = nullptr;
+	LPDWORD				indices = nullptr;
 };
 

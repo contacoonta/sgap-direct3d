@@ -5,270 +5,333 @@
 
 using std::ifstream;
 
-ObjLoader::ObjLoader()
-{
-}
 
-ObjLoader::~ObjLoader()
-{
-}
 
 /*
 */
-void ObjLoader::LoadModelFromFile(LPCWSTR wfilename)
+HRESULT ObjLoader::CreateModelFromFile(ObjLoader** pploader, LPCWSTR wfilename, Mesh& mesh)
+{
+	HRESULT hr = S_OK;
+
+	if (*pploader != nullptr)
+		return S_FALSE;
+
+	*pploader = new ObjLoader;
+
+
+	if (wfilename == nullptr)
+	{
+		hr = (*pploader)->BuildCube(mesh);
+	}
+	else
+	{
+		hr = (*pploader)->ParseFromObj(wfilename, mesh);
+	}
+
+	return hr;
+}
+
+void ObjLoader::Delete(ObjLoader** pploader)
+{
+	if (*pploader == nullptr)
+		return;
+
+	(*pploader)->Release();
+
+	delete (*pploader);
+	*pploader = nullptr;
+}
+
+
+/*
+*/
+HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
 {
 	ifstream	fin;
 	char		dat;
 	char		datLine[128] = {};
 	XMFLOAT3	f3;
-	
+	XMFLOAT2	f2;
+
 
 	fin.open(wfilename);
 
 	// 파일 읽기 실패
 	if (fin.fail())
-		return;
-	
+		return S_FALSE;
+
 	fin.get(dat);
 	while (!fin.eof())
 	{
-		//
+		//# 라인은 무시
 		if (dat == '#')
 		{
 			fin.getline(datLine, 128);
-		}
+		}//'#'
 
 		//vertex 정보 읽기
 		if (dat == 'v')
 		{
-			fin >> f3.x >> f3.y >> f3.z;
-			vertexList.push_back(f3);
-		}
+			fin.get(dat);
 
+			//position 정보 읽기
+			if (dat == ' ')
+			{
+				fin >> f3.x >> f3.y >> f3.z;
+				posList.push_back(f3);
+			}
+			
+			/*if (dat == 't')
+			{
+				fin >> f2.x >> f2.y;
+			}*/
+
+			//normal 정보 읽기
+			if (dat == 'n')
+			{
+				fin >> f3.x >> f3.y >> f3.z;
+				norList.push_back(f3);
+			}			
+		}//'v'
+
+		/*
+			face 는 1부터 시작하니 -1 을 해서 0으로 만들어 준다.
+		*/
 		if (dat == 'f')
 		{
-			fin >> f3.x >> f3.y >> f3.z;
-			f3.x--;	f3.y--;	f3.z--;
-			indexList.push_back(f3);
-		}
+			FACE face = {};
+			FLOAT fval;
+
+			for (UINT u = 0; u < 3; u++)
+			{
+				fin >> fval;
+				face.pos[u] = --fval;
+
+				if (fin.peek() == '/')
+				{
+					fin.ignore();
+
+					if (fin.peek() != '/')
+					{
+						fin >> fval;
+					}
+
+					if (fin.peek() == '/')
+					{
+						fin.ignore();
+
+						fin >> fval;
+						face.nor[u] = --fval;
+					}
+				}//if('/')
+
+			}//for()
+
+			faceList.push_back(face);
+
+		}//'f'
 
 		fin.get(dat);
-	}
+	
+	}//while()
 
 	fin.close();
+
+	return BuildMesh(mesh);
 }
+
 
 /*
 */
-void ObjLoader::Initialize()
+HRESULT ObjLoader::BuildMesh(Mesh& mesh)
+{
+	HRESULT hr = S_OK;
+	
+
+	/*
+		VERTEX LIST to VERTEX BUFFER
+	*/
+	vertices = new VERTEXpn[faceList.size()];
+	{
+		UINT u = 0;
+		for (auto x : posList)
+		{
+			vertices[u].pos = x;
+			vertices[u].nor = norList[u];
+			u++;
+		}
+
+		UINT numVertices = posList.size();
+
+		D3D11_BUFFER_DESC buffdesc;
+		ZeroMemory(&buffdesc, sizeof(buffdesc));
+		buffdesc.Usage = D3D11_USAGE_DEFAULT;
+		buffdesc.ByteWidth = sizeof(VERTEXpn)* numVertices;
+		buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffdesc.CPUAccessFlags = 0;
+		D3D11_SUBRESOURCE_DATA initData;
+		ZeroMemory(&initData, sizeof(initData));
+		initData.pSysMem = vertices;
+
+		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_vertexbuffer));
+		delete[] vertices;
+		if (FAILED(hr))
+			return hr;
+
+		UINT stride = sizeof(VERTEXpn);
+		UINT offset = 0;
+		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
+	}
+	
+
+	/*
+		INDEX LIST to INDEX BUFFER
+	*/
+	indices = new DWORD[faceList.size()*3];
+	{
+		UINT u = 0;
+		for (auto x : faceList)
+		{
+			indices[u++] = x.pos[0];
+			indices[u++] = x.pos[1];
+			indices[u++] = x.pos[2];
+		}
+
+		mesh.m_indexCnt = faceList.size() * 3;
+
+		D3D11_BUFFER_DESC buffdesc;
+		ZeroMemory(&buffdesc, sizeof(buffdesc));
+		buffdesc.Usage = D3D11_USAGE_DEFAULT;
+		buffdesc.ByteWidth = sizeof(DWORD) * mesh.m_indexCnt;
+		buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		buffdesc.CPUAccessFlags = 0;
+		D3D11_SUBRESOURCE_DATA initData;
+		ZeroMemory(&initData, sizeof(initData));
+		initData.pSysMem = indices;
+		// 인덱스 버퍼 생성
+		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_indexbuffer));
+		delete[] indices;
+		if (FAILED(hr))
+			return hr;
+		// 인풋 어셈블러에 인덱스 버퍼 설정
+		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh.m_indexbuffer, DXGI_FORMAT_R32_UINT, 0);
+		DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+	
+
+	return hr;
+}
+
+
+HRESULT ObjLoader::BuildCube(Mesh& mesh)
 {
 	HRESULT hr = S_OK;
 
-	/*
-		VERTEX SHADER
-	*/
-	ID3DBlob* pVSblob = nullptr;
-	// FX 파일 중 VertexShader 로드
-	hr = ComplieShaderFromFile(L"meshShader.fx", "VS", "vs_4_0", &pVSblob);
-	if (FAILED(hr))
+	VERTEXpn cubevertices[] =
 	{
-		MessageBox(NULL, L"Load FX file FAILED", L"VERTEX SHADER ERROR", MB_OK);
-		return;
-	}
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 
-	// Vertex Shader 생성
-	hr = DXUTGetD3D11Device()->CreateVertexShader(pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), NULL, &m_VertexShader);
-	if (FAILED(hr))
-	{
-		pVSblob->Release();
-		return;
-	}
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
 
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
 
-	/*
-		VERTEX LAYOUT
-	*/
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
 	};
-	UINT numElements = ARRAYSIZE(layout);
 
-	// Layout 구조체 정보를 바탕으로 VertexLayout 을 생성.
-	hr = DXUTGetD3D11Device()->CreateInputLayout(layout, numElements, pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), &m_VertexLayout);
-	pVSblob->Release();
-	if (FAILED(hr))
-		return;
 
-	// Device Context 로 VertexLayout을 Input Assembler 에 연결
-	DXUTGetD3D11DeviceContext()->IASetInputLayout(m_VertexLayout);
-
-	
-	/*
-		PIXEL SHADER
-	*/
-	ID3DBlob* pPSblob = nullptr;
-	// FX 파일 중 PixelShader 로드
-	hr = ComplieShaderFromFile(L"meshShader.fx", "PS", "ps_4_0", &pPSblob);
-	if (FAILED(hr))
+	WORD cubeindices[] =
 	{
-		MessageBox(NULL, L"Load FX file FAILED", L"PIXEL SHADER ERROR", MB_OK);
-		return;
-	}
+		3, 1, 0,
+		2, 1, 3,
 
-	// Pixel Shader 생성
-	hr = DXUTGetD3D11Device()->CreatePixelShader(pPSblob->GetBufferPointer(), pPSblob->GetBufferSize(), NULL, &m_PixelShader);
-	pPSblob->Release();
-	if (FAILED(hr))
-		return;
+		6, 4, 5,
+		7, 4, 6,
 
+		11, 9, 8,
+		10, 9, 11,
+
+		14, 12, 13,
+		15, 12, 14,
+
+		19, 17, 16,
+		18, 17, 19,
+
+		22, 20, 21,
+		23, 20, 22
+	};
 
 	/*
-		VERTEX BUFFER
+		VERTEX LIST 로 VERTEX BUFFER 만들기
 	*/
+	UINT numVertices = ARRAYSIZE(cubevertices);
+
 	D3D11_BUFFER_DESC buffdesc;
 	ZeroMemory(&buffdesc, sizeof(buffdesc));
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(VERTEXFORMAT)* vertexList.size();
+	buffdesc.ByteWidth = sizeof(VERTEXpn)* numVertices;
 	buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	buffdesc.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA initData;
 	ZeroMemory(&initData, sizeof(initData));
-	initData.pSysMem = &vertexList[0];
+	initData.pSysMem = cubevertices;
 
-	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &m_VertexBuffer);
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_vertexbuffer));
 	if (FAILED(hr))
-		return;
+		return hr;
 
-	UINT stride = sizeof(VERTEXFORMAT);
+	UINT stride = sizeof(VERTEXpn);
 	UINT offset = 0;
-	DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
+	DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
+
 
 	/*
-		INDEX BUFFER
+		INDEX LIST 로 INDEX BUFFER 버퍼 만들기
 	*/
+	mesh.m_indexCnt = ARRAYSIZE(cubeindices);
+
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(DWORD) * indexList.size() * 3;
+	buffdesc.ByteWidth = sizeof(WORD)* mesh.m_indexCnt;
 	buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	buffdesc.CPUAccessFlags = 0;
-	initData.pSysMem = &indexList[0];
+	initData.pSysMem = cubeindices;
 	// 인덱스 버퍼 생성
-	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &m_IndexBuffer);
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_indexbuffer));
 	if (FAILED(hr))
-		return;
+		return hr;
 	// 인풋 어셈블러에 인덱스 버퍼 설정
-	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
-	/*
-		CONSTANT BUFFER
-	*/
-	buffdesc.Usage = D3D11_USAGE_DYNAMIC; //D3D11_USAGE_DEFAULT;
-	buffdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	buffdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	buffdesc.ByteWidth = sizeof(CONSTANTFORMAT);
-	// CPU ACCESS WRITE 로 설정
-	// 상수 버퍼 생성
-	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, NULL, &m_ConstantBuffer);
-	if (FAILED(hr))
-		return;
+	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh.m_indexbuffer, DXGI_FORMAT_R16_UINT, 0);
 	
-
-	/*
-		World, View, Projection 매트릭스 초기화
-	*/	
-	//WORLD MATRIX
-	m_World			= XMMatrixIdentity();
-
-	//VIEW MATRIX
-	static const XMVECTOR Eye		= XMVectorSet(2.0f, 5.0f, -10.0f, 0.0f);
-	static const XMVECTOR LookAt	= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	static const XMVECTOR Up		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	m_View					= XMMatrixLookAtLH(Eye, LookAt, Up);
-
-	return;
+	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-
-/*
-*/
-void ObjLoader::Update()
-{
-	/*static float rot = 0.0f;
-	rot += 0.0001f;
-	m_World = XMMatrixRotationRollPitchYaw(0.0f, 0.0f, rot);
-	m_World = m_World * XMMatrixTranslation(0.0f, 0.0f, 0.0f);*/
-}
-
-
-/*
-*/
-void ObjLoader::Render()
-{
-	/*
-		Constant Buffer 연결
-	*/
-	CONSTANTFORMAT cb;
-	cb.mworld = XMMatrixTranspose(m_World);
-	cb.mview = XMMatrixTranspose(m_View);
-	cb.mprojection = XMMatrixTranspose(m_Projection);
-
-	DXUTGetD3D11DeviceContext()->UpdateSubresource(m_ConstantBuffer, 0, NULL, &cb, 0, 0);
-
-	DXUTGetD3D11DeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
-	DXUTGetD3D11DeviceContext()->VSSetConstantBuffers(0, 1, &m_ConstantBuffer);
-
-	DXUTGetD3D11DeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
-	DXUTGetD3D11DeviceContext()->PSSetConstantBuffers(0, 1, &m_ConstantBuffer);
-
-	DXUTGetD3D11DeviceContext()->DrawIndexed(indexList.size()*3, 0, 0);
-
-}
 
 /*
 */
 void ObjLoader::Release()
 {
-	if (m_ConstantBuffer) m_ConstantBuffer->Release();
-	if (m_VertexBuffer) m_VertexBuffer->Release();
-	if (m_VertexShader) m_VertexShader->Release();
-	if (m_IndexBuffer) m_IndexBuffer->Release();
-	if (m_PixelShader) m_PixelShader->Release();
-	if (m_VertexLayout) m_VertexLayout->Release();
-}
-
-
-/*
-*/
-HRESULT ObjLoader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob)
-{
-	HRESULT hr = S_OK;
-
-	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-#if defined(DEBUG) || defined(_DEBUG)
-	dwShaderFlags |= D3DCOMPILE_DEBUG;
-#endif
-
-	ID3DBlob* pErrorBlob = nullptr;
-
-	hr = D3DX11CompileFromFile(wFilename, NULL, NULL, 
-								strEntry, strShaderMdl, dwShaderFlags, 0,
-								NULL, ppblob, &pErrorBlob, NULL);
-	if (FAILED(hr))
-	{
-		if (pErrorBlob)
-		{
-			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-			pErrorBlob->Release();
-		}
-		return hr;		
-	}
-	
-	if ( pErrorBlob )
-		pErrorBlob->Release();
-
-	return S_OK;
+	posList.clear();
+	norList.clear();
+	faceList.clear();
 }
