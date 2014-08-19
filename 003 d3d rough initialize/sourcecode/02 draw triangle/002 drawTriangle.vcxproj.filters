@@ -6,11 +6,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="basicShader.fx">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="triangle.cpp" />
+    <None Include="shader.fx">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
