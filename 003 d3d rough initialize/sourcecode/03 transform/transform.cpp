@@ -1,10 +1,16 @@
-//--------------------------------------------------------------------------------------
-// File: Basics.cpp
-//
-// This application demonstrates creating a Direct3D 11 device
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
-//--------------------------------------------------------------------------------------
+/*
+	Transform
+	- Local -> World -> View -> Projection
+
+	Vertex Buffer
+
+	Index Buffer
+
+	과제 ]
+		- 제자리 돌기
+		- 궤도 따라 돌기
+*/
+
 #include <windows.h>
 #include <d3d11.h>
 #include <d3dx11.h>
@@ -13,14 +19,14 @@
 #include <xnamath.h>
 
 
-
-typedef struct SimpleVertex
+typedef struct Vertex
 {
-	XMFLOAT3 pos;
-	XMFLOAT4 color;
+	XMFLOAT3 pos;	// 위치 정보
+	XMFLOAT4 color;	// 색상(컬러) 정보
 
-}SIMPLEVERTEX;
+}VERTEX;
 
+// 셰이더와 소스코드 연결위한 상수형 변수
 typedef struct ConstantBuffer
 {
 	XMMATRIX mworld;
@@ -30,102 +36,109 @@ typedef struct ConstantBuffer
 }CONSTANTBUFFER;
 
 
-//--------------------------------------------------------------------------------------
-// Global Variables
-//--------------------------------------------------------------------------------------
+
 HINSTANCE               g_hInst = NULL;
 HWND                    g_hWnd = NULL;
-D3D_DRIVER_TYPE         g_driverType = D3D_DRIVER_TYPE_NULL;
-D3D_FEATURE_LEVEL       g_featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+// 그려주기 위한 준비 작업
 ID3D11Device*           g_device = NULL;
 ID3D11DeviceContext*    g_devcon = NULL;
-IDXGISwapChain*         g_pSwapChain = NULL;
-ID3D11RenderTargetView* g_rtBackbuffer = NULL;
+IDXGISwapChain*         g_swapchain = NULL;
+ID3D11RenderTargetView* g_rtview = NULL;
 
-ID3D11VertexShader*     g_pVertexShader = NULL;
-ID3D11PixelShader*      g_pPixelShader = NULL;
-ID3D11InputLayout*      g_pVertexLayout = NULL;
-ID3D11Buffer*           g_pVertexBuffer = NULL;
+// 실제로 그릴 데이터
+ID3D11VertexShader*     g_vertexShader = NULL;
+ID3D11InputLayout*      g_vertexLayout = NULL;
+ID3D11PixelShader*      g_pixelShader = NULL;
+ID3D11Buffer*           g_vertexBuffer = NULL;
 
-ID3D11Buffer*           g_pIndexBuffer = NULL;
-ID3D11Buffer*           g_pConstantBuffer = NULL;
+ID3D11Buffer*           g_indexBuffer = NULL;
+ID3D11Buffer*           g_constantBuffer = NULL;
+
 XMMATRIX                g_World;
 XMMATRIX                g_View;
 XMMATRIX                g_Projection;
 
 
-//--------------------------------------------------------------------------------------
-// Forward declarations
-//--------------------------------------------------------------------------------------
-HRESULT InitDevice();
-void	ReleaseDevice();
 
+HRESULT		InitDevice();
+void		ReleaseDevice();
 
-HRESULT ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob);
-void	Render();
+// 셰이더를 작동할 함수
+HRESULT		CompileShaderFromFile(WCHAR* wFilename, LPCSTR strEntry,
+								LPCSTR strShaderMdl, ID3DBlob** ppblob);
+void		RenderTriangle();
 
-LRESULT CALLBACK    WndProc( HWND, UINT, WPARAM, LPARAM );
-
-
-//--------------------------------------------------------------------------------------
-// Entry point to the program. Initializes everything and goes into a message processing 
-// loop. Idle time is used to render the scene.
-//--------------------------------------------------------------------------------------
-int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
+/*
+	윈도 메시지 프로시져
+*/
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER( hPrevInstance );
-    UNREFERENCED_PARAMETER( lpCmdLine );
+	switch (message)
+	{
+	case WM_CLOSE:
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
 
-	WCHAR classname[] = L"003 Transform";
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
 
-	 // Register class
-    WNDCLASSEX wcex;
-    wcex.cbSize = sizeof( WNDCLASSEX );
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon( hInstance, ( LPCTSTR )IDI_WINLOGO );
-    wcex.hCursor = LoadCursor( NULL, IDC_ARROW );
-    wcex.hbrBackground = ( HBRUSH )( COLOR_WINDOW + 1 );
-    wcex.lpszMenuName = NULL;
-	wcex.lpszClassName = classname;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_WINLOGO);
-    if( !RegisterClassEx( &wcex ) )
-        return E_FAIL;
+	return 0;
+}
 
-    // Create window
-    g_hInst = hInstance;
-    RECT rc = { 0, 0, 800, 600 };
-    AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
-	g_hWnd = CreateWindow(classname, classname, WS_OVERLAPPEDWINDOW,
-                           CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
-                           NULL );
-    if( !g_hWnd )
-        return E_FAIL;
+/*
+	윈 메인
+*/
+int WINAPI wWinMain(HINSTANCE hInstance, 
+	HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+{
+	wchar_t appname[50] = L"001 Basics";
 
-    ShowWindow( g_hWnd, nCmdShow );
+	// 윈도우 구조체 채우기
+	WNDCLASSEX wcex;
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_WINLOGO);
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = appname;
+	wcex.hIconSm = wcex.hIcon;
+	if (!RegisterClassEx(&wcex))
+		return E_FAIL;
 
+	// 윈도우 생성
+	g_hInst = hInstance;
+	RECT rc = { 0, 0, 1024, 768 };
+	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+	g_hWnd = CreateWindow(appname, appname, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, 
+		NULL, NULL, hInstance, NULL);
 
-    if( FAILED( InitDevice() ) )
-    {
-		ReleaseDevice();
+	// 윈도 출력
+	ShowWindow(g_hWnd, nCmdShow);
 
-        return 0;
-    }
+	// d3d device 생성
+	InitDevice();
 
-    // Main message loop
-    MSG msg = {0};
-    while( WM_QUIT != msg.message )
-    {
-        if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
-        {
-            TranslateMessage( &msg );
-            DispatchMessage( &msg );
-        }
-        else
-        {
+	// 기본 메시지 루프
+	MSG msg = { 0 };
+	while (WM_QUIT != msg.message)
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else //MainLoop
+		{
+			// 업데이트..
 
 			/*
 				박스 애니메이션 해보기
@@ -136,206 +149,180 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 			g_World = g_World * XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
 
-			//red,green,blue,alpha
-			float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; 
-			g_devcon->ClearRenderTargetView(g_rtBackbuffer, ClearColor);
-			{
-				Render();
-			}
-			g_pSwapChain->Present(0, 0);
-        }
-    }//while()
+			// 백버퍼 지우기
+			float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f };
+			g_devcon->ClearRenderTargetView(g_rtview, ClearColor);
+			
+			
+			// 렌더링..
+			RenderTriangle();
 
+			
+			// 더블 버퍼링
+			g_swapchain->Present(0, 0);
+		}
+	}//while
+
+	// D3d device 들 해제
 	ReleaseDevice();
 
-    return ( int )msg.wParam;
+	return (int)msg.wParam;
 }
 
 
-
-//--------------------------------------------------------------------------------------
-// Called every time the application receives a message
-//--------------------------------------------------------------------------------------
-LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+HRESULT		InitDevice()
 {
-    PAINTSTRUCT ps;
-    HDC hdc;
+	HRESULT hr = S_OK;
 
-    switch( message )
-    {
-		case WM_CLOSE:
-        case WM_DESTROY:
-            PostQuitMessage( 0 );
-            break;
+	RECT rc;
+	GetClientRect(g_hWnd, &rc);
+	UINT width = rc.right - rc.left;
+	UINT height = rc.bottom - rc.top;
 
-        default:
-            return DefWindowProc( hWnd, message, wParam, lParam );
-    }
-
-    return 0;
-}
-
-
-//--------------------------------------------------------------------------------------
-// Create Direct3D device and swap chain
-//--------------------------------------------------------------------------------------
-HRESULT InitDevice()
-{
-    HRESULT hr = S_OK;
-
-    RECT rc;
-    GetClientRect( g_hWnd, &rc );
-    UINT width = rc.right - rc.left;
-    UINT height = rc.bottom - rc.top;
-
-    UINT createDeviceFlags = 0;
+	UINT createDeviceFlags = 0;
 #ifdef _DEBUG
-    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-    D3D_DRIVER_TYPE driverTypes[] =
-    {
-        D3D_DRIVER_TYPE_HARDWARE,
-        D3D_DRIVER_TYPE_WARP,
-        D3D_DRIVER_TYPE_REFERENCE,
-    };
-    UINT numDriverTypes = ARRAYSIZE( driverTypes );
+	D3D_DRIVER_TYPE driverTypes[] =
+	{
+		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_WARP,
+		D3D_DRIVER_TYPE_REFERENCE,
+	};
+	UINT numDriverTypes = ARRAYSIZE(driverTypes);
 
-    D3D_FEATURE_LEVEL featureLevels[] =
-    {
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0,
-    };
-	UINT numFeatureLevels = ARRAYSIZE( featureLevels );
+	D3D_FEATURE_LEVEL featureLevels[] =
+	{
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_10_0,
+	};
+	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
-    DXGI_SWAP_CHAIN_DESC sd;
-    ZeroMemory( &sd, sizeof( sd ) );
-    sd.BufferCount = 1;
-    sd.BufferDesc.Width = width;
-    sd.BufferDesc.Height = height;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferDesc.RefreshRate.Numerator = 60;
-    sd.BufferDesc.RefreshRate.Denominator = 1;
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = g_hWnd;
-    sd.SampleDesc.Count = 1;
-    sd.SampleDesc.Quality = 0;
-    sd.Windowed = TRUE;
+	// 백버퍼에 대한 설정
+	DXGI_SWAP_CHAIN_DESC sd;
+	ZeroMemory(&sd, sizeof(sd));
+	sd.BufferCount = 1;
+	sd.BufferDesc.Width = width;
+	sd.BufferDesc.Height = height;
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow = g_hWnd;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
+	sd.Windowed = TRUE;
+
+	D3D_DRIVER_TYPE		driverType = D3D_DRIVER_TYPE_NULL;
+	D3D_FEATURE_LEVEL	featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; 
+														driverTypeIndex++)
+	{
+		driverType = driverTypes[driverTypeIndex];
+
+		// Device , Device Context , SwapChain 을 동시에 생성한다.
+		hr = D3D11CreateDeviceAndSwapChain(NULL, driverType, NULL, 
+							createDeviceFlags, featureLevels, numFeatureLevels,
+							D3D11_SDK_VERSION, &sd, 
+							&g_swapchain, &g_device, &featureLevel, &g_devcon);
+
+		if (SUCCEEDED(hr))
+			break;
+	}
+	if (FAILED(hr))
+		return hr;
+
+	/*
+		렌더 타겟 뷰 생성
+	*/
+	ID3D11Texture2D* pBackBuffer = NULL;
+	hr = g_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), 
+											(LPVOID*)&pBackBuffer);
+	if (FAILED(hr))
+		return hr;
+
+	hr = g_device->CreateRenderTargetView(pBackBuffer, NULL, &g_rtview);
+	pBackBuffer->Release();
+	if (FAILED(hr))
+		return hr;
+
+	// device context 에 렌더타겟 연결
+	g_devcon->OMSetRenderTargets(1, &g_rtview, NULL);
 
 
-    for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
-    {
-        g_driverType = driverTypes[driverTypeIndex];
-        hr = D3D11CreateDeviceAndSwapChain( NULL, g_driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-                                            D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_device, &g_featureLevel, &g_devcon );
-        if( SUCCEEDED( hr ) )
-            break;
-    }
-    if( FAILED( hr ) )
-        return hr;
+	// Viewport 세팅
+	D3D11_VIEWPORT vp;
+	vp.Width = (FLOAT)width;
+	vp.Height = (FLOAT)height;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
 
-    // Create a render target view
-    ID3D11Texture2D* pBackBuffer = NULL;
-    hr = g_pSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), ( LPVOID* )&pBackBuffer );
-    if( FAILED( hr ) )
-        return hr;
-
-    hr = g_device->CreateRenderTargetView( pBackBuffer, NULL, &g_rtBackbuffer );
-    pBackBuffer->Release();
-    if( FAILED( hr ) )
-        return hr;
-
-    g_devcon->OMSetRenderTargets( 1, &g_rtBackbuffer, NULL );
-
-    // Setup the viewport
-    D3D11_VIEWPORT vp;
-    vp.Width = (FLOAT)width;
-    vp.Height = (FLOAT)height;
-    vp.MinDepth = 0.0f;
-    vp.MaxDepth = 1.0f;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    g_devcon->RSSetViewports( 1, &vp );
-
-
+	g_devcon->RSSetViewports(1, &vp);
 
 
 	/*
 		VERTEX SHADER
 	*/
-
 	ID3DBlob* pVSblob = nullptr;
 	// FX 파일 중 VertexShader 로드
-	hr = ComplieShaderFromFile(L"transformShader.fx", "VS", "vs_4_0", &pVSblob);
+	hr = CompileShaderFromFile(L"transformShader.fx", "VS", "vs_4_0", &pVSblob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Load FX file FAILED", L"ERROR", MB_OK);
 		return hr;
 	}
-
 	// Vertex Shader 생성
-	hr = g_device->CreateVertexShader(pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), NULL, &g_pVertexShader);
-	if (FAILED(hr))
-	{
-		pVSblob->Release();
-		return hr;
-	}
-
-
-
+	hr = g_device->CreateVertexShader(
+								pVSblob->GetBufferPointer(),
+								pVSblob->GetBufferSize(), NULL, 
+								&g_vertexShader);
 	/*
 		VERTEX LAYOUT
 	*/
-
-	// Shader Layout 설정
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
-
 	UINT numElements = ARRAYSIZE(layout);
 
-	// Layout 구조체 정보를 바탕으로 VertexLayout 을 생성.
-	hr = g_device->CreateInputLayout(layout, numElements, pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), &g_pVertexLayout);
+	hr = g_device->CreateInputLayout(layout, numElements, 
+								pVSblob->GetBufferPointer(), 
+								pVSblob->GetBufferSize(), 
+								&g_vertexLayout);
 	pVSblob->Release();
-	if (FAILED(hr))
-		return hr;
 
 	// VertexLayout 을 device Context 에 설정.
-	g_devcon->IASetInputLayout(g_pVertexLayout);
-
-
-
+	g_devcon->IASetInputLayout(g_vertexLayout);
+	
 
 	/*
 		PIXEL SHADER
 	*/
-
 	ID3DBlob* pPSblob = nullptr;
 	// FX 파일 중 PixelShader 로드
-	hr = ComplieShaderFromFile(L"transformShader.fx", "PS", "ps_4_0", &pPSblob);
+	hr = CompileShaderFromFile(L"transformShader.fx", "PS", "ps_4_0", &pPSblob);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Load FX file FAILED", L"ERROR", MB_OK);
 		return hr;
 	}
-
 	// Pixel Shader 생성
-	hr = g_device->CreatePixelShader(pPSblob->GetBufferPointer(), pPSblob->GetBufferSize(), NULL, &g_pPixelShader);
+	hr = g_device->CreatePixelShader(
+								pPSblob->GetBufferPointer(),
+								pPSblob->GetBufferSize(), NULL,
+								&g_pixelShader);
 	pPSblob->Release();
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-
 
 	/*
-		vertex list 로 vertex buffer 만들기
+		VERTEX BUFFER 만들기
 	*/
-	SIMPLEVERTEX vertices[] =
+	VERTEX vertices[] =
 	{
 		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
 		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
@@ -351,26 +338,24 @@ HRESULT InitDevice()
 	D3D11_BUFFER_DESC buffdesc;
 	ZeroMemory(&buffdesc, sizeof(buffdesc));
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(SIMPLEVERTEX) * numVertices;
+	buffdesc.ByteWidth = sizeof(VERTEX)* numVertices;
 	buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	buffdesc.CPUAccessFlags = 0;
-	// 버텍스 버퍼 추가 정보
 	D3D11_SUBRESOURCE_DATA initData;
 	ZeroMemory(&initData, sizeof(initData));
 	initData.pSysMem = vertices;
-
-	hr = g_device->CreateBuffer(&buffdesc, &initData, &g_pVertexBuffer);
-	if (FAILED(hr))
-		return hr;
+	//버텍스 버퍼 생성
+	hr = g_device->CreateBuffer(&buffdesc, &initData, &g_vertexBuffer);
 	
-	// 버텍스 버퍼 생성
-	UINT stride = sizeof(SIMPLEVERTEX);
+	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
-	g_devcon->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+	//버텍스 버퍼를 IA 에 연결
+	g_devcon->IASetVertexBuffers(0, 1, &g_vertexBuffer, &stride, &offset);
 
-	
+
+
 	/*
-		인덱스 버퍼 만들기
+		INDEX BUFFER 만들기
 	*/
 	WORD indices[] =
 	{
@@ -394,128 +379,115 @@ HRESULT InitDevice()
 	};
 	UINT numIndices = ARRAYSIZE(indices);
 
+
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(WORD)* numIndices;        // 36 vertices needed for 12 triangles in a triangle list
+	buffdesc.ByteWidth = sizeof(WORD)* numIndices;
 	buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	buffdesc.CPUAccessFlags = 0;
+	buffdesc.CPUAccessFlags = 0;	
 	initData.pSysMem = indices;
-	// 인덱스 버퍼 생성
-	hr = g_device->CreateBuffer(&buffdesc, &initData, &g_pIndexBuffer);
-	if (FAILED(hr))
-		return hr;
-	// 인풋 어셈블러에 인덱스 버퍼 설정
-	g_devcon->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-	// 프리미티브 방식은 Triangle List 로
+	//인덱스 버퍼 생성
+	hr = g_device->CreateBuffer(&buffdesc, &initData, &g_indexBuffer);
+
+	//IA 에다가 인덱스 버퍼 연결
+	g_devcon->IASetIndexBuffer(g_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+	//TRIANGLELIST 방식으로 그리기
 	g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 
 
 	/*
 		상수 버퍼 만들기 ( Constant buffer )
 	*/
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(ConstantBuffer);
+	buffdesc.ByteWidth = sizeof(CONSTANTBUFFER);
 	buffdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	buffdesc.CPUAccessFlags = 0;
 
 	// 상수 버퍼 생성
-	hr = g_device->CreateBuffer(&buffdesc, NULL, &g_pConstantBuffer);
+	hr = g_device->CreateBuffer(&buffdesc, NULL, &g_constantBuffer);
 	if (FAILED(hr))
 		return hr;
 
 
 	/*
-		World, View, Projection 매트릭스 초기화
+		World, View, Projection 
 	*/
-	
-	//WORLD MATRIX
 	g_World = XMMatrixIdentity();
 
-	//VIEW MATRIX
-	XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	g_View = XMMatrixLookAtLH(Eye, At, Up);
+	XMVECTOR eye	= XMVectorSet(0.0f, 2.0f, -10.0f, 0.0f);
+	XMVECTOR lookat = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR up		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	g_View = XMMatrixLookAtLH(eye, lookat, up);
 
-	//PROJECTION MATRIX
 	g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / (FLOAT)height, 0.01f, 100.0f);
 
-    return S_OK;
+
+	return S_OK;
 }
 
-void	ReleaseDevice()
+void ReleaseDevice()
 {
-	if (g_devcon) g_devcon->ClearState();
+	if (g_devcon)			g_devcon->ClearState();
 
-	if (g_pConstantBuffer) g_pConstantBuffer->Release();
-	if (g_pIndexBuffer) g_pIndexBuffer->Release();
+	if (g_constantBuffer)	g_constantBuffer->Release();
+	if (g_indexBuffer)		g_indexBuffer->Release();
 
-	if (g_pVertexBuffer) g_pVertexBuffer->Release();
-	if (g_pVertexLayout) g_pVertexLayout->Release();
-	if (g_pVertexShader) g_pVertexShader->Release();
-	if (g_pPixelShader) g_pPixelShader->Release();
+	if (g_vertexBuffer)		g_vertexBuffer->Release();
+	if (g_vertexLayout)		g_vertexLayout->Release();
+	if (g_vertexShader)		g_vertexShader->Release();
+	if (g_pixelShader)		g_pixelShader->Release();
 
-	if (g_rtBackbuffer) g_rtBackbuffer->Release();
-	if (g_pSwapChain) g_pSwapChain->Release();
-	if (g_devcon) g_devcon->Release();
-	if (g_device) g_device->Release();
+	if (g_rtview)			g_rtview->Release();
+	if (g_swapchain)		g_swapchain->Release();
+	if (g_devcon)			g_devcon->Release();
+	if (g_device)			g_device->Release();
 }
 
 
-
-HRESULT ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob)
+/*
+	외부 셰이더 파일을 불러서 Device에 연결하기
+*/
+HRESULT CompileShaderFromFile(WCHAR* wFilename, LPCSTR strEntry,
+							LPCSTR strShaderMdl, ID3DBlob** ppblob)
 {
 	HRESULT hr = S_OK;
 
 	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
 #if defined(DEBUG) || defined(_DEBUG)
 	dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
 
-	hr = D3DX11CompileFromFile(wFilename, NULL, NULL, 
-							strEntry, strShaderMdl, dwShaderFlags, 0,
-							NULL, ppblob, &pErrorBlob, NULL);
-	if (FAILED(hr))
-	{
-		if (pErrorBlob)
-		{
-			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-			pErrorBlob->Release();
-		}
-		return hr;		
-	}
-	
-	if ( pErrorBlob )
+	hr = D3DX11CompileFromFile(wFilename, NULL, NULL,
+						strEntry, strShaderMdl, dwShaderFlags, 0,
+						NULL, ppblob, &pErrorBlob, NULL);
+
+	if (pErrorBlob)
 		pErrorBlob->Release();
 
-	return S_OK;
+	return hr;
 }
 
-void	Render()
-{
 
-	/*
-		Constant Buffer 연결
-	*/
-	ConstantBuffer cb;
+void RenderTriangle()
+{
+	CONSTANTBUFFER cb;
 	cb.mworld = XMMatrixTranspose(g_World);
 	cb.mview = XMMatrixTranspose(g_View);
 	cb.mprojection = XMMatrixTranspose(g_Projection);
-	g_devcon->UpdateSubresource(g_pConstantBuffer, 0, NULL, &cb, 0, 0);
 
-
-	/*
-		Box 그리기
-	*/
+	// 셰이더와 소스를 연결
+	g_devcon->UpdateSubresource(g_constantBuffer, 0, NULL, &cb, 0, 0);
 	
-	g_devcon->VSSetShader(g_pVertexShader, NULL, 0);
-	// 상수 버퍼 연결
-	g_devcon->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-	g_devcon->PSSetShader(g_pPixelShader, NULL, 0);
+
+	// 박스 그리기
+	g_devcon->VSSetShader(g_vertexShader, NULL, 0);
+	g_devcon->VSSetConstantBuffers(0, 1, &g_constantBuffer);
+	
+	g_devcon->PSSetShader(g_pixelShader, NULL, 0);
+
 	// 인덱스 버퍼로 그리기
 	g_devcon->DrawIndexed(36, 0, 0);
 }

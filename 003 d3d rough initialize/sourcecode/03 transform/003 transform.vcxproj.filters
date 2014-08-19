@@ -6,11 +6,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="transformShader.fx">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="transform.cpp" />
+    <None Include="transformShader.fx">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
