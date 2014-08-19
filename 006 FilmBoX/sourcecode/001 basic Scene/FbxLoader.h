@@ -8,17 +8,14 @@
 
 class FbxLoader
 {
-public:
-	static HRESULT		CreateModelFromFile(FbxLoader** pploader, LPCWSTR wfilename, Mesh& mesh);
-	static void			Delete(FbxLoader** pploader);
-	
 private:
-	HRESULT				LoadFbx(LPCWSTR wfilename, Mesh& mesh);
-	HRESULT				BuildMesh(Mesh& mesh);
+	HRESULT				BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh);	
 	void				Release();
 
 private:
 	FbxNode*			m_noderoot = nullptr;
 
+	LPVERTEXpn			vertices = nullptr;
+	LPDWORD				indices = nullptr;
 };
 

@@ -12,14 +12,17 @@ CompileShader::~CompileShader()
 {
 }
 
-HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements)
+HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename)
 {
 	if (*ppshader)
 		return S_FALSE;
 
 	*ppshader = new CompileShader;
 
-	return (*ppshader)->Initialize(wfilename, pLayout, numElements);
+	WCHAR strpathW[256] = {};
+	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
+
+	return (*ppshader)->Initialize(strpathW);
 }
 
 void CompileShader::Delete(CompileShader** ppshader)
@@ -28,7 +31,7 @@ void CompileShader::Delete(CompileShader** ppshader)
 		return;
 
 	(*ppshader)->Release();
-	
+
 	delete *ppshader;
 	*ppshader = nullptr;
 }
@@ -36,7 +39,7 @@ void CompileShader::Delete(CompileShader** ppshader)
 
 /*
 */
-void CompileShader::RenderPrepare( const void* psrcData )
+void CompileShader::RenderPrepare(const void* psrcData)
 {
 	DXUTGetD3D11DeviceContext()->UpdateSubresource(m_constantbuffer, 0, NULL, psrcData, 0, 0);
 
@@ -50,12 +53,19 @@ void CompileShader::RenderPrepare( const void* psrcData )
 
 /*
 */
-HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements)
+HRESULT CompileShader::Initialize(WCHAR* wfilename)
 {
 	HRESULT hr;
 
+	D3D11_INPUT_ELEMENT_DESC layoutPN[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE(layoutPN);
+
 	/*
-		VERTEX SHADER
+	VERTEX SHADER
 	*/
 	ID3DBlob* pVSblob = nullptr;
 	// FX 파일 중 VertexShader 로드
@@ -76,10 +86,10 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 
 
 	/*
-		VERTEX LAYOUT
+	VERTEX LAYOUT
 	*/
 	// Layout 구조체 정보를 바탕으로 VertexLayout 을 생성.
-	hr = DXUTGetD3D11Device()->CreateInputLayout(pLayout, numElements, pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), &m_vertexlayout);
+	hr = DXUTGetD3D11Device()->CreateInputLayout(layoutPN, numElements, pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), &m_vertexlayout);
 	pVSblob->Release();
 	if (FAILED(hr))
 		return hr;
@@ -89,7 +99,7 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 
 
 	/*
-		PIXEL SHADER
+	PIXEL SHADER
 	*/
 	ID3DBlob* pPSblob = nullptr;
 	// FX 파일 중 PixelShader 로드
@@ -110,7 +120,7 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 
 
 	/*
-		상수 버퍼 만들기 ( Constant buffer )
+	상수 버퍼 만들기 ( Constant buffer )
 	*/
 	D3D11_BUFFER_DESC buffdesc;
 	ZeroMemory(&buffdesc, sizeof(buffdesc));
@@ -154,7 +164,7 @@ HRESULT CompileShader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, 
 	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wFilename);
 
 	hr = DXUTCompileFromFile(strpathW, nullptr, strEntry, strShaderMdl, dwShaderFlags, 0, ppblob);
-	
+
 	if (FAILED(hr))
 	{
 		return hr;

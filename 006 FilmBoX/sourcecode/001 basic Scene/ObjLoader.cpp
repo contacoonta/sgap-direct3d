@@ -1,4 +1,5 @@
 #include "DXUT.h"
+#include "SDKmisc.h"
 #include "ObjLoader.h"
 
 #include <fstream>
@@ -6,46 +7,9 @@
 using std::ifstream;
 
 
-
 /*
 */
-HRESULT ObjLoader::CreateModelFromFile(ObjLoader** pploader, LPCWSTR wfilename, Mesh& mesh)
-{
-	HRESULT hr = S_OK;
-
-	if (*pploader != nullptr)
-		return S_FALSE;
-
-	*pploader = new ObjLoader;
-
-
-	if (wfilename == nullptr)
-	{
-		hr = (*pploader)->BuildCube(mesh);
-	}
-	else
-	{
-		hr = (*pploader)->ParseFromObj(wfilename, mesh);
-	}
-
-	return hr;
-}
-
-void ObjLoader::Delete(ObjLoader** pploader)
-{
-	if (*pploader == nullptr)
-		return;
-
-	(*pploader)->Release();
-
-	delete (*pploader);
-	*pploader = nullptr;
-}
-
-
-/*
-*/
-HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
+HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 {
 	ifstream	fin;
 	char		dat;
@@ -80,10 +44,10 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
 				fin >> f3.x >> f3.y >> f3.z;
 				posList.push_back(f3);
 			}
-			
+
 			/*if (dat == 't')
 			{
-				fin >> f2.x >> f2.y;
+			fin >> f2.x >> f2.y;
 			}*/
 
 			//normal 정보 읽기
@@ -91,11 +55,11 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
 			{
 				fin >> f3.x >> f3.y >> f3.z;
 				norList.push_back(f3);
-			}			
+			}
 		}//'v'
 
 		/*
-			face 는 1부터 시작하니 -1 을 해서 0으로 만들어 준다.
+		face 는 1부터 시작하니 -1 을 해서 0으로 만들어 준다.
 		*/
 		if (dat == 'f')
 		{
@@ -132,21 +96,37 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
 		}//'f'
 
 		fin.get(dat);
-	
+
 	}//while()
 
 	fin.close();
 
-	return BuildMesh(mesh);
+	return S_OK;
 }
 
 
 /*
 */
-HRESULT ObjLoader::BuildMesh(Mesh& mesh)
+HRESULT ObjLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
 {
 	HRESULT hr = S_OK;
-	
+
+
+	hr = mesh.Initialize();
+	if (FAILED(hr))
+		return hr;
+
+
+	/*
+		Obj 파일 읽어오기
+	*/
+	WCHAR strpathW[256] = {};
+	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
+
+	hr = ParseFromObj(strpathW);
+	if (FAILED(hr))
+		return hr;
+
 
 	/*
 		VERTEX LIST to VERTEX BUFFER
@@ -182,12 +162,12 @@ HRESULT ObjLoader::BuildMesh(Mesh& mesh)
 		UINT offset = 0;
 		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
 	}
-	
+
 
 	/*
 		INDEX LIST to INDEX BUFFER
 	*/
-	indices = new DWORD[faceList.size()*3];
+	indices = new DWORD[faceList.size() * 3];
 	{
 		UINT u = 0;
 		for (auto x : faceList)
@@ -202,7 +182,7 @@ HRESULT ObjLoader::BuildMesh(Mesh& mesh)
 		D3D11_BUFFER_DESC buffdesc;
 		ZeroMemory(&buffdesc, sizeof(buffdesc));
 		buffdesc.Usage = D3D11_USAGE_DEFAULT;
-		buffdesc.ByteWidth = sizeof(DWORD) * mesh.m_indexCnt;
+		buffdesc.ByteWidth = sizeof(DWORD)* mesh.m_indexCnt;
 		buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		buffdesc.CPUAccessFlags = 0;
 		D3D11_SUBRESOURCE_DATA initData;
@@ -217,7 +197,7 @@ HRESULT ObjLoader::BuildMesh(Mesh& mesh)
 		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh.m_indexbuffer, DXGI_FORMAT_R32_UINT, 0);
 		DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
-	
+
 
 	return hr;
 }
@@ -226,6 +206,14 @@ HRESULT ObjLoader::BuildMesh(Mesh& mesh)
 HRESULT ObjLoader::BuildCube(Mesh& mesh)
 {
 	HRESULT hr = S_OK;
+
+	/*
+		LAYOUT 등 메시 초기화
+	*/
+	hr = mesh.Initialize();
+	if (FAILED(hr))
+		return hr;
+
 
 	VERTEXpn cubevertices[] =
 	{
@@ -322,7 +310,7 @@ HRESULT ObjLoader::BuildCube(Mesh& mesh)
 		return hr;
 	// 인풋 어셈블러에 인덱스 버퍼 설정
 	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh.m_indexbuffer, DXGI_FORMAT_R16_UINT, 0);
-	
+
 	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 

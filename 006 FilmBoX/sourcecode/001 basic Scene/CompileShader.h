@@ -23,13 +23,13 @@ public:
 	CompileShader();
 	~CompileShader();
 
-	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements);
+	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename);
 	static void		Delete(CompileShader** ppshader);
 
 	void			RenderPrepare(const void* psrcData);
 
 private:
-	HRESULT			Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements);
+	HRESULT			Initialize(WCHAR* wfilename);
 	void			Release();
 
 	HRESULT			ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob);

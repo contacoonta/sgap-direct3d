@@ -13,13 +13,12 @@ typedef struct vertexPN
 }VERTEXpn, *LPVERTEXpn;
 
 
-/*	
+/*
 */
 class Mesh
 {
 	friend class			CompileShader;
 	friend class			ObjLoader;
-	friend class			FbxLoader;
 
 public:
 	Mesh();
@@ -28,21 +27,15 @@ public:
 public:
 	HRESULT					Initialize();
 	void					Update();
-	void					Render(XMMATRIX& view, XMMATRIX& proj);
+	void					Render();
 	void					Release();
 
-	HRESULT					BuildCube();
-	HRESULT					BuildFromObj(LPCWSTR wfilename);
-	HRESULT					BuildFromFbx(LPCWSTR wfilename);
+	XMMATRIX				World()			{ return m_world; }
 
 private:
-	CompileShader*			m_compileshader	= nullptr;
-	ObjLoader*				m_objloader		= nullptr;
-	FbxLoader*				m_fbxloader		= nullptr;
-
-	ID3D11Buffer*           m_vertexbuffer	= nullptr;
-	ID3D11Buffer*           m_indexbuffer	= nullptr;
-	UINT					m_indexCnt		= 0;
+	ID3D11Buffer*           m_vertexbuffer = nullptr;
+	ID3D11Buffer*           m_indexbuffer = nullptr;
+	UINT					m_indexCnt = 0;
 
 	XMMATRIX                m_world;
 };
