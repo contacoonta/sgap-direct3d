@@ -1,4 +1,6 @@
 #include "DXUT.h"
+#include "SDKmisc.h"
+
 #include "ObjLoader.h"
 
 #include <fstream>
@@ -7,45 +9,10 @@ using std::ifstream;
 
 
 
-/*
-*/
-HRESULT ObjLoader::CreateModelFromFile(ObjLoader** pploader, LPCWSTR wfilename, Mesh& mesh)
-{
-	HRESULT hr = S_OK;
-
-	if (*pploader != nullptr)
-		return S_FALSE;
-
-	*pploader = new ObjLoader;
-
-
-	if (wfilename == nullptr)
-	{
-		hr = (*pploader)->BuildCube(mesh);
-	}
-	else
-	{
-		hr = (*pploader)->ParseFromObj(wfilename, mesh);
-	}
-
-	return hr;
-}
-
-void ObjLoader::Delete(ObjLoader** pploader)
-{
-	if (*pploader == nullptr)
-		return;
-
-	(*pploader)->Release();
-
-	delete (*pploader);
-	*pploader = nullptr;
-}
-
 
 /*
 */
-HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
+HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 {
 	ifstream	fin;
 	char		dat;
@@ -137,16 +104,34 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename, Mesh& mesh)
 
 	fin.close();
 
-	return BuildMesh(mesh);
+	return S_OK;
 }
 
 
 /*
 */
-HRESULT ObjLoader::BuildMesh(Mesh& mesh)
+HRESULT ObjLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
 {
 	HRESULT hr = S_OK;
-	
+
+	/*
+		LAYOUT 등 메시 초기화
+	*/
+	hr = mesh.Initialize();
+	if (FAILED(hr))
+		return hr;
+
+
+	/*
+		Obj 파일 읽어오기
+	*/
+	WCHAR strpathW[256] = {};
+	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
+
+	hr = ParseFromObj(strpathW);
+	if (FAILED(hr))
+		return hr;
+
 
 	/*
 		VERTEX LIST to VERTEX BUFFER
@@ -226,6 +211,14 @@ HRESULT ObjLoader::BuildMesh(Mesh& mesh)
 HRESULT ObjLoader::BuildCube(Mesh& mesh)
 {
 	HRESULT hr = S_OK;
+
+	/*
+		LAYOUT 등 메시 초기화
+	*/
+	hr = mesh.Initialize();
+	if (FAILED(hr))
+		return hr;
+
 
 	VERTEXpn cubevertices[] =
 	{

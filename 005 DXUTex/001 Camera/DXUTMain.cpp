@@ -4,12 +4,16 @@
 #include "SDKmisc.h"
 
 #include "Mesh.h"
+#include "ObjLoader.h"
+#include "CompileShader.h"
+
 
 #pragma warning( disable : 4100 )
 using namespace DirectX;
 
 
 CModelViewerCamera	g_camera;
+CompileShader*		g_shader;
 Mesh				g_mesh;
 
 
@@ -31,16 +35,15 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 {
     HRESULT hr = S_OK;
 
-    auto pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 
-    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
-    dwShaderFlags |= D3DCOMPILE_DEBUG;
-    dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
+	// Shader Layout ¼³Á¤
+	hr = CompileShader::Create(&g_shader, L"shaders\\lightShader.fx");
+	if (FAILED(hr))
+		return hr;
 
-
-	g_mesh.BuildFromObj(L"models\\teapot_vntf.obj");
+	ObjLoader loader;
+	//loader.BuildCube(g_mesh);
+	loader.BuildMeshFromFile(L"models\\teapot_vntf.obj", g_mesh);
 
 
 	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
@@ -89,7 +92,22 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	
 	XMMATRIX mview = g_camera.GetViewMatrix();
 	XMMATRIX mproj = g_camera.GetProjMatrix();
-	g_mesh.Render(mview, mproj);
+	XMFLOAT4 LitDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
+	XMFLOAT4 LitCol = XMFLOAT4(0.9f, 0.2f, 0.3f, 1.0f);
+
+	/*
+		SHADER CONSTANT BUFFER
+	*/
+	ConstantBuffer cb;
+	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_mesh.World()));
+	XMStoreFloat4x4(&(cb.view), XMMatrixTranspose(mview));
+	XMStoreFloat4x4(&(cb.projection), XMMatrixTranspose(mproj));
+	cb.litDir = LitDir;
+	cb.litCol = LitCol;
+
+	g_shader->RenderPrepare(&cb);
+
+	g_mesh.Render();
 }
 
 
@@ -107,6 +125,8 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
 	g_mesh.Release();
+
+	if (g_shader) CompileShader::Delete(&g_shader);
 }
 
 

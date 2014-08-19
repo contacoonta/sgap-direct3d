@@ -27,16 +27,12 @@ public:
 public:
 	HRESULT					Initialize();
 	void					Update();
-	void					Render(XMMATRIX& view, XMMATRIX& proj);
+	void					Render();
 	void					Release();
 
-	HRESULT					BuildCube();
-	HRESULT					BuildFromObj(LPCWSTR wfilename);
+	XMMATRIX				World()			{ return m_world; }
 
 private:
-	CompileShader*			m_compileshader	= nullptr;
-	ObjLoader*				m_objloader		= nullptr;
-
 	ID3D11Buffer*           m_vertexbuffer	= nullptr;
 	ID3D11Buffer*           m_indexbuffer	= nullptr;
 	UINT					m_indexCnt		= 0;

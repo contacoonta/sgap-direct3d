@@ -12,14 +12,17 @@ CompileShader::~CompileShader()
 {
 }
 
-HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements)
+HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename)
 {
 	if (*ppshader)
 		return S_FALSE;
 
 	*ppshader = new CompileShader;
 
-	return (*ppshader)->Initialize(wfilename, pLayout, numElements);
+	WCHAR strpathW[256] = {};
+	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
+	
+	return (*ppshader)->Initialize(strpathW);
 }
 
 void CompileShader::Delete(CompileShader** ppshader)
@@ -50,9 +53,16 @@ void CompileShader::RenderPrepare( const void* psrcData )
 
 /*
 */
-HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLayout[], UINT numElements)
+HRESULT CompileShader::Initialize(WCHAR* wfilename)
 {
 	HRESULT hr;
+
+	D3D11_INPUT_ELEMENT_DESC layoutPN[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE(layoutPN);
 
 	/*
 		VERTEX SHADER
@@ -79,7 +89,7 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename, D3D11_INPUT_ELEMENT_DESC pLa
 		VERTEX LAYOUT
 	*/
 	// Layout 구조체 정보를 바탕으로 VertexLayout 을 생성.
-	hr = DXUTGetD3D11Device()->CreateInputLayout(pLayout, numElements, pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), &m_vertexlayout);
+	hr = DXUTGetD3D11Device()->CreateInputLayout(layoutPN, numElements, pVSblob->GetBufferPointer(), pVSblob->GetBufferSize(), &m_vertexlayout);
 	pVSblob->Release();
 	if (FAILED(hr))
 		return hr;
