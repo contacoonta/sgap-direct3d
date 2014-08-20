@@ -9,7 +9,7 @@
     <ClCompile Include="transform orbit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="orbitShader.fx">
+    <None Include="transformShader.fx">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

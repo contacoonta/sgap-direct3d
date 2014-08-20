@@ -4,6 +4,8 @@ cbuffer CONSTANTBUFFER : register (b0)
 	matrix world;
 	matrix view;
 	matrix projection;
+
+	float4 outcolor;
 }
 
 typedef struct vertexInput
@@ -28,7 +30,7 @@ VERTEXOUTPUT VS(VERTEXINPUT input)
 	output.pos		= mul( input.pos, world );
 	output.pos		= mul( output.pos, view );
 	output.pos		= mul( output.pos, projection );
-	output.color	= input.color;
+	output.color	= outcolor;
 
 	return output;
 }
