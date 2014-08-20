@@ -30,7 +30,7 @@
     <ClCompile Include="transform orbit.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="orbitShader.fx">
+    <None Include="transformShader.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
