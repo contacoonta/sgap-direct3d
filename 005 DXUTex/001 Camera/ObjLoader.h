@@ -11,7 +11,7 @@ class ObjLoader
 {
 public:
 	Mesh*				BuildMeshFromFile(LPCWSTR wfilename);
-	HRESULT				BuildCube(Mesh* mesh);
+	Mesh*				BuildCube();
 	
 	void				Release();
 

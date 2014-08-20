@@ -227,20 +227,23 @@ Mesh* ObjLoader::BuildMeshFromFile(LPCWSTR wfilename)
 }
 
 
-HRESULT ObjLoader::BuildCube(Mesh* mesh)
+Mesh* ObjLoader::BuildCube()
 {
 	HRESULT hr = S_OK;
 
 	// 기존의 메시정보가 있다면 지운다..
 	Release();
-	mesh->Release();
 
 	/*
 		LAYOUT 등 메시 초기화
 	*/
+	Mesh* mesh = new Mesh;
 	hr = mesh->Initialize();
 	if (FAILED(hr))
-		return hr;
+	{
+		delete mesh;
+		return nullptr;
+	}
 
 
 	VERTEXpn cubevertices[] =
@@ -315,7 +318,10 @@ HRESULT ObjLoader::BuildCube(Mesh* mesh)
 
 	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_vertexbuffer));
 	if (FAILED(hr))
-		return hr;
+	{
+		delete mesh;
+		return nullptr;
+	}
 
 	UINT stride = sizeof(VERTEXpn);
 	UINT offset = 0;
@@ -335,11 +341,18 @@ HRESULT ObjLoader::BuildCube(Mesh* mesh)
 	// 인덱스 버퍼 생성
 	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_indexbuffer));
 	if (FAILED(hr))
-		return hr;
+	{
+		delete mesh;
+		return nullptr;
+	}
+
+
 	// 인풋 어셈블러에 인덱스 버퍼 설정
 	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh->m_indexbuffer, DXGI_FORMAT_R16_UINT, 0);
 	
 	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return mesh;
 }
 
 

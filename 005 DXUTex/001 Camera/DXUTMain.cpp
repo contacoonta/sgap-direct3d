@@ -14,8 +14,8 @@ using namespace DirectX;
 
 CModelViewerCamera	g_camera;
 CompileShader*		g_shader;
-Mesh*				g_mesh = nullptr;
-Mesh*				pclone = nullptr;
+Mesh*				g_mesh		= nullptr;
+Mesh*				g_meshClone = nullptr;
 
 
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -44,13 +44,13 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
 	ObjLoader loader;
 	
-	//g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
-	g_mesh = loader.BuildMeshFromFile(L"models\\oiltank.obj");
+	//g_mesh = loader.BuildMeshFromFile(L"models\\oiltank.obj");
+	g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
 
 
-	pclone = g_mesh->Clone();
+	g_meshClone = g_mesh->Clone();
 	XMMATRIX mat = XMMatrixTranslation(-20.0f, 0.0f, 0.0f);
-	pclone->SetWorld(mat);
+	g_meshClone->SetWorld(mat);
 
 	
 	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
@@ -119,9 +119,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	g_shader->RenderPrepare(&cb);
 	g_mesh->Render();
 		
-	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(pclone->World()));
+	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_meshClone->World()));
 	g_shader->RenderPrepare(&cb);
-	pclone->Render();
+	g_meshClone->Render();
 }
 
 
@@ -139,7 +139,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
 	delete g_mesh;
-	delete pclone;
+	delete g_meshClone;
 
 	if (g_shader) CompileShader::Delete(&g_shader);
 }
