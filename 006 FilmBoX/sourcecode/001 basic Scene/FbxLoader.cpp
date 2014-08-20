@@ -57,76 +57,97 @@ HRESULT FbxLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
 	for (int i = 0; i < numKids; i++)
 	{
 		childNode = m_noderoot->GetChild(i);
-		FbxMesh *mesh = childNode->GetMesh();
+		FbxMesh *fbxmesh = childNode->GetMesh();
 
-		if (mesh != NULL)
+		if (fbxmesh == nullptr)
+			continue;
+		
+		/*
+			VERTICES
+		*/
+		//int numVerts = fbxmesh->GetControlPointsCount();
+		FbxVector4* fbxvertices = fbxmesh->GetControlPoints();
+		
+		vertices = new VERTEXpn[fbxmesh->GetPolygonCount()];
+
+		for (UINT idxPolygon = 0; idxPolygon < fbxmesh->GetPolygonCount(); idxPolygon)
 		{
-			/*
-				VERTICES
-			*/
-			int numVerts = mesh->GetControlPointsCount();
+			int numvertices = fbxmesh->GetPolygonSize(idxPolygon);
+			assert(numvertices == 3);
 
-			/*for (int j = 0; j<numVerts; j++)
+			for (UINT idxVertices = 0; idxVertices < numvertices; ++idxVertices)
 			{
-				FbxVector4 vert =	mesh->GetControlPointAt(j);
-									mesh->GetControlPointsCount;
+				int uidx = fbxmesh->GetPolygonVertex(idxPolygon, idxVertices);
+
 				
+				vertices[0].pos.x = FLOAT(fbxvertices[uidx].mData[0]);
+				vertices[0].pos.y = FLOAT(fbxvertices[uidx].mData[1]);
+				vertices[0].pos.z = FLOAT(fbxvertices[uidx].mData[2]);
+
+
 			}
-
-			D3D11_BUFFER_DESC buffdesc;
-			ZeroMemory(&buffdesc, sizeof(buffdesc));
-			buffdesc.Usage = D3D11_USAGE_DEFAULT;
-			buffdesc.ByteWidth = sizeof(VERTEXpn)* mesh->GetControlPointsCount();
-			buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			buffdesc.CPUAccessFlags = 0;
-			D3D11_SUBRESOURCE_DATA initData;
-			ZeroMemory(&initData, sizeof(initData));
-			initData.pSysMem = vertices;
-
-			hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_vertexbuffer));
-			delete[] vertices;
-			if (FAILED(hr))
-				return hr;
-
-			UINT stride = sizeof(VERTEXpn);
-			UINT offset = 0;
-			DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
-*/
-
-			/*
-				INDICES
-			*/
-			int numIndices = mesh->GetPolygonVertexCount();
-			/*indices = new int[numIndices];
-			indices = mesh->GetPolygonVertices();*/
-
-
-			/*
-				NORMALS
-			*/
-			FbxGeometryElementNormal* normalEl = mesh->GetElementNormal();
-			if (normalEl)
-			{
-				int numNormals = mesh->GetPolygonCount() * 3;
-				/*normals = new float[numNormals * 3];
-				int vertexCounter = 0;
-				for (int polyCounter = 0; polyCounter<mesh->GetPolygonCount(); polyCounter++)
-				{
-					for (int i = 0; i<3; i++)
-					{
-						FbxVector4 normal = normalEl->GetDirectArray().GetAt(vertexCounter);
-						normals[vertexCounter * 3 + 0] = normal[0];
-						normals[vertexCounter * 3 + 1] = normal[1];
-						normals[vertexCounter * 3 + 2] = normal[2];
-						cout << "\n" << normals[vertexCounter * 3 + 0] << " " << normals[vertexCounter * 3 + 1] << " " << normals[vertexCounter * 3 + 2];
-						vertexCounter++;
-					}
-				}*/
-			}
-
-
-
 		}
+
+		delete [] vertices;
+
+
+		/*for (int j = 0; j<numVerts; j++)
+		{
+			FbxVector4 vert =	mesh->GetControlPointAt(j);
+								mesh->GetControlPointsCount;
+				
+		}
+
+		D3D11_BUFFER_DESC buffdesc;
+		ZeroMemory(&buffdesc, sizeof(buffdesc));
+		buffdesc.Usage = D3D11_USAGE_DEFAULT;
+		buffdesc.ByteWidth = sizeof(VERTEXpn)* mesh->GetControlPointsCount();
+		buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffdesc.CPUAccessFlags = 0;
+		D3D11_SUBRESOURCE_DATA initData;
+		ZeroMemory(&initData, sizeof(initData));
+		initData.pSysMem = vertices;
+
+		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_vertexbuffer));
+		delete[] vertices;
+		if (FAILED(hr))
+			return hr;
+
+		UINT stride = sizeof(VERTEXpn);
+		UINT offset = 0;
+		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
+		*/
+
+		/*
+			INDICES
+		*/
+		int numIndices = fbxmesh->GetPolygonVertexCount();
+		/*indices = new int[numIndices];
+		indices = mesh->GetPolygonVertices();*/
+
+
+		/*
+			NORMALS
+		*/
+		FbxGeometryElementNormal* normalEl = fbxmesh->GetElementNormal();
+		if (normalEl)
+		{
+			int numNormals = fbxmesh->GetPolygonCount() * 3;
+			/*normals = new float[numNormals * 3];
+			int vertexCounter = 0;
+			for (int polyCounter = 0; polyCounter<mesh->GetPolygonCount(); polyCounter++)
+			{
+				for (int i = 0; i<3; i++)
+				{
+					FbxVector4 normal = normalEl->GetDirectArray().GetAt(vertexCounter);
+					normals[vertexCounter * 3 + 0] = normal[0];
+					normals[vertexCounter * 3 + 1] = normal[1];
+					normals[vertexCounter * 3 + 2] = normal[2];
+					cout << "\n" << normals[vertexCounter * 3 + 0] << " " << normals[vertexCounter * 3 + 1] << " " << normals[vertexCounter * 3 + 2];
+					vertexCounter++;
+				}
+			}*/
+		}	
 	}
 
 	return S_OK;
