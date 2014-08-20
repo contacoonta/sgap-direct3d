@@ -16,7 +16,7 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
-	ReleaseBuffer();
+	Release();
 }
 
 Mesh* Mesh::Clone()
@@ -51,11 +51,21 @@ void Mesh::Render()
 	DXUTGetD3D11DeviceContext()->DrawIndexed(m_indexCnt, 0, 0);
 }
 
-void Mesh::ReleaseBuffer()
+void Mesh::Release()
 {
 	if (m_bClone)
 		return;
 	
-	if (m_vertexbuffer) m_vertexbuffer->Release();	
-	if (m_indexbuffer) m_indexbuffer->Release();	
+	if (m_vertexbuffer)
+	{
+		m_vertexbuffer->Release();
+		m_vertexbuffer = nullptr;
+	}
+
+	if (m_indexbuffer)
+	{
+		m_indexbuffer->Release();
+		m_indexbuffer = nullptr;
+	}
+
 }

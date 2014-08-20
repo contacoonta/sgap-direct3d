@@ -9,8 +9,8 @@ using std::ifstream;
 
 
 
-
 /*
+	
 */
 HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 {
@@ -110,16 +110,23 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 
 /*
 */
-HRESULT ObjLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
+Mesh* ObjLoader::BuildMeshFromFile(LPCWSTR wfilename)
 {
 	HRESULT hr = S_OK;
+
+	// 기존의 메시정보가 있다면 지운다.
+	Release();
 
 	/*
 		LAYOUT 등 메시 초기화
 	*/
-	hr = mesh.Initialize();
+	Mesh* mesh = new Mesh;
+	hr = mesh->Initialize();
 	if (FAILED(hr))
-		return hr;
+	{
+		delete mesh;
+		return nullptr;
+	}
 
 
 	/*
@@ -130,7 +137,10 @@ HRESULT ObjLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
 
 	hr = ParseFromObj(strpathW);
 	if (FAILED(hr))
-		return hr;
+	{
+		delete mesh;
+		return nullptr;
+	}
 
 
 	/*
@@ -158,15 +168,19 @@ HRESULT ObjLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
 		ZeroMemory(&initData, sizeof(initData));
 		initData.pSysMem = vertices;
 
-		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_vertexbuffer));
-		delete[] vertices;
+		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_vertexbuffer));
 		if (FAILED(hr))
-			return hr;
+		{
+			delete mesh;
+			return nullptr;
+		}
 
 		UINT stride = sizeof(VERTEXpn);
 		UINT offset = 0;
-		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
+		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh->m_vertexbuffer), &stride, &offset);
 	}
+	delete[] vertices;
+	vertices = nullptr;
 	
 
 	/*
@@ -182,40 +196,49 @@ HRESULT ObjLoader::BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh)
 			indices[u++] = x.pos[2];
 		}
 
-		mesh.m_indexCnt = faceList.size() * 3;
+		mesh->m_indexCnt = faceList.size() * 3;
 
 		D3D11_BUFFER_DESC buffdesc;
 		ZeroMemory(&buffdesc, sizeof(buffdesc));
 		buffdesc.Usage = D3D11_USAGE_DEFAULT;
-		buffdesc.ByteWidth = sizeof(DWORD) * mesh.m_indexCnt;
+		buffdesc.ByteWidth = sizeof(DWORD) * mesh->m_indexCnt;
 		buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		buffdesc.CPUAccessFlags = 0;
 		D3D11_SUBRESOURCE_DATA initData;
 		ZeroMemory(&initData, sizeof(initData));
 		initData.pSysMem = indices;
 		// 인덱스 버퍼 생성
-		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_indexbuffer));
-		delete[] indices;
+		hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_indexbuffer));
 		if (FAILED(hr))
-			return hr;
+		{
+			delete mesh;
+			return nullptr;
+		}
+
 		// 인풋 어셈블러에 인덱스 버퍼 설정
-		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh.m_indexbuffer, DXGI_FORMAT_R32_UINT, 0);
+		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh->m_indexbuffer, DXGI_FORMAT_R32_UINT, 0);
 		DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
+	delete[] indices;
+	indices = nullptr;
 	
 
-	return hr;
+	return mesh;
 }
 
 
-HRESULT ObjLoader::BuildCube(Mesh& mesh)
+HRESULT ObjLoader::BuildCube(Mesh* mesh)
 {
 	HRESULT hr = S_OK;
+
+	// 기존의 메시정보가 있다면 지운다..
+	Release();
+	mesh->Release();
 
 	/*
 		LAYOUT 등 메시 초기화
 	*/
-	hr = mesh.Initialize();
+	hr = mesh->Initialize();
 	if (FAILED(hr))
 		return hr;
 
@@ -290,31 +313,31 @@ HRESULT ObjLoader::BuildCube(Mesh& mesh)
 	ZeroMemory(&initData, sizeof(initData));
 	initData.pSysMem = cubevertices;
 
-	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_vertexbuffer));
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_vertexbuffer));
 	if (FAILED(hr))
 		return hr;
 
 	UINT stride = sizeof(VERTEXpn);
 	UINT offset = 0;
-	DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh.m_vertexbuffer), &stride, &offset);
+	DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh->m_vertexbuffer), &stride, &offset);
 
 
 	/*
 		INDEX LIST 로 INDEX BUFFER 버퍼 만들기
 	*/
-	mesh.m_indexCnt = ARRAYSIZE(cubeindices);
+	mesh->m_indexCnt = ARRAYSIZE(cubeindices);
 
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(WORD)* mesh.m_indexCnt;
+	buffdesc.ByteWidth = sizeof(WORD)* mesh->m_indexCnt;
 	buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	buffdesc.CPUAccessFlags = 0;
 	initData.pSysMem = cubeindices;
 	// 인덱스 버퍼 생성
-	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh.m_indexbuffer));
+	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_indexbuffer));
 	if (FAILED(hr))
 		return hr;
 	// 인풋 어셈블러에 인덱스 버퍼 설정
-	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh.m_indexbuffer, DXGI_FORMAT_R16_UINT, 0);
+	DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh->m_indexbuffer, DXGI_FORMAT_R16_UINT, 0);
 	
 	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

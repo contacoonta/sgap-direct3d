@@ -13,7 +13,7 @@ typedef struct vertexPN
 }VERTEXpn, *LPVERTEXpn;
 
 
-/*	
+/*
 */
 class Mesh
 {
@@ -34,7 +34,7 @@ public:
 	HRESULT				Initialize();
 	void				Update();
 	void				Render();
-	void				ReleaseBuffer();
+	void				Release();
 
 private:
 	ID3D11Buffer*       m_vertexbuffer			= nullptr;
@@ -43,5 +43,6 @@ private:
 
 	XMMATRIX            m_world					= XMMatrixIdentity();
 	BOOL				m_bClone				= false;
+
 };
 

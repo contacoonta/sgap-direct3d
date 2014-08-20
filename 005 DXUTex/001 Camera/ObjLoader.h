@@ -10,8 +10,8 @@ using std::vector;
 class ObjLoader
 {
 public:
-	HRESULT				BuildMeshFromFile(LPCWSTR wfilename, Mesh& mesh);
-	HRESULT				BuildCube(Mesh& mesh);
+	Mesh*				BuildMeshFromFile(LPCWSTR wfilename);
+	HRESULT				BuildCube(Mesh* mesh);
 	
 	void				Release();
 

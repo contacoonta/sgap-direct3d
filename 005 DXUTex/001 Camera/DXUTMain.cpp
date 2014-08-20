@@ -14,7 +14,7 @@ using namespace DirectX;
 
 CModelViewerCamera	g_camera;
 CompileShader*		g_shader;
-Mesh				g_mesh;
+Mesh*				g_mesh = nullptr;
 Mesh*				pclone = nullptr;
 
 
@@ -35,7 +35,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
                                       void* pUserContext )
 {
     HRESULT hr = S_OK;
-
+	
 
 	// Shader Layout ¼³Á¤
 	hr = CompileShader::Create(&g_shader, L"shaders\\lightShader.fx");
@@ -43,11 +43,12 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 		return hr;
 
 	ObjLoader loader;
-	//loader.BuildCube(g_mesh);
-	loader.BuildMeshFromFile(L"models\\oiltank.obj", g_mesh);
+	
+	//g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
+	g_mesh = loader.BuildMeshFromFile(L"models\\oiltank.obj");
 
 
-	pclone = g_mesh.Clone();
+	pclone = g_mesh->Clone();
 	XMMATRIX mat = XMMatrixTranslation(-20.0f, 0.0f, 0.0f);
 	pclone->SetWorld(mat);
 
@@ -85,9 +86,9 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
 	g_camera.FrameMove(fElapsedTime);
 
 	XMMATRIX mat = XMMatrixTranslation(20.0f, 0.0f, 0.0f);
-	g_mesh.SetWorld(mat);
+	g_mesh->SetWorld(mat);
 
-	g_mesh.Update();
+	g_mesh->Update();
 }
 
 
@@ -109,14 +110,14 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 		SHADER CONSTANT BUFFER
 	*/
 	ConstantBuffer cb;
-	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_mesh.World()));
+	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_mesh->World()));
 	XMStoreFloat4x4(&(cb.view), XMMatrixTranspose(mview));
 	XMStoreFloat4x4(&(cb.projection), XMMatrixTranspose(mproj));
 	cb.litDir = LitDir;
 	cb.litCol = LitCol;
 
 	g_shader->RenderPrepare(&cb);
-	g_mesh.Render();
+	g_mesh->Render();
 		
 	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(pclone->World()));
 	g_shader->RenderPrepare(&cb);
@@ -137,7 +138,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 //--------------------------------------------------------------------------------------
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
-	g_mesh.Release();
+	delete g_mesh;
 	delete pclone;
 
 	if (g_shader) CompileShader::Delete(&g_shader);
