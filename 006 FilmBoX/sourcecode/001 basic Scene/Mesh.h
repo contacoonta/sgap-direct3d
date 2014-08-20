@@ -30,7 +30,8 @@ public:
 	void					Render();
 	void					Release();
 
-	XMMATRIX				World()			{ return m_world; }
+	void					SetWorld(XMMATRIX mat)		{ m_world = XMMatrixTranspose(mat); }
+	XMMATRIX&				World()						{ return m_world; }
 
 private:
 	ID3D11Buffer*           m_vertexbuffer = nullptr;

@@ -27,7 +27,6 @@ void Mesh::Update()
 
 void Mesh::Render()
 {
-
 	DXUTGetD3D11DeviceContext()->DrawIndexed(m_indexCnt, 0, 0);
 }
 
