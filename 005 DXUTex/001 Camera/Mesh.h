@@ -17,26 +17,31 @@ typedef struct vertexPN
 */
 class Mesh
 {
-	friend class			CompileShader;
-	friend class			ObjLoader;
+	friend class		CompileShader;
+	friend class		ObjLoader;
 
 public:
 	Mesh();
 	~Mesh();
 
 public:
-	HRESULT					Initialize();
-	void					Update();
-	void					Render();
-	void					Release();
+	Mesh*				Clone();
+	BOOL				isCloned() const		{ return m_bClone; }
 
-	XMMATRIX				World()			{ return m_world; }
+	void				SetWorld(XMMATRIX& mat)	{ m_world = mat;	}
+	XMMATRIX			World()					{ return m_world;	}
+	
+	HRESULT				Initialize();
+	void				Update();
+	void				Render();
+	void				ReleaseBuffer();
 
 private:
-	ID3D11Buffer*           m_vertexbuffer	= nullptr;
-	ID3D11Buffer*           m_indexbuffer	= nullptr;
-	UINT					m_indexCnt		= 0;
+	ID3D11Buffer*       m_vertexbuffer			= nullptr;
+	ID3D11Buffer*       m_indexbuffer			= nullptr;
+	UINT				m_indexCnt				= 0;
 
-	XMMATRIX                m_world;
+	XMMATRIX            m_world					= XMMatrixIdentity();
+	BOOL				m_bClone				= false;
 };
 

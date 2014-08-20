@@ -15,6 +15,7 @@ using namespace DirectX;
 CModelViewerCamera	g_camera;
 CompileShader*		g_shader;
 Mesh				g_mesh;
+Mesh*				pclone = nullptr;
 
 
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -43,9 +44,14 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
 	ObjLoader loader;
 	//loader.BuildCube(g_mesh);
-	loader.BuildMeshFromFile(L"models\\teapot_vntf.obj", g_mesh);
+	loader.BuildMeshFromFile(L"models\\oiltank.obj", g_mesh);
 
 
+	pclone = g_mesh.Clone();
+	XMMATRIX mat = XMMatrixTranslation(-20.0f, 0.0f, 0.0f);
+	pclone->SetWorld(mat);
+
+	
 	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
 	static const XMVECTOR lookat = { 0.0f, 1.0f, 0.0f, 0.f };
 	g_camera.SetViewParams(eye, lookat);
@@ -77,6 +83,10 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
 	g_camera.FrameMove(fElapsedTime);
+
+	XMMATRIX mat = XMMatrixTranslation(20.0f, 0.0f, 0.0f);
+	g_mesh.SetWorld(mat);
+
 	g_mesh.Update();
 }
 
@@ -106,8 +116,11 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	cb.litCol = LitCol;
 
 	g_shader->RenderPrepare(&cb);
-
 	g_mesh.Render();
+		
+	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(pclone->World()));
+	g_shader->RenderPrepare(&cb);
+	pclone->Render();
 }
 
 
@@ -125,6 +138,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
 	g_mesh.Release();
+	delete pclone;
 
 	if (g_shader) CompileShader::Delete(&g_shader);
 }
