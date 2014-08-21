@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00 DXUTOpt", "DXUT\Optional
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 Camera", "001 Camera\001 Camera.vcxproj", "{D3D10008-96D0-4629-88B8-122C0256058C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 Md5Loader", "002 Md5Loader\002 Md5Loader.vcxproj", "{F7A3A367-AC59-4586-BE3E-5EF499A647A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +57,18 @@ Global
 		{D3D10008-96D0-4629-88B8-122C0256058C}.Release|Win32.Build.0 = Release|Win32
 		{D3D10008-96D0-4629-88B8-122C0256058C}.Release|x64.ActiveCfg = Release|x64
 		{D3D10008-96D0-4629-88B8-122C0256058C}.Release|x64.Build.0 = Release|x64
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Debug|Win32.Build.0 = Debug|Win32
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Debug|x64.ActiveCfg = Debug|x64
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Debug|x64.Build.0 = Debug|x64
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Profile|Win32.ActiveCfg = Profile|Win32
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Profile|Win32.Build.0 = Profile|Win32
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Profile|x64.ActiveCfg = Profile|x64
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Profile|x64.Build.0 = Profile|x64
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Release|Win32.ActiveCfg = Release|Win32
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Release|Win32.Build.0 = Release|Win32
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Release|x64.ActiveCfg = Release|x64
+		{F7A3A367-AC59-4586-BE3E-5EF499A647A7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
