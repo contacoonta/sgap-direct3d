@@ -23,7 +23,7 @@ public:
 	CompileShader();
 	~CompileShader();
 
-	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR* wtexturefilename);
+	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR* wtexturefilename = NULL );
 	static void		Delete(CompileShader** ppshader);
 
 	void			RenderPrepare(const void* psrcData);

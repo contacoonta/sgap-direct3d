@@ -25,8 +25,11 @@ HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR*
 	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
 	hr = (*ppshader)->Initialize(strpathW);
 
-	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wtexturefilename);
-	hr = (*ppshader)->CreateTextureFromFile(strpathW);
+	if (wtexturefilename)
+	{
+		DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wtexturefilename);
+		hr = (*ppshader)->CreateTextureFromFile(strpathW);
+	}
 
 	return hr;
 	
@@ -56,8 +59,11 @@ void CompileShader::RenderPrepare( const void* psrcData )
 	DXUTGetD3D11DeviceContext()->PSSetShader(m_pixelshader, NULL, 0);
 	DXUTGetD3D11DeviceContext()->PSSetConstantBuffers(0, 1, &m_constantbuffer);
 
-	DXUTGetD3D11DeviceContext()->PSSetShaderResources(0, 1, &m_textureRView);
-	DXUTGetD3D11DeviceContext()->PSSetSamplers(0, 1, &m_samplerLinear);
+	if (m_textureRView && m_samplerLinear)
+	{
+		DXUTGetD3D11DeviceContext()->PSSetShaderResources(0, 1, &m_textureRView);
+		DXUTGetD3D11DeviceContext()->PSSetSamplers(0, 1, &m_samplerLinear);
+	}
 }
 
 
@@ -65,7 +71,7 @@ void CompileShader::RenderPrepare( const void* psrcData )
 */
 HRESULT CompileShader::Initialize(WCHAR* wfilename)
 {
-	HRESULT hr;
+	HRESULT hr = S_OK;
 
 	D3D11_INPUT_ELEMENT_DESC layoutPN[] =
 	{
@@ -145,6 +151,7 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename)
 	if (FAILED(hr))
 		return hr;
 
+	return hr;
 }
 
 

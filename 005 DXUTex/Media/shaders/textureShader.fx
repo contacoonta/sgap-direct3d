@@ -64,5 +64,5 @@ float4 PS(PIXELFORM input) : SV_TARGET
 	outColor += saturate(fdot * litCol);
 	outColor.a = 1;
 
-	return texDiff.Sample(linSamp, input.tex) * outColor;
+	return /*texDiff.Sample(linSamp, input.tex) * */outColor;
 }

@@ -38,15 +38,15 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	
 
 	// Shader Layout ¼³Á¤
-	hr = CompileShader::Create(&g_shader, L"shaders\\textureShader.fx", L"textures\\Tiny_skin.dds");
+	hr = CompileShader::Create(&g_shader, L"shaders\\textureShader.fx");
 	if (FAILED(hr))
 		return hr;
 
 	ObjLoader loader;
 	
-	g_mesh = loader.BuildCube();
+	//g_mesh = loader.BuildCube();
 	//g_mesh = loader.BuildMeshFromFile(L"models\\oiltank.obj");
-	//g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
+	g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
 
 
 	g_meshClone = g_mesh->Clone();
