@@ -166,7 +166,7 @@ Mesh* ObjLoader::BuildMeshFromFile(LPCWSTR wfilename)
 			vertices[u++].nor = norList[x.nor[1]];
 			
 			vertices[u].pos = posList[x.pos[2]];
-			vertices[u].tex = XMFLOAT2(0.0f, 0.0f);
+			vertices[u].tex = texList[x.tex[2]];
 			vertices[u++].nor = norList[x.nor[2]];
 		}
 

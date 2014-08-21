@@ -87,7 +87,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	
 	XMMATRIX mview = g_camera.GetViewMatrix();
 	XMMATRIX mproj = g_camera.GetProjMatrix();
-	XMFLOAT4 LitDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
+	XMFLOAT4 LitDir = XMFLOAT4(0.577f, -0.577f, -0.577f, 1.0f);
 	XMFLOAT4 LitCol = XMFLOAT4(0.5f, 0.6f, 0.5f, 1.0f);
 
 	/*
@@ -138,6 +138,13 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
 	delete g_mesh;
+
+	for (int i = 0; i < g_md5model.numSubsets; i++)
+	{
+		g_md5model.subsets[i].indexBuff->Release();
+		g_md5model.subsets[i].vertBuff->Release();
+	}
+
 
 	if (g_shader) CompileShader::Delete(&g_shader);
 }
@@ -199,7 +206,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     DXUTInit( true, true, nullptr ); // Parse the command line, show msgboxes on error, no extra command line params
     DXUTSetCursorSettings( true, true ); // Show the cursor and clip it when in full screen
-    DXUTCreateWindow( L"001 Camera" );
+    DXUTCreateWindow( L"002 Md5Loader" );
 
     // Only require 10-level hardware or later
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
