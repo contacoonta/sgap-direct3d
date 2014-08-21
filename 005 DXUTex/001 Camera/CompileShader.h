@@ -23,7 +23,7 @@ public:
 	CompileShader();
 	~CompileShader();
 
-	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename);
+	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR* wtexturefilename);
 	static void		Delete(CompileShader** ppshader);
 
 	void			RenderPrepare(const void* psrcData);
@@ -33,6 +33,7 @@ private:
 	void			Release();
 
 	HRESULT			ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob);
+	HRESULT			CreateTextureFromFile(WCHAR* wfilename);
 
 private:
 	ID3D11InputLayout*      m_vertexlayout = nullptr;
@@ -40,5 +41,9 @@ private:
 	ID3D11PixelShader*      m_pixelshader = nullptr;
 
 	ID3D11Buffer*           m_constantbuffer = nullptr;
+
+	// for texture
+	ID3D11ShaderResourceView*	m_textureRView = nullptr;
+	ID3D11SamplerState*         m_samplerLinear = nullptr;
 };
 

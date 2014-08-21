@@ -38,18 +38,19 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	
 
 	// Shader Layout ¼³Á¤
-	hr = CompileShader::Create(&g_shader, L"shaders\\lightShader.fx");
+	hr = CompileShader::Create(&g_shader, L"shaders\\textureShader.fx", L"textures\\Tiny_skin.dds");
 	if (FAILED(hr))
 		return hr;
 
 	ObjLoader loader;
 	
+	g_mesh = loader.BuildCube();
 	//g_mesh = loader.BuildMeshFromFile(L"models\\oiltank.obj");
-	g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
+	//g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
 
 
 	g_meshClone = g_mesh->Clone();
-	XMMATRIX mat = XMMatrixTranslation(-20.0f, 0.0f, 0.0f);
+	XMMATRIX mat = XMMatrixTranslation(-10.0f, 0.0f, 0.0f);
 	g_meshClone->SetWorld(mat);
 
 	
@@ -104,7 +105,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	XMMATRIX mview = g_camera.GetViewMatrix();
 	XMMATRIX mproj = g_camera.GetProjMatrix();
 	XMFLOAT4 LitDir = XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f);
-	XMFLOAT4 LitCol = XMFLOAT4(0.9f, 0.2f, 0.3f, 1.0f);
+	XMFLOAT4 LitCol = XMFLOAT4(0.5f, 0.6f, 0.5f, 1.0f);
 
 	/*
 		SHADER CONSTANT BUFFER

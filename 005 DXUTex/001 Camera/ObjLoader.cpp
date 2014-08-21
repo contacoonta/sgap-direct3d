@@ -20,7 +20,6 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 	XMFLOAT3	f3;
 	XMFLOAT2	f2;
 
-
 	fin.open(wfilename);
 
 	// 파일 읽기 실패
@@ -48,10 +47,12 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 				posList.push_back(f3);
 			}
 			
-			/*if (dat == 't')
+			//texture 정보 읽기
+			if (dat == 't')
 			{
 				fin >> f2.x >> f2.y;
-			}*/
+				texList.push_back(f2);
+			}
 
 			//normal 정보 읽기
 			if (dat == 'n')
@@ -67,35 +68,40 @@ HRESULT ObjLoader::ParseFromObj(LPCWSTR wfilename)
 		if (dat == 'f')
 		{
 			FACE face = {};
-			FLOAT fval;
+			UINT val = 0;
 
 			for (UINT u = 0; u < 3; u++)
 			{
-				fin >> fval;
-				face.pos[u] = --fval;
+				//position
+				fin >> val;
+				face.pos[u] = --val;
 
 				if (fin.peek() == '/')
 				{
 					fin.ignore();
 
+					//texture
 					if (fin.peek() != '/')
 					{
-						fin >> fval;
+						fin >> val;
+						face.tex[u] = --val;
 					}
 
+					//normal
 					if (fin.peek() == '/')
 					{
 						fin.ignore();
 
-						fin >> fval;
-						face.nor[u] = --fval;
+						fin >> val;
+						face.nor[u] = --val;
 					}
 				}//if('/')
 
 			}//for()
 
+			//인덱스를 무조건 저장
 			faceList.push_back(face);
-
+			
 		}//'f'
 
 		fin.get(dat);
@@ -146,17 +152,25 @@ Mesh* ObjLoader::BuildMeshFromFile(LPCWSTR wfilename)
 	/*
 		VERTEX LIST to VERTEX BUFFER
 	*/
-	vertices = new VERTEXpn[faceList.size()];
+	vertices = new VERTEXpn[faceList.size()*3];
 	{
 		UINT u = 0;
-		for (auto x : posList)
+		for (auto x : faceList)
 		{
-			vertices[u].pos = x;
-			vertices[u].nor = norList[u];
-			u++;
+			vertices[u].pos = posList[x.pos[0]];
+			vertices[u].tex = texList[x.tex[0]];
+			vertices[u++].nor = norList[x.nor[0]];
+			
+			vertices[u].pos = posList[x.pos[1]];
+			vertices[u].tex = texList[x.tex[1]];
+			vertices[u++].nor = norList[x.nor[1]];
+			
+			vertices[u].pos = posList[x.pos[2]];
+			vertices[u].tex = XMFLOAT2(0.0f, 0.0f);
+			vertices[u++].nor = norList[x.nor[2]];
 		}
 
-		UINT numVertices = posList.size();
+		UINT numVertices = faceList.size() * 3;
 
 		D3D11_BUFFER_DESC buffdesc;
 		ZeroMemory(&buffdesc, sizeof(buffdesc));
@@ -191,9 +205,9 @@ Mesh* ObjLoader::BuildMeshFromFile(LPCWSTR wfilename)
 		UINT u = 0;
 		for (auto x : faceList)
 		{
-			indices[u++] = x.pos[0];
-			indices[u++] = x.pos[1];
-			indices[u++] = x.pos[2];
+			indices[u] = u++;
+			indices[u] = u++;
+			indices[u] = u++;
 		}
 
 		mesh->m_indexCnt = faceList.size() * 3;
@@ -248,35 +262,35 @@ Mesh* ObjLoader::BuildCube()
 
 	VERTEXpn cubevertices[] =
 	{
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
 	};
 
 

@@ -9,6 +9,7 @@ typedef struct vertexPN
 {
 	XMFLOAT3 pos;
 	XMFLOAT3 nor;
+	XMFLOAT2 tex;
 
 }VERTEXpn, *LPVERTEXpn;
 
