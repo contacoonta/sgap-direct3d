@@ -38,7 +38,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	
 
 	// Shader Layout ¼³Á¤
-	hr = CompileShader::Create(&g_shader, L"shaders\\textureShader.fx");
+	hr = CompileShader::Create(&g_shader, L"shaders\\textureShader.fx", L"textures\\seafloor.dds");
 	if (FAILED(hr))
 		return hr;
 
