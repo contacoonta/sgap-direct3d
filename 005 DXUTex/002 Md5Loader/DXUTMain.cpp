@@ -49,8 +49,8 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	g_mesh->SetWorld(mat);
 
 
-	md5Loader md5loader;
-	md5loader.LoadMd5Model(L"models\\boy.md5mesh", g_md5model, meshSRV, textureNameArray);
+	md5Loader loadermd5;
+	loadermd5.LoadMd5Model(L"models\\boy.md5mesh", g_md5model, meshSRV, textureNameArray);
 		
 	
 	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
@@ -102,6 +102,32 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
 	g_shader->RenderPrepare(&cb);
 	g_mesh->Render();
+
+
+	UINT stride = sizeof(VERTEX);
+	UINT offset = 0;
+	for (int i = 0; i < g_md5model.numSubsets; i++)
+	{
+		//Set the grounds index buffer
+		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(g_md5model.subsets[i].indexBuff, DXGI_FORMAT_R32_UINT, 0);
+		//Set the grounds vertex buffer
+		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &g_md5model.subsets[i].vertBuff, &stride, &offset);
+
+		//Set the WVP matrix and send it to the constant buffer in effect file
+		//WVP = smilesWorld * camView * camProjection;
+		//cbPerObj.WVP = XMMatrixTranspose(WVP);
+		//cbPerObj.World = XMMatrixTranspose(smilesWorld);
+		//cbPerObj.hasTexture = true;		// We'll assume all md5 subsets have textures
+		//cbPerObj.hasNormMap = false;	// We'll also assume md5 models have no normal map (easy to change later though)
+		//d3d11DevCon->UpdateSubresource(cbPerObjectBuffer, 0, NULL, &cbPerObj, 0, 0);
+		//d3d11DevCon->VSSetConstantBuffers(0, 1, &cbPerObjectBuffer);
+		//d3d11DevCon->PSSetConstantBuffers(1, 1, &cbPerObjectBuffer);
+		/*d3d11DevCon->PSSetShaderResources(0, 1, &meshSRV[NewMD5Model.subsets[i].texArrayIndex]);
+		d3d11DevCon->PSSetSamplers(0, 1, &CubesTexSamplerState);*/
+
+		//DXUTGetD3D11DeviceContext()->RSSetState(RSCullNone);
+		DXUTGetD3D11DeviceContext()->DrawIndexed(g_md5model.subsets[i].indices.size(), 0, 0);
+	}
 
 }
 
