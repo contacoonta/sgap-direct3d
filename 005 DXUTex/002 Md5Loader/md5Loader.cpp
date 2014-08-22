@@ -169,7 +169,7 @@ BOOL md5Loader::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 						}
 
 						//if the texture is not already loaded, load it now
-						if (!alreadyLoaded)
+						/*if (!alreadyLoaded)
 						{
 							HRESULT hr = S_OK;
 							ID3D11ShaderResourceView* tempMeshSRV;
@@ -188,7 +188,7 @@ BOOL md5Loader::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 								MessageBox(0, fileNamePath.c_str(), L"Could Not Open:", MB_OK);
 								return false;
 							}
-						}
+						}*/
 
 						std::getline(fileIn, checkString);				// Skip rest of this line
 					}

@@ -38,19 +38,19 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
     HRESULT hr = S_OK;
 	
 	// Shader Layout ¼³Á¤
-	hr = CompileShader::Create(&g_shader, L"shaders\\textureShader.fx");
+	hr = CompileShader::Create(&g_shader, L"shaders\\md5shader.fx");
 	if (FAILED(hr))
 		return hr;
 
-	ObjLoader loader;
-	g_mesh = loader.BuildMeshFromFile(L"models\\teapot.obj");
+	//ObjLoader loader;
+	//g_mesh = loader.BuildMeshFromFile(L"models\\marine.obj");
 
-	XMMATRIX mat = XMMatrixTranslation(20, 0.0f, 0.0f);
-	g_mesh->SetWorld(mat);
+	/*XMMATRIX mat = XMMatrixTranslation(0, 0.0f, 0.0f);
+	g_mesh->SetWorld(mat);*/
 
 
 	md5Loader loadermd5;
-	loadermd5.LoadMd5Model(L"models\\boy.md5mesh", g_md5model, meshSRV, textureNameArray);
+	loadermd5.LoadMd5Model(L"models\\cylinder.md5mesh", g_md5model, meshSRV, textureNameArray);
 		
 	
 	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
@@ -100,8 +100,8 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	cb.litDir = LitDir;
 	cb.litCol = LitCol;
 
-	g_shader->RenderPrepare(&cb);
-	g_mesh->Render();
+	/*g_shader->RenderPrepare(&cb);
+	g_mesh->Render();*/
 
 
 	UINT stride = sizeof(VERTEX);
@@ -126,6 +126,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 		d3d11DevCon->PSSetSamplers(0, 1, &CubesTexSamplerState);*/
 
 		//DXUTGetD3D11DeviceContext()->RSSetState(RSCullNone);
+		XMMATRIX mat = XMMatrixIdentity();
+		XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(mat));
+		g_shader->RenderPrepare(&cb);
 		DXUTGetD3D11DeviceContext()->DrawIndexed(g_md5model.subsets[i].indices.size(), 0, 0);
 	}
 
@@ -144,8 +147,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 		g_md5model.subsets[i].indexBuff->Release();
 		g_md5model.subsets[i].vertBuff->Release();
 	}
-
-
+	
 	if (g_shader) CompileShader::Delete(&g_shader);
 }
 
