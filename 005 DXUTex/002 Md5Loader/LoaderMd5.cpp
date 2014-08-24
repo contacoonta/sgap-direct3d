@@ -1,23 +1,33 @@
 #include "DXUT.h"
 #include "SDKmisc.h"
-#include "md5Loader.h"
+
+#include "LoaderMd5.h"
 
 #include <fstream>
 using std::ifstream;
 using namespace DirectX;
 
-md5Loader::md5Loader()
-{
 
+
+Mesh* LoaderMd5::BuildMeshFromFile(LPCWSTR wfilename)
+{
+	BOOL br = TRUE;
+
+	Mesh* pmesh = new MeshMd5;
+	MeshMd5* pmd5 = static_cast<MeshMd5*>(pmesh);
+
+	br = LoadMd5Model(wfilename, pmd5->m_model, pmd5->m_textures, pmd5->m_textureNames);
+	if (br == FALSE)
+	{
+		SAFE_DELETE(pmesh);
+		return nullptr;
+	}
+
+	return pmesh;
 }
 
-md5Loader::~md5Loader()
-{
 
-}
-
-
-BOOL md5Loader::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
+BOOL LoaderMd5::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 						std::vector<ID3D11ShaderResourceView*>& shaderResourceViewArray,
 						std::vector<std::wstring> texFileNameArray )
 {
@@ -169,7 +179,7 @@ BOOL md5Loader::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 						}
 
 						//if the texture is not already loaded, load it now
-						/*if (!alreadyLoaded)
+						if (!alreadyLoaded)
 						{
 							HRESULT hr = S_OK;
 							ID3D11ShaderResourceView* tempMeshSRV;
@@ -188,7 +198,7 @@ BOOL md5Loader::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 								MessageBox(0, fileNamePath.c_str(), L"Could Not Open:", MB_OK);
 								return false;
 							}
-						}*/
+						}
 
 						std::getline(fileIn, checkString);				// Skip rest of this line
 					}
@@ -423,7 +433,7 @@ BOOL md5Loader::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 				D3D11_BUFFER_DESC vertexBufferDesc;
 				ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 				vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;							// We will be updating this buffer, so we must set as dynamic
-				vertexBufferDesc.ByteWidth = sizeof(Vertex)* subset.vertices.size();
+				vertexBufferDesc.ByteWidth = sizeof(VERTEX)* subset.vertices.size();
 				vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 				vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;				// Give CPU power to write to buffer
 				vertexBufferDesc.MiscFlags = 0;

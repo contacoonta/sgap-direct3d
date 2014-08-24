@@ -1,49 +1,45 @@
 #pragma once
 
 #include <DirectXMath.h>
-
 using namespace DirectX;
 
 
-typedef struct vertexPN
+typedef struct Vertex
 {
 	XMFLOAT3 pos;
-	XMFLOAT3 nor;
-	XMFLOAT2 tex;
+	XMFLOAT2 texCoord;
+	XMFLOAT3 normal;
+	XMFLOAT3 tangent;
+	XMFLOAT3 biTangent;
 
-}VERTEXpn, *LPVERTEXpn;
+	// Will not be sent to shader
+	int StartWeight = -1;
+	int WeightCount = -1;
+
+}VERTEX;
 
 
-/*
-*/
+class CompileShader;
 class Mesh
 {
-	friend class		CompileShader;
-	friend class		ObjLoader;
+public:
+			Mesh()		{}
+	virtual ~Mesh()		{}
 
 public:
-	Mesh();
-	~Mesh();
+	virtual Mesh*		Clone()							{ return nullptr;	}
+	BOOL				isCloned() const				{ return m_bClone;	}
 
-public:
-	Mesh*				Clone();
-	BOOL				isCloned() const		{ return m_bClone; }
+	virtual HRESULT		Initialize()					{ return S_OK;		}
+	virtual void		Update()						{}
+	virtual void		Render(CompileShader* pshader)	{}
+	virtual void		Release()						{}
 
-	void				SetWorld(XMMATRIX& mat)	{ m_world = mat;	}
-	XMMATRIX			World()					{ return m_world;	}
-	
-	HRESULT				Initialize();
-	void				Update();
-	void				Render();
-	void				Release();
+	void				SetWorld(XMMATRIX& mat)			{ m_world = mat;	}
+	XMMATRIX			World() const					{ return m_world;	}
 
-private:
-	ID3D11Buffer*       m_vertexbuffer			= nullptr;
-	ID3D11Buffer*       m_indexbuffer			= nullptr;
-	UINT				m_indexCnt				= 0;
-
-	XMMATRIX            m_world					= XMMatrixIdentity();
-	BOOL				m_bClone				= false;
-
+protected:
+	XMMATRIX            m_world			= XMMatrixIdentity();
+	BOOL				m_bClone		= false;
 };
 

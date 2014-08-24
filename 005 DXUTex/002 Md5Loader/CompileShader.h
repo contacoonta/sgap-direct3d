@@ -20,10 +20,14 @@ typedef struct ConstantBuffer
 class CompileShader
 {
 public:
+	friend class MeshObj;
+	friend class MeshMd5;
+
+public:
 	CompileShader();
 	~CompileShader();
 
-	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR* wtexturefilename = NULL );
+	static HRESULT	Create(CompileShader** ppshader, WCHAR* wfilename);
 	static void		Delete(CompileShader** ppshader);
 
 	void			RenderPrepare(const void* psrcData);
@@ -33,7 +37,6 @@ private:
 	void			Release();
 
 	HRESULT			ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, LPCSTR strShaderMdl, ID3DBlob** ppblob);
-	HRESULT			CreateTextureFromFile(WCHAR* wfilename);
 
 private:
 	ID3D11InputLayout*      m_vertexlayout = nullptr;
@@ -43,7 +46,6 @@ private:
 	ID3D11Buffer*           m_constantbuffer = nullptr;
 
 	// for texture
-	ID3D11ShaderResourceView*	m_textureRView = nullptr;
-	ID3D11SamplerState*         m_samplerLinear = nullptr;
+	ID3D11SamplerState*		m_samplerLinear = nullptr;
 };
 

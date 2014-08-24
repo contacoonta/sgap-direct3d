@@ -3,14 +3,40 @@
   <ItemGroup>
     <ClCompile Include="DXUTMain.cpp" />
     <ClCompile Include="CompileShader.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ObjLoader.cpp" />
-    <ClCompile Include="md5Loader.cpp" />
+    <ClCompile Include="MeshMd5.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="LoaderMd5.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="LoaderObj.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshObj.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompileShader.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="ObjLoader.h" />
-    <ClInclude Include="md5Loader.h" />
+    <ClInclude Include="MeshMd5.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="LoaderMd5.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshObj.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="LoaderObj.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{3cb6077e-0cdf-4417-b843-a436d462ffd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

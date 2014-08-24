@@ -12,7 +12,7 @@ CompileShader::~CompileShader()
 {
 }
 
-HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR* wtexturefilename)
+HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename)
 {
 	HRESULT hr = S_OK;
 
@@ -24,12 +24,6 @@ HRESULT CompileShader::Create(CompileShader** ppshader, WCHAR* wfilename, WCHAR*
 	WCHAR strpathW[256] = {};
 	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
 	hr = (*ppshader)->Initialize(strpathW);
-
-	if (wtexturefilename)
-	{
-		DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wtexturefilename);
-		hr = (*ppshader)->CreateTextureFromFile(strpathW);
-	}
 
 	return hr;
 	
@@ -59,11 +53,8 @@ void CompileShader::RenderPrepare( const void* psrcData )
 	DXUTGetD3D11DeviceContext()->PSSetShader(m_pixelshader, NULL, 0);
 	DXUTGetD3D11DeviceContext()->PSSetConstantBuffers(0, 1, &m_constantbuffer);
 
-	if (m_textureRView && m_samplerLinear)
-	{
-		DXUTGetD3D11DeviceContext()->PSSetShaderResources(0, 1, &m_textureRView);
-		DXUTGetD3D11DeviceContext()->PSSetSamplers(0, 1, &m_samplerLinear);
-	}
+	// linear sampler 적용
+	DXUTGetD3D11DeviceContext()->PSSetSamplers(0, 1, &m_samplerLinear);
 }
 
 
@@ -72,14 +63,6 @@ void CompileShader::RenderPrepare( const void* psrcData )
 HRESULT CompileShader::Initialize(WCHAR* wfilename)
 {
 	HRESULT hr = S_OK;
-
-	/*D3D11_INPUT_ELEMENT_DESC layoutPN[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	UINT numElements = ARRAYSIZE(layoutPN);*/
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -160,6 +143,23 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename)
 	if (FAILED(hr))
 		return hr;
 
+
+
+	//텍스쳐 샘플러 설정
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = DXUTGetD3D11Device()->CreateSamplerState(&sampDesc, &m_samplerLinear);
+	if (FAILED(hr))
+		return hr;
+	
 	return hr;
 }
 
@@ -168,7 +168,6 @@ HRESULT CompileShader::Initialize(WCHAR* wfilename)
 */
 void CompileShader::Release()
 {
-	SAFE_RELEASE(m_textureRView);
 	SAFE_RELEASE(m_samplerLinear);
 	SAFE_RELEASE(m_constantbuffer);
 	SAFE_RELEASE(m_vertexshader);
@@ -195,43 +194,6 @@ HRESULT CompileShader::ComplieShaderFromFile(WCHAR* wFilename, LPCSTR strEntry, 
 	{
 		return hr;
 	}
-
-	return S_OK;
-}
-
-
-/*
-*/
-HRESULT CompileShader::CreateTextureFromFile(WCHAR* wfilename)
-{
-	HRESULT hr = S_OK;
-
-	//기존에 불러온 텍스쳐 있으면 리턴
-	if (m_textureRView || m_samplerLinear)
-		return S_FALSE;
-
-	WCHAR strpathW[256] = {};
-	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
-
-	//텍스쳐 파일 불러오기 ( .DDS )	
-	hr = DXUTCreateShaderResourceViewFromFile(DXUTGetD3D11Device(), strpathW, &m_textureRView);
-	if (FAILED(hr))
-		return hr;
-
-	//텍스쳐 샘플러 설정
-	D3D11_SAMPLER_DESC sampDesc;
-	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	hr = DXUTGetD3D11Device()->CreateSamplerState(&sampDesc, &m_samplerLinear);
-	if (FAILED(hr))
-		return hr;
 
 	return S_OK;
 }

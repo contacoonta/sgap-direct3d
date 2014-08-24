@@ -380,9 +380,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="md5Loader.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ObjLoader.cpp" />
+    <ClCompile Include="LoaderMd5.cpp" />
+    <ClCompile Include="MeshMd5.cpp" />
+    <ClCompile Include="LoaderObj.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="MeshObj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DXUT\Core\DXUT_2012.vcxproj">
@@ -394,9 +397,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompileShader.h" />
-    <ClInclude Include="md5Loader.h" />
+    <ClInclude Include="LoaderMd5.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="ObjLoader.h" />
+    <ClInclude Include="MeshMd5.h" />
+    <ClInclude Include="LoaderObj.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="MeshObj.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
