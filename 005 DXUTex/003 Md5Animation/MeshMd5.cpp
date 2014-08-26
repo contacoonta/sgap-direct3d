@@ -48,6 +48,8 @@ void MeshMd5::Render( CompileShader* pshader )
 	if (pshader == nullptr)
 		return;
 
+	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	for (int i = 0; i < m_model.numSubsets; i++)

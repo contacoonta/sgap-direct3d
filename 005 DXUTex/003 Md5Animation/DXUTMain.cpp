@@ -39,8 +39,8 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 		return hr;
 
 	LoaderMd5 loadermd5;
-	g_mesh = loadermd5.BuildMeshFromFile(L"models\\boy.md5mesh");
-	loadermd5.BuildAnimationFromFile(L"models\\boy_run.md5anim", g_mesh);
+	g_mesh = loadermd5.BuildMeshFromFile(L"models\\zealot.md5mesh");
+	loadermd5.BuildAnimationFromFile(L"models\\zealot.md5anim", g_mesh);
 
 	
 	static const XMVECTOR eye = { 20.0f, 100.0f, -100.0f, 0.f };
