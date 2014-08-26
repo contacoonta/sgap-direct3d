@@ -132,5 +132,7 @@ private:
 	MODEL3D										m_model;
 	std::vector<ID3D11ShaderResourceView*>		m_textures;
 	std::vector<std::wstring>					m_textureNames;
+
+	INT					m_curAnimation;
 };
 

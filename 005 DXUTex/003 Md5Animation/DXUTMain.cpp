@@ -40,10 +40,13 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
 	LoaderMd5 loadermd5;
 	g_mesh = loadermd5.BuildMeshFromFile(L"models\\zealot.md5mesh");
-	loadermd5.BuildAnimationFromFile(L"models\\zealot.md5anim", g_mesh);
+	loadermd5.BuildAnimationFromFile(L"models\\zealot_idle.md5anim", g_mesh);
+	loadermd5.BuildAnimationFromFile(L"models\\zealot_walk.md5anim", g_mesh);
+	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack1.md5anim", g_mesh);
+	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack2.md5anim", g_mesh);
 
 	
-	static const XMVECTOR eye = { 20.0f, 100.0f, -100.0f, 0.f };
+	static const XMVECTOR eye = { 2.0f, 5.0f, -5.0f, 0.f };
 	static const XMVECTOR lookat = { 0.0f, 1.0f, 0.0f, 0.f };
 	g_camera.SetViewParams(eye, lookat);
 
@@ -75,14 +78,14 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
 void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext,
                                   double fTime, float fElapsedTime, void* pUserContext )
 {
-	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::MidnightBlue);
+	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::Black);
 	pd3dImmediateContext->ClearDepthStencilView(DXUTGetD3D11DepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
 	
 	XMMATRIX mworld = XMMatrixIdentity();
 	XMMATRIX mview = g_camera.GetViewMatrix();
 	XMMATRIX mproj = g_camera.GetProjMatrix();
-	XMFLOAT4 LitDir = XMFLOAT4(2.0f, 5.0f, -5.0f, 1.0f);
-	XMFLOAT4 LitCol = XMFLOAT4(0.5f, 0.6f, 0.5f, 1.0f);
+	XMFLOAT4 LitDir = XMFLOAT4(0.2f, 0.1f, -1.0f, 1.0f);
+	XMFLOAT4 LitCol = XMFLOAT4(0.7f, 0.75f, 0.7f, 1.0f);
 
 
 	/*

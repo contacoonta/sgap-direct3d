@@ -52,12 +52,11 @@ PIXELFORM VS(VERTEXFORM input)
 */
 float4 PS(PIXELFORM input) : SV_TARGET
 {
-	float4 outColor = float4(0.13f, 0.14f, 0.12f, 1.0f);
+	float4 outColor = float4(0.03f, 0.04f, 0.03f, 1.0f);
 
 	float fdot = dot( (float3)litDir, input.nor );
 	outColor += saturate(fdot * litCol);
 	outColor *= texDiff.Sample(texSamp, input.tex);
-	outColor.a = 1;
 
-	return outColor ;
+	return outColor;
 }

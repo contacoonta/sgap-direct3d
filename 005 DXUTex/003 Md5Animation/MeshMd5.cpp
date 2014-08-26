@@ -40,7 +40,24 @@ HRESULT MeshMd5::Initialize()
 
 void MeshMd5::Update(float deltaTime)
 {
-	UpdateFrame(deltaTime, 0);
+	int idxAni = 0;	// idle
+
+	if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState('w') & 0x8000)
+	{
+		idxAni = 1;	// walk
+	}
+	
+	if (GetAsyncKeyState('1') & 0x8000)
+	{
+		idxAni = 2;	// attack 1
+	}
+	
+	if (GetAsyncKeyState('2') & 0x8000)
+	{
+		idxAni = 3;	// attack 2
+	}
+
+	UpdateFrame(deltaTime, idxAni);
 }
 
 void MeshMd5::Render( CompileShader* pshader )
@@ -91,8 +108,15 @@ void MeshMd5::Release()
 
 void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 {
+	static int prevAniIdx = animationIdx;
+
 	if (m_model.animations.size() <= 0)
 		return;
+
+	if (prevAniIdx != animationIdx) {
+		m_model.animations[animationIdx].currAnimTime = 0;
+		prevAniIdx = animationIdx;
+	}
 
 	m_model.animations[animationIdx].currAnimTime += deltaTime;			// Update the current animationIdx time
 
