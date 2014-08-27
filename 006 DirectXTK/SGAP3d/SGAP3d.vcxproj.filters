@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CompileShader.h" />
+    <ClInclude Include="LoaderMd5.h" />
+    <ClInclude Include="LoaderObj.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshMd5.h" />
+    <ClInclude Include="MeshObj.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CompileShader.cpp" />
+    <ClCompile Include="LoaderMd5.cpp" />
+    <ClCompile Include="LoaderObj.cpp" />
+    <ClCompile Include="MeshMd5.cpp" />
+    <ClCompile Include="MeshObj.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+</Project>
