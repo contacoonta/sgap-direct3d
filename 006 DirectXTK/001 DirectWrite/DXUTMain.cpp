@@ -29,6 +29,7 @@ std::unique_ptr<SpriteBatch>                            g_Sprites;
 std::unique_ptr<SpriteFont>                             g_Font;
 
 void DrawGrid(FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color);
+void DrawCenterGrid(FXMVECTOR yAxis1, FXMVECTOR yAxis2);
 
 bool CALLBACK IsD3D11DeviceAcceptable(const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
 									DXGI_FORMAT BackBufferFormat, bool bWindowed, void* pUserContext)
@@ -43,7 +44,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 
 	//주전자 그리기
 	g_Batch.reset(new PrimitiveBatch<VertexPositionColor>(DXUTGetD3D11DeviceContext()));
-	g_Shape = GeometricPrimitive::CreateCube(DXUTGetD3D11DeviceContext());
+	g_Shape = GeometricPrimitive::CreateOctahedron(DXUTGetD3D11DeviceContext(),1.0f,false);
 	g_Sprites.reset(new SpriteBatch(DXUTGetD3D11DeviceContext()));
 
 	//이펙트 설정
@@ -114,20 +115,22 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	g_BatchEffect->SetProjection(mproj);
 
 	// Draw procedurally generated dynamic grid
-	const XMVECTORF32 xaxis = { 1.f, 0.f, 0.f };
-	const XMVECTORF32 yaxis = { 0.f, 0.f, 1.f };
-	DrawGrid(xaxis, yaxis, g_XMZero, 1, 1, Colors::Azure);
-
+	const XMVECTORF32 xaxis = { 20.f, 0.f, 0.f };
+	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
+	DrawGrid(xaxis, yaxis, g_XMZero, 4, 4, Colors::Azure);
+	const XMVECTORF32 yaxis1 = { 0.f, -10.f, 0.f };
+	const XMVECTORF32 yaxis2 = { 0.f, 10.f, 0.f };
+	DrawCenterGrid(yaxis1, yaxis2);
 
 	// Draw sprite
 	g_Sprites->Begin(SpriteSortMode_Deferred);
-	g_Sprites->Draw(g_pTextureRV, XMFLOAT2(10, 75), nullptr, Colors::White, 0.5f);
+	g_Sprites->Draw(g_pTextureRV, XMFLOAT2(10, 75), nullptr, Colors::Aqua, 0.3f);
 	g_Font->DrawString(g_Sprites.get(), L"Italic font", XMFLOAT2(10, 10), Colors::Yellow, 0.1f);
 	g_Sprites->End();
 
 
 	XMMATRIX local = XMMatrixMultiply(mworld, XMMatrixTranslation(0.f, 0.f, 0.f));
-	g_Shape->Draw(local, mview, mproj, Colors::White, nullptr);
+	g_Shape->Draw(local, mview, mproj, Colors::MediumTurquoise, nullptr);
 }
 
 
@@ -239,5 +242,20 @@ void DrawGrid( FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs,
         g_Batch->DrawLine( v1, v2 );
     }
 
+    g_Batch->End();
+}
+
+
+void DrawCenterGrid(FXMVECTOR yAxis1, FXMVECTOR yAxis2)
+{
+	VertexPositionColor v1(yAxis1, Colors::Red);
+	VertexPositionColor v2(yAxis2, Colors::Red);
+
+	DXUTGetD3D11DeviceContext()->IASetInputLayout(g_pBatchInputLayout);
+	
+	g_BatchEffect->Apply(DXUTGetD3D11DeviceContext());
+
+    g_Batch->Begin();
+    g_Batch->DrawLine( v1, v2 );
     g_Batch->End();
 }
