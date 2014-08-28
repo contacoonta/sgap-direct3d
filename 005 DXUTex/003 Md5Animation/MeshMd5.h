@@ -2,6 +2,7 @@
 
 #include "Mesh.h"
 
+
 #include <string>
 using std::wstring;
 
@@ -127,6 +128,8 @@ public:
 
 private:
 	void				UpdateFrame(float deltaTime, int animationIdx);
+
+	Joint				LerpJoint(Joint& src, Joint& tar, float fdelta);
 
 private:
 	MODEL3D										m_model;

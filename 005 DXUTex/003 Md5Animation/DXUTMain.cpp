@@ -46,8 +46,8 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack2.md5anim", g_mesh);
 
 	
-	static const XMVECTOR eye = { 2.0f, 5.0f, -5.0f, 0.f };
-	static const XMVECTOR lookat = { 0.0f, 1.0f, 0.0f, 0.f };
+	static const XMVECTOR eye = { 1.0f, 2.0f, -3.0f, 0.f };
+	static const XMVECTOR lookat = { 0.0f, 0.3f, 0.0f, 0.f };
 	g_camera.SetViewParams(eye, lookat);
 
     return S_OK;
@@ -69,7 +69,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
 
-	g_mesh->Update(fElapsedTime * 0.7f);
+	g_mesh->Update(fElapsedTime);
 
 	g_camera.FrameMove(fElapsedTime);
 	

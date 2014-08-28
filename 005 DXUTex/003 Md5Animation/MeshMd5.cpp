@@ -108,15 +108,43 @@ void MeshMd5::Release()
 
 void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 {
-	static int prevAniIdx = animationIdx;
+	static int prevAniIdx = 0;
+	static bool bfirst = true;
 
 	if (m_model.animations.size() <= 0)
 		return;
 
-	if (prevAniIdx != animationIdx) {
-		m_model.animations[animationIdx].currAnimTime = 0;
+
+	/*
+		블렌딩을 위한 이전 본 저장
+	*/
+	static std::vector<Joint> savedSkeleton;
+
+	if (prevAniIdx != animationIdx || bfirst == true)
+	{
+		float prevframe = m_model.animations[prevAniIdx].currAnimTime * m_model.animations[prevAniIdx].frameRate;
+		int frame = floorf(prevframe);
+
+
+		int numjoints = m_model.animations[prevAniIdx].numJoints;
+		for (int i = 0; i < numjoints; i++)
+		{
+			Joint joint = m_model.animations[prevAniIdx].frameSkeleton[frame][i];
+
+			if (bfirst) {
+				savedSkeleton.push_back(joint);
+			}
+			else {
+				savedSkeleton[i] = joint;
+			}
+		}
+
+		m_model.animations[animationIdx].currAnimTime = 0.0f;
 		prevAniIdx = animationIdx;
+		bfirst = false;
 	}
+
+
 
 	m_model.animations[animationIdx].currAnimTime += deltaTime;			// Update the current animationIdx time
 
@@ -124,18 +152,20 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		m_model.animations[animationIdx].currAnimTime = 0.0f;
 
 	// Which frame are we on
+	ModelAnimation mdlAni = m_model.animations[animationIdx];
 	float currentFrame = m_model.animations[animationIdx].currAnimTime * m_model.animations[animationIdx].frameRate;
-	int frame0 = floorf( currentFrame );
+	int frame0 = floorf(currentFrame);
 	int frame1 = frame0 + 1;
-
+	
 	// Make sure we don't go over the number of frames	
 	if (frame0 == m_model.animations[animationIdx].numFrames - 1)
 		frame1 = 0;
 
 	float interpolation = currentFrame - frame0;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
-
+	
 	std::vector<Joint> interpolatedSkeleton;		// Create a frame skeleton to store the interpolated skeletons in
 
+	int numfrm = m_model.animations[animationIdx].numFrames;
 	// Compute the interpolated skeleton
 	for (int i = 0; i < m_model.animations[animationIdx].numJoints; i++)
 	{
@@ -143,22 +173,12 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		Joint joint0 = m_model.animations[animationIdx].frameSkeleton[frame0][i];		// Get the i'th joint of frame0's skeleton
 		Joint joint1 = m_model.animations[animationIdx].frameSkeleton[frame1][i];		// Get the i'th joint of frame1's skeleton
 
-		tempJoint.parentID = joint0.parentID;											// Set the tempJoints parent id
+		tempJoint = LerpJoint(joint0, joint1, interpolation);
+		savedSkeleton[i] = LerpJoint(savedSkeleton[i], tempJoint, interpolation);
 
-		// Turn the two quaternions into XMVECTORs for easy computations
-		XMVECTOR joint0Orient = XMVectorSet(joint0.orientation.x, joint0.orientation.y, joint0.orientation.z, joint0.orientation.w);
-		XMVECTOR joint1Orient = XMVectorSet(joint1.orientation.x, joint1.orientation.y, joint1.orientation.z, joint1.orientation.w);
-
-		// Interpolate positions
-		tempJoint.pos.x = joint0.pos.x + (interpolation * (joint1.pos.x - joint0.pos.x));
-		tempJoint.pos.y = joint0.pos.y + (interpolation * (joint1.pos.y - joint0.pos.y));
-		tempJoint.pos.z = joint0.pos.z + (interpolation * (joint1.pos.z - joint0.pos.z));
-
-		// Interpolate orientations using spherical interpolation (Slerp)
-		XMStoreFloat4(&tempJoint.orientation, XMQuaternionSlerp(joint0Orient, joint1Orient, interpolation));
-
-		interpolatedSkeleton.push_back(tempJoint);		// Push the joint back into our interpolated skeleton
+		interpolatedSkeleton.push_back(savedSkeleton[i]);		// Push the joint back into our interpolated skeleton
 	}
+	
 
 	for (int k = 0; k < m_model.numSubsets; k++)
 	{
@@ -199,10 +219,6 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 				//XMStoreFloat3(&rotatedPoint, XMQuaternionMultiply(XMQuaternionMultiply(tempJointOrientation, tempWeightNormal), tempJointOrientationConjugate));
 
 				// Add to vertices normal and ake weight bias into account
-				/*tempVert.normal.x -= rotatedPoint.x * tempWeight.bias;
-				tempVert.normal.y -= rotatedPoint.y * tempWeight.bias;
-				tempVert.normal.z -= rotatedPoint.z * tempWeight.bias;*/
-
 				tempVert.normal.x += (rotatedPoint.x) * tempWeight.bias;
 				tempVert.normal.y += (rotatedPoint.y) * tempWeight.bias;
 				tempVert.normal.z += (rotatedPoint.z) * tempWeight.bias;
@@ -246,4 +262,25 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		DXUTGetD3D11DeviceContext()->Unmap(m_model.subsets[k].vertBuff, 0);
 
 	}//for()
+}
+
+
+Joint MeshMd5::LerpJoint(Joint& src, Joint& tar, float fdelta)
+{
+	Joint lerped;
+
+	lerped.parentID = src.parentID;
+
+	// Interpolate positions
+	XMVECTOR tempvec = XMVectorLerp(XMLoadFloat3(&src.pos), XMLoadFloat3(&tar.pos), fdelta);
+	XMStoreFloat3(&lerped.pos, tempvec);
+
+	// Turn the two quaternions into XMVECTORs for easy computations
+	XMVECTOR joint0Orient = XMVectorSet(src.orientation.x, src.orientation.y, src.orientation.z, src.orientation.w);
+	XMVECTOR joint1Orient = XMVectorSet(tar.orientation.x, tar.orientation.y, tar.orientation.z, tar.orientation.w);
+
+	// Interpolate orientations using spherical interpolation (Slerp)
+	XMStoreFloat4(&lerped.orientation, XMQuaternionSlerp(joint0Orient, joint1Orient, fdelta));
+
+	return lerped;
 }
