@@ -8,6 +8,8 @@ public:
 	Mesh*		BuildMeshFromFile(LPCWSTR wfilename);
 	BOOL		BuildAnimationFromFile(LPCWSTR wfilename, Mesh* mesh);
 
+	void		SaveToFile(LPCWSTR wfilename, Mesh& mesh);
+
 private:
 	BOOL		LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 						std::vector<ID3D11ShaderResourceView*>& shaderResourceViewArray,

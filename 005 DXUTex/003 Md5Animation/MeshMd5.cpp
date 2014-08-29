@@ -19,15 +19,13 @@ MeshMd5::~MeshMd5()
 Mesh* MeshMd5::Clone()
 {
 	Mesh* pmesh = new MeshMd5;
+	MeshMd5* pmd5 = static_cast<MeshMd5*>(pmesh);
 
-	/*
-		원본의 인덱스 , 버텍스 버퍼를 공유한다.
-	*/
-	/*pmesh->m_vertexbuffer = m_vertexbuffer;
-	pmesh->m_indexbuffer = m_indexbuffer;
-	pmesh->m_indexCnt = m_indexCnt;
-	pmesh->m_bClone = true;*/
-
+	pmd5->m_bClone = true;
+	pmd5->m_model = m_model;
+	pmd5->m_textures = m_textures;
+	pmd5->m_textureNames = m_textureNames;
+	
 	return pmesh;
 }
 
@@ -46,18 +44,29 @@ void MeshMd5::Update(float deltaTime)
 	{
 		idxAni = 1;	// walk
 	}
+
+	if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState('a') & 0x8000)
+	{
+		idxAni = 2;	// left
+	}
+
+	if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState('d') & 0x8000)
+	{
+		idxAni = 3;	// right
+	}
 	
 	if (GetAsyncKeyState('1') & 0x8000)
 	{
-		idxAni = 2;	// attack 1
+		idxAni = 4;	// attack 1
 	}
 	
 	if (GetAsyncKeyState('2') & 0x8000)
 	{
-		idxAni = 3;	// attack 2
+		idxAni = 5;	// attack 2
 	}
 
-	UpdateFrame(deltaTime, idxAni);
+	//UpdateFrame(deltaTime, idxAni);
+	UpdateFrame(deltaTime, m_ani);
 }
 
 void MeshMd5::Render( CompileShader* pshader )
@@ -71,9 +80,11 @@ void MeshMd5::Render( CompileShader* pshader )
 	UINT offset = 0;
 	for (int i = 0; i < m_model.numSubsets; i++)
 	{
+		//애니메이션 된 버텍스 정보를 버텍스 버퍼에 설정후 업데이트 한다.
+		DXUTGetD3D11DeviceContext()->UpdateSubresource(m_model.subsets[i].vertBuff, 0, NULL, &m_model.subsets[i].vertices[0], 0, 0);
+
 		//인덱스 버퍼
 		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(m_model.subsets[i].indexBuff, DXGI_FORMAT_R32_UINT, 0);
-		//버텍스 버퍼
 		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &m_model.subsets[i].vertBuff, &stride, &offset);
 
 		//텍스쳐 설정
@@ -108,8 +119,8 @@ void MeshMd5::Release()
 
 void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 {
-	static int prevAniIdx = 0;
-	static bool bfirst = true;
+	/*static int prevAniIdx_ = 0;
+	static bool bfirst_ = true;*/
 
 	if (m_model.animations.size() <= 0)
 		return;
@@ -118,30 +129,30 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 	/*
 		블렌딩을 위한 이전 본 저장
 	*/
-	static std::vector<Joint> savedSkeleton;
+	//static std::vector<Joint> savedSkeleton_;
 
-	if (prevAniIdx != animationIdx || bfirst == true)
+	if (prevAniIdx_ != animationIdx || bfirst_ == true)
 	{
-		float prevframe = m_model.animations[prevAniIdx].currAnimTime * m_model.animations[prevAniIdx].frameRate;
+		float prevframe = m_model.animations[prevAniIdx_].currAnimTime * m_model.animations[prevAniIdx_].frameRate;
 		int frame = floorf(prevframe);
 
 
-		int numjoints = m_model.animations[prevAniIdx].numJoints;
+		int numjoints = m_model.animations[prevAniIdx_].numJoints;
 		for (int i = 0; i < numjoints; i++)
 		{
-			Joint joint = m_model.animations[prevAniIdx].frameSkeleton[frame][i];
+			Joint joint = m_model.animations[prevAniIdx_].frameSkeleton[frame][i];
 
-			if (bfirst) {
-				savedSkeleton.push_back(joint);
+			if (bfirst_) {
+				savedSkeleton_.push_back(joint);
 			}
 			else {
-				savedSkeleton[i] = joint;
+				savedSkeleton_[i] = joint;
 			}
 		}
 
 		m_model.animations[animationIdx].currAnimTime = 0.0f;
-		prevAniIdx = animationIdx;
-		bfirst = false;
+		prevAniIdx_ = animationIdx;
+		bfirst_ = false;
 	}
 
 
@@ -152,31 +163,27 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		m_model.animations[animationIdx].currAnimTime = 0.0f;
 
 	// Which frame are we on
-	ModelAnimation mdlAni = m_model.animations[animationIdx];
+	ModelAnimation& mdlAni = m_model.animations[animationIdx];
 	float currentFrame = m_model.animations[animationIdx].currAnimTime * m_model.animations[animationIdx].frameRate;
 	int frame0 = floorf(currentFrame);
-	int frame1 = frame0 + 1;
 	
-	// Make sure we don't go over the number of frames	
-	if (frame0 == m_model.animations[animationIdx].numFrames - 1)
-		frame1 = 0;
+	// frame0 가 간혹 범위를 초과 한다면 , 마지막 키 값으로 설정
+	if (frame0 >= mdlAni.frameSkeleton.size()) {
+		frame0 = mdlAni.frameSkeleton.size() - 1;
+	}
+		
+	float interpolation = (currentFrame - frame0) * 0.33f;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
 
-	float interpolation = currentFrame - frame0;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
-	
 	std::vector<Joint> interpolatedSkeleton;		// Create a frame skeleton to store the interpolated skeletons in
 
-	int numfrm = m_model.animations[animationIdx].numFrames;
 	// Compute the interpolated skeleton
-	for (int i = 0; i < m_model.animations[animationIdx].numJoints; i++)
+	for (int i = 0; i < mdlAni.numJoints; i++)
 	{
-		Joint tempJoint;
-		Joint joint0 = m_model.animations[animationIdx].frameSkeleton[frame0][i];		// Get the i'th joint of frame0's skeleton
-		Joint joint1 = m_model.animations[animationIdx].frameSkeleton[frame1][i];		// Get the i'th joint of frame1's skeleton
+		Joint joint = mdlAni.frameSkeleton[frame0][i];		// Get the i'th joint of frame0's skeleton
 
-		tempJoint = LerpJoint(joint0, joint1, interpolation);
-		savedSkeleton[i] = LerpJoint(savedSkeleton[i], tempJoint, interpolation);
+		savedSkeleton_[i] = LerpJoint(savedSkeleton_[i], joint, interpolation);
 
-		interpolatedSkeleton.push_back(savedSkeleton[i]);		// Push the joint back into our interpolated skeleton
+		interpolatedSkeleton.push_back(savedSkeleton_[i]);		// Push the joint back into our interpolated skeleton
 	}
 	
 
@@ -241,9 +248,6 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		//HRESULT hr = S_OK;
 		//D3D11_MAPPED_SUBRESOURCE mappedVertBuff;
 		//hr = DXUTGetD3D11DeviceContext()->Map(m_model.subsets[k].vertBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedVertBuff);
-		//if (FAILED(hr))
-		//	return;
-
 		//// Copy the data into the vertex buffer.
 		//memcpy(mappedVertBuff.pData, &m_model.subsets[k].vertices[0], (sizeof(Vertex)* m_model.subsets[k].vertices.size()));
 
@@ -255,11 +259,7 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		//// for you. if you want to use the line below, you will have to create the buffer with D3D11_USAGE_DEFAULT instead
 		//// of D3D11_USAGE_DYNAMIC
 		//DXUTGetD3D11DeviceContext()->UpdateSubresource(m_model.subsets[k].vertBuff, 0, NULL, &m_model.subsets[k].vertices[0], 0, 0);
-	
-		D3D11_MAPPED_SUBRESOURCE mappedVertBuff;
-		DXUTGetD3D11DeviceContext()->Map(m_model.subsets[k].vertBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedVertBuff);
-		memcpy(mappedVertBuff.pData, &m_model.subsets[k].vertices[0], (sizeof(Vertex)* m_model.subsets[k].vertices.size()));
-		DXUTGetD3D11DeviceContext()->Unmap(m_model.subsets[k].vertBuff, 0);
+		
 
 	}//for()
 }

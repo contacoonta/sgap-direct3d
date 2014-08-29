@@ -15,6 +15,7 @@ using namespace DirectX;
 CModelViewerCamera	g_camera;
 CompileShader*		g_shader	= nullptr;
 Mesh*				g_mesh		= nullptr;
+Mesh*				g_clone		= nullptr;
 
 
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -42,10 +43,18 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	g_mesh = loadermd5.BuildMeshFromFile(L"models\\zealot.md5mesh");
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_idle.md5anim", g_mesh);
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_walk.md5anim", g_mesh);
+	loadermd5.BuildAnimationFromFile(L"models\\zealot_turnLeft.md5anim", g_mesh);
+	loadermd5.BuildAnimationFromFile(L"models\\zealot_turnRight.md5anim", g_mesh);
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack1.md5anim", g_mesh);
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack2.md5anim", g_mesh);
+	g_mesh->m_ani = 1;
 
+
+	g_clone = g_mesh->Clone();
+	g_clone->SetWorld(XMMatrixTranslation(1.0f, 0.0f, 0.0f));
+	g_clone->m_ani = 1;
 	
+
 	static const XMVECTOR eye = { 1.0f, 2.0f, -3.0f, 0.f };
 	static const XMVECTOR lookat = { 0.0f, 0.3f, 0.0f, 0.f };
 	g_camera.SetViewParams(eye, lookat);
@@ -69,7 +78,8 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
 
-	g_mesh->Update(fElapsedTime);
+	g_mesh->Update(fElapsedTime* 0.5f);
+	g_clone->Update(fElapsedTime * 2.0f);
 
 	g_camera.FrameMove(fElapsedTime);
 	
@@ -98,8 +108,15 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	cb.litCol = LitCol;
 
 	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_mesh->World()));
+	
 	g_shader->RenderPrepare(&cb);
 	g_mesh->Render(g_shader);
+
+	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_clone->World()));
+	
+	g_shader->RenderPrepare(&cb);
+	g_clone->Render(g_shader);
+
 }
 
 void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
@@ -109,6 +126,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
 	SAFE_DELETE(g_mesh);
+	SAFE_DELETE(g_clone);
 
 	if (g_shader) CompileShader::Delete(&g_shader);
 }

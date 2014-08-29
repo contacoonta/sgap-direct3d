@@ -5,6 +5,7 @@
 
 #include <fstream>
 using std::ifstream;
+using std::ofstream;
 using namespace DirectX;
 
 
@@ -449,10 +450,10 @@ BOOL LoaderMd5::LoadMd5Model(LPCWSTR wfilename, Model3D& MD5Model,
 				//Create Vertex Buffer
 				D3D11_BUFFER_DESC vertexBufferDesc;
 				ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
-				vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;							// We will be updating this buffer, so we must set as dynamic
+				vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;// D3D11_USAGE_DYNAMIC;							// We will be updating this buffer, so we must set as dynamic
 				vertexBufferDesc.ByteWidth = sizeof(VERTEX)* subset.vertices.size();
 				vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-				vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;				// Give CPU power to write to buffer
+				vertexBufferDesc.CPUAccessFlags = 0;		// D3D11_CPU_ACCESS_WRITE;				// Give CPU power to write to buffer
 				vertexBufferDesc.MiscFlags = 0;
 
 
@@ -747,4 +748,37 @@ bool LoaderMd5::LoadMD5Anim(std::wstring filename, Model3D& MD5Model)
 	}
 
 	return true;
+}
+
+
+void LoaderMd5::SaveToFile(LPCWSTR wfilename, Mesh& mesh)
+{
+
+/*REFERENCE
+	
+	class Data {
+		int    key;
+		double value;
+	};
+
+	Data x;
+	Data *y = new Data[10];
+
+	fstream myFile("data.bin", ios::in | ios::out | ios::binary);
+	myFile.seekp(location1);
+	myFile.write((char*)&x, sizeof (Data));
+
+REFERENCE*/
+
+
+	WCHAR strpathW[MAX_PATH] = {};
+	DXUTFindDXSDKMediaFileCch(strpathW, sizeof(strpathW) / sizeof(WCHAR), wfilename);
+
+	std::ofstream fileOut(strpathW, std::ios::out | std::ios::binary );
+	
+	//fileOut.seekp();
+	fileOut.write((char*)&mesh, sizeof(Mesh));
+	
+	fileOut.close();
+	
 }

@@ -38,6 +38,8 @@ public:
 	void				SetWorld(XMMATRIX& mat)			{ m_world = mat;	}
 	XMMATRIX			World() const					{ return m_world;	}
 
+	int m_ani = 0;
+
 protected:
 	XMMATRIX            m_world			= XMMatrixIdentity();
 	BOOL				m_bClone		= false;
