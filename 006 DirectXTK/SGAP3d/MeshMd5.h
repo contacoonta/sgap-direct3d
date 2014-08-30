@@ -2,6 +2,7 @@
 
 #include "Mesh.h"
 
+
 #include <string>
 using std::wstring;
 
@@ -128,11 +129,16 @@ public:
 private:
 	void				UpdateFrame(float deltaTime, int animationIdx);
 
+	Joint				LerpJoint(Joint& src, Joint& tar, float fdelta);
+
 private:
 	MODEL3D										m_model;
 	std::vector<ID3D11ShaderResourceView*>		m_textures;
 	std::vector<std::wstring>					m_textureNames;
-
-	INT					m_curAnimation;
+	
+private:
+	int					prevAniIdx_				= 0;
+	bool				bfirst_					= true;
+	std::vector<Joint>	savedSkeleton_;						// 보간을 위한 joint list
 };
 

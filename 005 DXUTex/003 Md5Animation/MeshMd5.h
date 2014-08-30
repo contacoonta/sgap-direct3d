@@ -137,8 +137,8 @@ private:
 	std::vector<std::wstring>					m_textureNames;
 	
 private:
-	int					prevAniIdx_		= 0;
-	bool				bfirst_			= true;
-	std::vector<Joint>	savedSkeleton_;			// 보간을 위한 joint list
+	int					prevAniIdx_				= 0;
+	bool				bfirst_					= true;
+	std::vector<Joint>	savedSkeleton_;						// 보간을 위한 joint list
 };
 

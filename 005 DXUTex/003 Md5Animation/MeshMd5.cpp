@@ -65,8 +65,10 @@ void MeshMd5::Update(float deltaTime)
 		idxAni = 5;	// attack 2
 	}
 
-	//UpdateFrame(deltaTime, idxAni);
-	UpdateFrame(deltaTime, m_ani);
+	//if (m_bClone)
+		//UpdateFrame(deltaTime, m_ani);
+	//else
+		UpdateFrame(deltaTime, idxAni);
 }
 
 void MeshMd5::Render( CompileShader* pshader )
@@ -119,9 +121,6 @@ void MeshMd5::Release()
 
 void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 {
-	/*static int prevAniIdx_ = 0;
-	static bool bfirst_ = true;*/
-
 	if (m_model.animations.size() <= 0)
 		return;
 
@@ -129,8 +128,6 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 	/*
 		블렌딩을 위한 이전 본 저장
 	*/
-	//static std::vector<Joint> savedSkeleton_;
-
 	if (prevAniIdx_ != animationIdx || bfirst_ == true)
 	{
 		float prevframe = m_model.animations[prevAniIdx_].currAnimTime * m_model.animations[prevAniIdx_].frameRate;
@@ -172,7 +169,7 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		frame0 = mdlAni.frameSkeleton.size() - 1;
 	}
 		
-	float interpolation = (currentFrame - frame0) * 0.33f;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
+	float interpolation = (currentFrame - frame0) * 0.25f;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
 
 	std::vector<Joint> interpolatedSkeleton;		// Create a frame skeleton to store the interpolated skeletons in
 
@@ -250,7 +247,6 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		//hr = DXUTGetD3D11DeviceContext()->Map(m_model.subsets[k].vertBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedVertBuff);
 		//// Copy the data into the vertex buffer.
 		//memcpy(mappedVertBuff.pData, &m_model.subsets[k].vertices[0], (sizeof(Vertex)* m_model.subsets[k].vertices.size()));
-
 		//DXUTGetD3D11DeviceContext()->Unmap(m_model.subsets[k].vertBuff, 0);
 
 		//// The line below is another way to update a buffer. You will use this when you want to update a buffer less
@@ -260,7 +256,6 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		//// of D3D11_USAGE_DYNAMIC
 		//DXUTGetD3D11DeviceContext()->UpdateSubresource(m_model.subsets[k].vertBuff, 0, NULL, &m_model.subsets[k].vertices[0], 0, 0);
 		
-
 	}//for()
 }
 

@@ -14,7 +14,7 @@
     <ProjectGuid>{30A6CC41-517D-4769-BEE3-E5279D88389C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SGAP3d</RootNamespace>
-    <ProjectName>02 SGAP3d</ProjectName>
+    <ProjectName>00 SGAP3d</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
