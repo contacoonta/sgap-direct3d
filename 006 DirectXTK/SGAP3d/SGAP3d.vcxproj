@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompileShader.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="LoaderMd5.h" />
     <ClInclude Include="LoaderObj.h" />
     <ClInclude Include="Mesh.h" />
@@ -95,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompileShader.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="LoaderMd5.cpp" />
     <ClCompile Include="LoaderObj.cpp" />
     <ClCompile Include="MeshMd5.cpp" />

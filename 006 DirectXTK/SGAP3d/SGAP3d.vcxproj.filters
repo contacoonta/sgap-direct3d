@@ -5,20 +5,45 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompileShader.h" />
-    <ClInclude Include="LoaderMd5.h" />
-    <ClInclude Include="LoaderObj.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="MeshMd5.h" />
-    <ClInclude Include="MeshObj.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshMd5.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshObj.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="LoaderObj.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="LoaderMd5.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompileShader.cpp" />
-    <ClCompile Include="LoaderMd5.cpp" />
-    <ClCompile Include="LoaderObj.cpp" />
-    <ClCompile Include="MeshMd5.cpp" />
-    <ClCompile Include="MeshObj.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="MeshMd5.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshObj.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="LoaderMd5.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="LoaderObj.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{c9ceb23b-3293-4cdf-a686-00d20e8b0192}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

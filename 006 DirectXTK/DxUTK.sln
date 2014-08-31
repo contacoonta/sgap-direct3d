@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00 SGAP3d", "SGAP3d\SGAP3d.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 BatchPrimitives", "001 BatchPrimitives\001 BatchPrimitives.vcxproj", "{AE8411FC-DBA2-437D-8A39-E2E7885E9F55}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 DirectInput", "002 DirectInput\002 DirectInput.vcxproj", "{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -104,6 +106,18 @@ Global
 		{AE8411FC-DBA2-437D-8A39-E2E7885E9F55}.Release|Win32.Build.0 = Release|Win32
 		{AE8411FC-DBA2-437D-8A39-E2E7885E9F55}.Release|x64.ActiveCfg = Release|x64
 		{AE8411FC-DBA2-437D-8A39-E2E7885E9F55}.Release|x64.Build.0 = Release|x64
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Debug|Win32.Build.0 = Debug|Win32
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Debug|x64.ActiveCfg = Debug|x64
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Debug|x64.Build.0 = Debug|x64
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Profile|Win32.ActiveCfg = Profile|Win32
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Profile|Win32.Build.0 = Profile|Win32
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Profile|x64.ActiveCfg = Profile|x64
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Profile|x64.Build.0 = Profile|x64
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Release|Win32.ActiveCfg = Release|Win32
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Release|Win32.Build.0 = Release|Win32
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Release|x64.ActiveCfg = Release|x64
+		{90BC1FC1-A6FB-4202-B910-59C7FE6C97A8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
