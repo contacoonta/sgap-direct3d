@@ -65,9 +65,9 @@ void MeshMd5::Update(float deltaTime)
 		idxAni = 5;	// attack 2
 	}
 
-	//if (m_bClone)
-		//UpdateFrame(deltaTime, m_ani);
-	//else
+	if (m_bClone)
+		UpdateFrame(deltaTime, m_ani);
+	else
 		UpdateFrame(deltaTime, idxAni);
 }
 
@@ -169,7 +169,7 @@ void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 		frame0 = mdlAni.frameSkeleton.size() - 1;
 	}
 		
-	float interpolation = (currentFrame - frame0) * 0.25f;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
+	float interpolation = (currentFrame - frame0) /** 1.0f*/;	// Get the remainder (in time) between frame0 and frame1 to use as interpolation factor
 
 	std::vector<Joint> interpolatedSkeleton;		// Create a frame skeleton to store the interpolated skeletons in
 

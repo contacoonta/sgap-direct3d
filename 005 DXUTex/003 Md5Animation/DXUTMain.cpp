@@ -12,12 +12,12 @@
 using namespace DirectX;
 
 
-//const int cnt = 5;
+const int cnt = 10;
 
 CModelViewerCamera	g_camera;
 CompileShader*		g_shader	= nullptr;
 Mesh*				g_mesh		= nullptr;
-//Mesh*				g_clone[cnt];
+Mesh*				g_clone[cnt];
 
 
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -49,15 +49,21 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_turnRight.md5anim", g_mesh);
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack1.md5anim", g_mesh);
 	loadermd5.BuildAnimationFromFile(L"models\\zealot_attack2.md5anim", g_mesh);
-	/*g_mesh->SetWorld(XMMatrixTranslation(0.0f, 0.0f, -1.0f));
-	g_mesh->m_ani = 4;*/
+	
+	XMMATRIX lm = XMMatrixTranslation(0.0f, 0.0f, -1.0f);
+	XMFLOAT4X4 local;
+	XMStoreFloat4x4(&local, XMMatrixTranspose(lm));
+	g_mesh->SetWorld(local);
+	//g_mesh->m_ani = 4;
 
-	/*for (int i = 0; i < cnt; i++)
+	for (int i = 0; i < cnt; i++)
 	{
+		XMStoreFloat4x4(&local, XMMatrixTranspose(XMMatrixTranslation((0.1f * i) - (cnt * 0.05f), 0.0f, (i % 10))));
+		
 		g_clone[i] = g_mesh->Clone();
-		g_clone[i]->SetWorld(XMMatrixTranslation((1.0f * i) - cnt / 2, 0.0f, 0.0f));
+		g_clone[i]->SetWorld(local);
 		g_clone[i]->m_ani = i % 6;
-	}*/
+	}
 	
 
 	static const XMVECTOR eye = { 1.0f, 2.0f, -3.0f, 0.f };
@@ -85,10 +91,10 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
 
 	g_mesh->Update(fElapsedTime);
 
-	/*for (int i = 0; i < cnt; i++)
+	for (int i = 0; i < cnt; i++)
 	{
 		g_clone[i]->Update(fElapsedTime);
-	}*/
+	}
 
 	g_camera.FrameMove(fElapsedTime);
 	
@@ -116,18 +122,20 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	cb.litDir = LitDir;
 	cb.litCol = LitCol;
 
-	XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_mesh->World()));
+	//XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_mesh->World()));
+	cb.world = g_mesh->World();
 	
 	g_shader->RenderPrepare(&cb);
 	g_mesh->Render(g_shader);
 
 	
-	/*for (int i = 0; i < cnt; i++)
+	for (int i = 0; i < cnt; i++)
 	{
-		XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_clone[i]->World()));
+		//XMStoreFloat4x4(&(cb.world), XMMatrixTranspose(g_clone[i]->World()));
+		cb.world = g_clone[i]->World();
 		g_shader->RenderPrepare(&cb);
 		g_clone[i]->Render(g_shader);
-	}*/
+	}
 
 }
 
@@ -139,10 +147,10 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
 	SAFE_DELETE(g_mesh);
 
-	/*for (int i = 0; i < cnt; i++)
+	for (int i = 0; i < cnt; i++)
 	{
 		SAFE_DELETE(g_clone[i]);
-	}*/
+	}
 
 	if (g_shader) CompileShader::Delete(&g_shader);
 }
