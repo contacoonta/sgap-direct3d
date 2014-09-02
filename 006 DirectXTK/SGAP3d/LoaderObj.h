@@ -17,8 +17,6 @@ private:
 					std::vector<ID3D11ShaderResourceView*>& shaderResourceViewArray,
 					std::vector<std::wstring> texFileNameArray,
 					bool isRHCoordSys, bool computeNormals);
-
-private:
 	
 };
 

@@ -22,7 +22,12 @@
     <ClInclude Include="LoaderMd5.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h" />
+    <ClInclude Include="Input.h">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="DwriteText.h">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompileShader.cpp" />
@@ -39,11 +44,19 @@
     <ClCompile Include="LoaderObj.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Input.cpp">
+      <Filter>Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="DwriteText.cpp">
+      <Filter>Miscellaneous</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mesh">
       <UniqueIdentifier>{c9ceb23b-3293-4cdf-a686-00d20e8b0192}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Miscellaneous">
+      <UniqueIdentifier>{6aa55768-276b-4046-ae5c-4eb032dbdec3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

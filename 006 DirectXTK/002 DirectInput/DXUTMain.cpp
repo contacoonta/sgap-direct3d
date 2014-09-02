@@ -217,7 +217,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
-    DXUTCreateWindow( L"001 DxUTK - DirectWrite" );
+    DXUTCreateWindow( L"002 DxUTK - DirectInput" );
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
 
     DXUTMainLoop();

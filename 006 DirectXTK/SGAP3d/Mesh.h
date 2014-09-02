@@ -23,7 +23,7 @@ class CompileShader;
 class Mesh
 {
 public:
-			Mesh()		{}
+			Mesh()		{	XMStoreFloat4x4(&m_world, XMMatrixIdentity());	}
 	virtual ~Mesh()		{}
 
 public:
@@ -35,13 +35,13 @@ public:
 	virtual void		Render(CompileShader* pshader)	{}
 	virtual void		Release()						{}
 
-	void				SetWorld(XMMATRIX& mat)			{ m_world = mat;	}
-	XMMATRIX			World() const					{ return m_world;	}
+	void				SetWorld(XMFLOAT4X4 mat)		{ m_world = mat;	}
+	XMFLOAT4X4			World() const					{ return m_world;	}
 
 	int m_ani = 0;
 
 protected:
-	XMMATRIX            m_world			= XMMatrixIdentity();
+	XMFLOAT4X4          m_world;
 	BOOL				m_bClone		= false;
 };
 

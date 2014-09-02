@@ -1,6 +1,7 @@
 
 #include "DXUT.h"
 #include "stdafx.h"
+#include "FW1Precompiled.h"
 
 #include <string>
 
@@ -8,28 +9,24 @@
 #include "SDKmisc.h"
 
 #include "VertexTypes.h"
-#include "DDSTextureLoader.h"
 #include "Effects.h"
 #include "PrimitiveBatch.h"
-#include "GeometricPrimitive.h"
-#include "SpriteBatch.h"
-#include "SpriteFont.h"
+
+#include "Input.h"
+#include "DwriteText.h"
+
 
 #pragma warning( disable : 4100 )
 using namespace DirectX;
 
 
-
 CModelViewerCamera	g_camera;
+Input*				g_input;
+DwriteText*			g_dwtext;
 
-ID3D11ShaderResourceView*           g_pTextureRV = nullptr;
-ID3D11InputLayout*                  g_pBatchInputLayout = nullptr;
-
+ID3D11InputLayout*										g_pBatchInputLayout = nullptr;
 std::unique_ptr<BasicEffect>                            g_BatchEffect;
 std::unique_ptr<PrimitiveBatch<VertexPositionColor>>    g_Batch;
-std::unique_ptr<GeometricPrimitive>                     g_Shape;
-std::unique_ptr<SpriteBatch>                            g_Sprites;
-std::unique_ptr<SpriteFont>                             g_Font;
 
 void DrawGrid(FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color);
 void DrawCenterGrid(FXMVECTOR yAxis1, FXMVECTOR yAxis2);
@@ -45,36 +42,25 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 {
 	HRESULT hr;
 
-	//주전자 그리기
-	g_Batch.reset(new PrimitiveBatch<VertexPositionColor>(DXUTGetD3D11DeviceContext()));
-	g_Shape = GeometricPrimitive::CreateOctahedron(DXUTGetD3D11DeviceContext(),1.0f,false);
-	g_Sprites.reset(new SpriteBatch(DXUTGetD3D11DeviceContext()));
+	g_input = new Input;
+	g_dwtext = new DwriteText;
 
-	//이펙트 설정
+	g_Batch.reset(new PrimitiveBatch<VertexPositionColor>(DXUTGetD3D11DeviceContext()));
 	g_BatchEffect.reset( new BasicEffect( pd3dDevice ) );
     g_BatchEffect->SetVertexColorEnabled(true);
-
-    {
+	{
         void const* shaderByteCode;
         size_t byteCodeLength;
 
         g_BatchEffect->GetVertexShaderBytecode( &shaderByteCode, &byteCodeLength );
 
-        hr = pd3dDevice->CreateInputLayout( VertexPositionColor::InputElements,
-                                            VertexPositionColor::InputElementCount,
-                                            shaderByteCode, byteCodeLength,
-                                            &g_pBatchInputLayout );
+        hr = pd3dDevice->CreateInputLayout( VertexPositionColor::InputElements, VertexPositionColor::InputElementCount,
+                                            shaderByteCode, byteCodeLength, &g_pBatchInputLayout );
         if( FAILED( hr ) )
             return hr;
     }
 
 	WCHAR str[MAX_PATH];
-	
-	V_RETURN(DXUTFindDXSDKMediaFileCch(str, MAX_PATH, L"UI\\italic.spritefont"));
-	g_Font.reset(new SpriteFont(pd3dDevice, str));
-
-	V_RETURN(DXUTFindDXSDKMediaFileCch(str, MAX_PATH, L"textures\\seafloor.dds"));
-	hr = CreateDDSTextureFromFile(pd3dDevice, str, nullptr, &g_pTextureRV);
 	
 
 	static const XMVECTOR eye = { 2.0f, 5.0f, -5.0f, 0.f };
@@ -100,6 +86,11 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 
 void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
+	g_input->Update();
+
+	if (g_input->isKeyPressed(DIK_ESCAPE))
+		DXUTShutdown();
+
 	g_camera.FrameMove(fElapsedTime);
 }
 
@@ -117,6 +108,11 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	g_BatchEffect->SetView(mview);
 	g_BatchEffect->SetProjection(mproj);
 
+
+	// Draw Font
+	g_dwtext->Render(L"프레임 = ", DXUTGetFPS());
+
+
 	// Draw procedurally generated dynamic grid
 	const XMVECTORF32 xaxis = { 20.f, 0.f, 0.f };
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
@@ -125,23 +121,37 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	const XMVECTORF32 yaxis2 = { 0.f, 10.f, 0.f };
 	DrawCenterGrid(yaxis1, yaxis2);
 
-	// Draw sprite
-	g_Sprites->Begin(SpriteSortMode_Deferred);
-	g_Sprites->Draw(g_pTextureRV, XMFLOAT2(10, 75), nullptr, Colors::Aqua, 0.3f);
-	std::wstring str;
-	str += L"FPS = " + std::to_wstring(int(DXUTGetFPS()));
-	g_Font->DrawString(g_Sprites.get(), str.c_str(), XMFLOAT2(10, 10), Colors::Yellow, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.4f,0.4f));
-	g_Sprites->End();
+	
+
+	//g_Sprites->Begin(SpriteSortMode_Deferred);
+	//std::wstring str;
+	//str += L"FPS = " + std::to_wstring(int(DXUTGetFPS()));
+	//g_Font->DrawString(g_Sprites.get(), str.c_str(), XMFLOAT2(10, 10), Colors::Yellow, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.4f,0.4f));
+	////Dinput Mouse Cursor
+	//str = L"Mouse DELTA = " + std::to_wstring(g_input->getMouseDelta()[0]) + L" , "
+	//						+ std::to_wstring(g_input->getMouseDelta()[1]);
+	//	
+	//if (g_input->isMBtnDown())
+	//{
+	//	g_Font->DrawString(g_Sprites.get(), str.c_str(), XMFLOAT2(10, 30), Colors::Yellow, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.4f, 0.4f));
+	//}
+	////Windows Mouse Cursor
+	//POINT pt = {};
+	//GetCursorPos(&pt);
+	//ScreenToClient(DXUTGetHWND(), &pt);
+	//str = L"Mouse POS = "	+ std::to_wstring(pt.x) + L" , "
+	//						+ std::to_wstring(pt.y);
+	//
+	//g_Font->DrawString(g_Sprites.get(), str.c_str(), XMFLOAT2(10, 50), Colors::Yellow, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.4f, 0.4f));
+	//
+	//g_Sprites->End();
 
 
-	XMMATRIX local = XMMatrixMultiply(mworld, XMMatrixTranslation(0.f, 0.f, 0.f));
-	g_Shape->Draw(local, mview, mproj, Colors::MediumTurquoise, nullptr);
 }
 
 
 void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
 {
-
 }
 
 void CALLBACK OnD3D11DestroyDevice(void* pUserContext)
@@ -149,12 +159,9 @@ void CALLBACK OnD3D11DestroyDevice(void* pUserContext)
 
 	g_BatchEffect.reset();
 	g_Batch.reset();
-	g_Shape.reset();
-	g_Sprites.reset();
-	g_Font.reset();
-
 	SAFE_RELEASE(g_pBatchInputLayout);
-	SAFE_RELEASE(g_pTextureRV);
+	SAFE_DELETE(g_input);
+	SAFE_DELETE(g_dwtext);
 	
 }
 
@@ -200,7 +207,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
-    DXUTCreateWindow( L"001 DxUTK - BatchPrimitives" );
+    DXUTCreateWindow( L"003 DxUTK - DirectWrite" );
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
 
     DXUTMainLoop();
