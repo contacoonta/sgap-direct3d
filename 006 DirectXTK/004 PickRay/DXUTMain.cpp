@@ -112,9 +112,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	const XMVECTORF32 xaxis = { 20.f, 0.f, 0.f };
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
 	DrawGrid(xaxis, yaxis, g_XMZero, 4, 4, Colors::Azure);
-	const XMVECTORF32 yaxis1 = { 0.f, -10.f, 0.f };
-	const XMVECTORF32 yaxis2 = { 0.f, 10.f, 0.f };
-	DrawCenterGrid(yaxis1, yaxis2);
+	
 
 	// Draw Font
 	g_dwtext->Render(L"ÇÁ·¹ÀÓ = ", DXUTGetFPS(), 10, 10);
@@ -126,13 +124,29 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 
 	WCHAR strformat[256] = {};
 	XMFLOAT3 pos;
-	XMStoreFloat3(&pos, worldPos);
+	XMStoreFloat3(&pos, worldPos );
+	//pos.x *= -1.0f;
+	//pos.y *= -1.0f;
+	//pos.z *= -1.0f;
+
+
+	
 	swprintf(strformat, L"pos = %f , %f , %f", pos.x, pos.y, pos.z);
-	g_dwtext->Render(strformat, 0, 10, 30);
 
 	XMFLOAT3 dir;
 	XMStoreFloat3(&dir, worldDir);
+	//dir.x *= -1.0f;
+	//dir.y *= -1.0f;
+	//dir.z *= -1.0f;
+
 	swprintf(strformat, L"dir = %f , %f , %f", dir.x, dir.y, dir.z);
+
+
+	const XMVECTORF32 yaxis1 = { pos.x, pos.y, pos.z };
+	const XMVECTORF32 yaxis2 = { dir.x, dir.y, dir.z };
+	DrawCenterGrid(yaxis1, yaxis2);
+
+	g_dwtext->Render(strformat, 0, 10, 30);
 	g_dwtext->Render(strformat, 0, 10, 50);
 }
 
