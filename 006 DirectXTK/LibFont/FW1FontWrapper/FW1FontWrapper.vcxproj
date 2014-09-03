@@ -119,8 +119,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\Bin\</OutDir>
+    <IntDir>..\..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>FW1FontWrapper</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -130,8 +130,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\Bin\</OutDir>
+    <IntDir>..\..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>FW1FontWrapper</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

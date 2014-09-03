@@ -5,12 +5,12 @@
 #pragma comment(lib, "dinput8.lib")
 
 
+
 Input::Input()
 {
 	ZeroMemory(m_keyboardState, sizeof(UCHAR)* 256);
 	ZeroMemory(&m_mouseState, sizeof(DIMOUSESTATE));
 	ZeroMemory(m_mouseDelta, sizeof(INT)* 2);
-	//ZeroMemory(&grabPos_, sizeof(POINT));
 	
 	Initialize();
 }
@@ -41,6 +41,36 @@ POINT Input::getMousePos()
 	ScreenToClient(DXUTGetHWND(), &pt);
 
 	return pt;
+}
+
+/*
+*/
+void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX view, _In_ XMMATRIX proj)
+{
+	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
+
+	POINT		ptcursor	= getMousePos();
+	XMFLOAT4X4	mproj		= XMFLOAT4X4();
+	XMFLOAT3	viewpos		= XMFLOAT3();
+
+	XMStoreFloat4x4(&mproj, proj);
+
+	// 마우스 위치 화면좌표(Screen Space) -> 뷰좌표(View Space) 로 변환
+	viewpos.x = (((ptcursor.x * 2.0f) / pd3dsdBackBuffer->Width) - 1) / mproj._11;
+	viewpos.y = -(((ptcursor.x * 2.0f) / pd3dsdBackBuffer->Width) - 1) / mproj._22;
+	viewpos.z = 1.0f;
+	
+	XMVECTOR viewspacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR viewspaceDir = XMVectorSet(viewpos.x, viewpos.y, viewpos.z, 0.0f);
+	// 화면 중앙 고정 ( FPS 게임을 위한 )
+	//XMVECTOR rayPos = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	XMVECTOR tmpDeter;
+	// ViewSpace matrix 의 역행렬로 WorldSpace matrix 구한다.
+	XMMATRIX mworld = XMMatrixInverse(&tmpDeter, view);
+
+	worldPos = XMVector3TransformCoord(viewspacePos, mworld);
+	worldDir = XMVector3TransformCoord(viewspaceDir, mworld);
 }
 
 /*
@@ -130,15 +160,7 @@ HRESULT Input::Update()
 	if (FAILED(hr))
 		return hr;
 	
-	/*
-	if (bgrab_ == true)
-	{
-		bgrab_ = false;			
-		grabPos_.x = m_mouseState.lX;
-		grabPos_.y = m_mouseState.lY;
-	}
-	*/
-	
+		
 	//마우스 위치 적용
 	m_mouseDelta[0] += m_mouseState.lX /*- grabPos_.x*/;
 	m_mouseDelta[1] += m_mouseState.lY /*- grabPos_.y*/;
