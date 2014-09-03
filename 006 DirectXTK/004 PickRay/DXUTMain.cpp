@@ -119,8 +119,14 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	// Draw Font
 	g_dwtext->Render(L"프레임 = ", DXUTGetFPS(), 10, 10);
 	
-	//g_input->getMousePosWorld();
-	//g_dwtext->Render(L"마우스 좌표 = ", , 10, 10);
+	XMVECTOR worldPos;
+	XMVECTOR worldDir;
+
+	g_input->getMousePosWorld(worldPos, worldDir, g_camera.GetViewMatrix(), g_camera.GetProjMatrix());
+
+	WCHAR strformat[256] = {};
+	swprintf(strformat, L"pos = %f , %f , %f", XMVectorGetIntX(worldPos), XMVectorGetIntY(worldPos), XMVectorGetIntZ(worldPos), XMVectorGetIntX(worldPos) );
+	g_dwtext->Render(strformat, 0, 10, 10);
 }
 
 
