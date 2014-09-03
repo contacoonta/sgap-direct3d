@@ -45,7 +45,7 @@ POINT Input::getMousePos()
 
 /*
 */
-void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX view, _In_ XMMATRIX proj)
+void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& view, _In_ XMMATRIX& proj)
 {
 	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
 

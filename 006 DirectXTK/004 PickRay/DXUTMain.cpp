@@ -125,8 +125,15 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	g_input->getMousePosWorld(worldPos, worldDir, g_camera.GetViewMatrix(), g_camera.GetProjMatrix());
 
 	WCHAR strformat[256] = {};
-	swprintf(strformat, L"pos = %f , %f , %f", XMVectorGetIntX(worldPos), XMVectorGetIntY(worldPos), XMVectorGetIntZ(worldPos), XMVectorGetIntX(worldPos) );
-	g_dwtext->Render(strformat, 0, 10, 10);
+	XMFLOAT3 pos;
+	XMStoreFloat3(&pos, worldPos);
+	swprintf(strformat, L"pos = %f , %f , %f", pos.x, pos.y, pos.z);
+	g_dwtext->Render(strformat, 0, 10, 30);
+
+	XMFLOAT3 dir;
+	XMStoreFloat3(&dir, worldDir);
+	swprintf(strformat, L"dir = %f , %f , %f", dir.x, dir.y, dir.z);
+	g_dwtext->Render(strformat, 0, 10, 50);
 }
 
 

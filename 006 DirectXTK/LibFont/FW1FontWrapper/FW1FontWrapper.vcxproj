@@ -119,7 +119,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\Bin\</OutDir>
+    <OutDir>..\..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\Bin\FW1FontWrapper\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>FW1FontWrapper</TargetName>
   </PropertyGroup>
