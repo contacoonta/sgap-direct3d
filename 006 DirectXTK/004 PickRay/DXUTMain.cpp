@@ -11,7 +11,7 @@
 #include "VertexTypes.h"
 #include "Effects.h"
 #include "PrimitiveBatch.h"
-
+#include "GeometricPrimitive.h"
 #include "Input.h"
 #include "DwriteText.h"
 
@@ -27,6 +27,8 @@ DwriteText*			g_dwtext;
 ID3D11InputLayout*										g_pBatchInputLayout = nullptr;
 std::unique_ptr<BasicEffect>                            g_BatchEffect;
 std::unique_ptr<PrimitiveBatch<VertexPositionColor>>    g_Batch;
+std::unique_ptr<GeometricPrimitive>                     g_ShapeDir;
+std::unique_ptr<GeometricPrimitive>                     g_ShapePos;
 
 void DrawGrid(FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color);
 void DrawCenterGrid(FXMVECTOR yAxis1, FXMVECTOR yAxis2);
@@ -44,6 +46,9 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 
 	g_input = new Input;
 	g_dwtext = new DwriteText;
+
+	g_ShapePos = GeometricPrimitive::CreateCube(DXUTGetD3D11DeviceContext(), 0.1f, false);
+	g_ShapeDir = GeometricPrimitive::CreateOctahedron(DXUTGetD3D11DeviceContext(), 0.1f, false);
 
 	g_Batch.reset(new PrimitiveBatch<VertexPositionColor>(DXUTGetD3D11DeviceContext()));
 	g_BatchEffect.reset( new BasicEffect( pd3dDevice ) );
@@ -66,6 +71,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 	static const XMVECTOR eye = { 2.0f, 5.0f, -5.0f, 0.f };
 	static const XMVECTOR lookat = { 0.0f, 0.0f, 0.0f, 0.f };
 	g_camera.SetViewParams(eye, lookat);
+	
 
 	return S_OK;
 }
@@ -77,7 +83,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 	HRESULT hr;
 
 	float fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
-	g_camera.SetProjParams(XM_PI / 4, fAspectRatio, 0.1f, 1000.0f);
+	g_camera.SetProjParams(XM_PI / 2, fAspectRatio, 0.001f, 1000.0f);
 	g_camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
 	g_camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_RIGHT_BUTTON);
 
@@ -87,7 +93,6 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
 	g_input->Update();
-
 	if (g_input->isKeyPressed(DIK_ESCAPE))
 		DXUTShutdown();
 
@@ -101,7 +106,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::Black);
 	pd3dImmediateContext->ClearDepthStencilView(DXUTGetD3D11DepthStencilView(), D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	XMMATRIX mworld = XMMatrixIdentity();
+	XMMATRIX mworld = g_camera.GetWorldMatrix();
 	XMMATRIX mview = g_camera.GetViewMatrix();
 	XMMATRIX mproj = g_camera.GetProjMatrix();
 
@@ -112,21 +117,70 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	const XMVECTORF32 xaxis = { 20.f, 0.f, 0.f };
 	const XMVECTORF32 yaxis = { 0.f, 0.f, 20.f };
 	DrawGrid(xaxis, yaxis, g_XMZero, 4, 4, Colors::Azure);
-	const XMVECTORF32 yaxis1 = { 0.f, -10.f, 0.f };
-	const XMVECTORF32 yaxis2 = { 0.f, 10.f, 0.f };
-	DrawCenterGrid(yaxis1, yaxis2);
+	
 
 	// Draw Font
 	g_dwtext->Render(L"ÇÁ·¹ÀÓ = ", DXUTGetFPS(), 10, 10);
 	
 	XMVECTOR worldPos;
 	XMVECTOR worldDir;
+	
+	g_input->getMousePosWorld(worldPos, worldDir, mworld, mview, mproj);
 
-	g_input->getMousePosWorld(worldPos, worldDir, g_camera.GetViewMatrix(), g_camera.GetProjMatrix());
 
+	/*
+		POSITION
+	*/
 	WCHAR strformat[256] = {};
-	swprintf(strformat, L"pos = %f , %f , %f", XMVectorGetIntX(worldPos), XMVectorGetIntY(worldPos), XMVectorGetIntZ(worldPos), XMVectorGetIntX(worldPos) );
-	g_dwtext->Render(strformat, 0, 10, 10);
+	XMFLOAT3 pos;
+	XMStoreFloat3(&pos, worldPos);
+	pos.x += 1.0f;
+	pos.y += 1.0f;
+	swprintf(strformat, L"pos = %f , %f , %f", pos.x, pos.y, pos.z);
+	g_dwtext->Render(strformat, 0, 10, 30);
+
+
+	/*
+		DIRECTION
+	*/
+	XMFLOAT3 dir;
+	XMStoreFloat3(&dir, worldDir);
+	
+	swprintf(strformat, L"dir = %f , %f , %f", dir.x, dir.y, dir.z);
+	g_dwtext->Render(strformat, 0, 10, 50);
+
+
+	/*
+		CURSOR POSITION
+	*/
+	POINT pt = g_input->getMousePos();
+	swprintf(strformat, L"cursor = %d , %d", pt.x, pt.y );
+	g_dwtext->Render(strformat, 0, 10, 70);
+
+
+	XMVECTOR eye = g_camera.GetEyePt();
+	XMFLOAT3 feye;
+	XMStoreFloat3(&feye, eye);
+	swprintf(strformat, L"eye = %f , %f , %f", feye.x, feye.y, feye.z);
+	g_dwtext->Render(strformat, 0, 10, 90);
+
+	XMVECTOR lookat = g_camera.GetLookAtPt();
+	XMFLOAT3 flookat;
+	XMStoreFloat3(&flookat, lookat);
+	swprintf(strformat, L"lookat = %f , %f , %f", flookat.x, flookat.y, flookat.z);
+	g_dwtext->Render(strformat, 0, 10, 110);
+
+
+	XMVECTOR yaxis1 = XMVectorSet( pos.x, pos.y, pos.z, 0.0f);
+	XMVECTOR yaxis2 = XMVectorSet( dir.x, dir.y, dir.z, 0.0f);;
+	DrawCenterGrid(yaxis1, yaxis2);
+
+	XMMATRIX wpos = XMMatrixTranslation(pos.x, pos.y, pos.z);
+	g_ShapePos->Draw(wpos, mview, mproj, Colors::Red);
+
+	XMMATRIX wdir = XMMatrixTranslation(dir.x, dir.y, dir.z);
+	g_ShapeDir->Draw(wdir, mview, mproj, Colors::MediumTurquoise);	
+	
 }
 
 
@@ -136,7 +190,8 @@ void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
 
 void CALLBACK OnD3D11DestroyDevice(void* pUserContext)
 {
-
+	g_ShapePos.reset();
+	g_ShapeDir.reset();
 	g_BatchEffect.reset();
 	g_Batch.reset();
 	SAFE_RELEASE(g_pBatchInputLayout);
