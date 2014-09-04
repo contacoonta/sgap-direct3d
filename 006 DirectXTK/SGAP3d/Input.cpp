@@ -74,10 +74,10 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	XMFLOAT4X4 mw;
 	XMStoreFloat4x4(&mw, mworld);
 
-	/*worldPos = XMVector3TransformCoord(viewspacePos, mworld);
-	worldDir = XMVector3TransformNormal(viewspaceDir, mworld);*/
+	worldPos = XMVector3TransformCoord(viewspacePos, mworld);
+	worldDir = XMVector3TransformCoord(viewspaceDir, mworld);
 		
-	XMFLOAT3 wpos;
+	/*XMFLOAT3 wpos;
 	wpos.x = mw._41;
 	wpos.y = mw._42;
 	wpos.z = mw._43;
@@ -87,7 +87,7 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	wdir.x = viewpos.x * mw._11 + viewpos.y * mw._21 + viewpos.z * mw._31;
 	wdir.y = viewpos.x * mw._12 + viewpos.y * mw._22 + viewpos.z * mw._32;
 	wdir.z = viewpos.x * mw._13 + viewpos.y * mw._23 + viewpos.z * mw._33;
-	worldDir = XMLoadFloat3(&wdir);
+	worldDir = XMLoadFloat3(&wdir);*/
 	
 }
 
