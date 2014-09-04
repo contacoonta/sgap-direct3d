@@ -37,7 +37,14 @@ void DwriteText::Render(std::wstring wtext, INT numex, int x, int y, float fsize
 	HRESULT hr = S_OK;
 
 	std::wstring str;
-	str = wtext + std::to_wstring(numex);
+	if (numex == 0)
+	{
+		str = wtext;
+	}
+	else
+	{
+		str = wtext + std::to_wstring(numex);
+	}
 
 	m_fontwrap->DrawString(	DXUTGetD3D11DeviceContext(),
 							str.c_str(),// String

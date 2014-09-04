@@ -25,7 +25,7 @@ public:
 	//MOUSE
 	POINT					getMousePos();
 	INT*					getMouseDelta();
-	void					getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& view, _In_ XMMATRIX& proj);
+	void					getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& world, _In_ XMMATRIX& view, _In_ XMMATRIX& proj);
 	
 	BOOL					isLBtnDown()	{ return m_mouseState.rgbButtons[0] & 0x80; }
 	BOOL					isMBtnDown()	{ return m_mouseState.rgbButtons[2] & 0x80; }

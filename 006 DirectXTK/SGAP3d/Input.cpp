@@ -45,9 +45,11 @@ POINT Input::getMousePos()
 
 /*
 */
-void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& view, _In_ XMMATRIX& proj)
+void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& world, _In_ XMMATRIX& view, _In_ XMMATRIX& proj)
 {
 	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
+	//int nwidth = GetSystemMetrics(SM_CXFULLSCREEN);
+	//int nheight = GetSystemMetrics(SM_CYFULLSCREEN);
 
 	POINT		ptcursor	= getMousePos();
 	XMFLOAT4X4	mproj		= XMFLOAT4X4();
@@ -56,21 +58,37 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	XMStoreFloat4x4(&mproj, proj);
 
 	// 마우스 위치 화면좌표(Screen Space) -> 뷰좌표(View Space) 로 변환
-	viewpos.x = (((ptcursor.x * 2.0f) / pd3dsdBackBuffer->Width) - 1) / mproj._11;
-	viewpos.y = -(((ptcursor.x * 2.0f) / pd3dsdBackBuffer->Width) - 1) / mproj._22;
+	viewpos.x = (((2.0f * ptcursor.x) / pd3dsdBackBuffer->Width) - 1) / mproj._11;
+	viewpos.y = -(((2.0f * ptcursor.y) / pd3dsdBackBuffer->Height) - 1) / mproj._22;
 	viewpos.z = 1.0f;
 	
 	XMVECTOR viewspacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR viewspaceDir = XMVectorSet(viewpos.x, viewpos.y, viewpos.z, 0.0f);
+	viewspaceDir = XMVector3Normalize(viewspaceDir);
 	// 화면 중앙 고정 ( FPS 게임을 위한 )
-	//XMVECTOR rayPos = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	//XMVECTOR viewspaceDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
-	XMVECTOR tmpDeter;
 	// ViewSpace matrix 의 역행렬로 WorldSpace matrix 구한다.
-	XMMATRIX mworld = XMMatrixInverse(&tmpDeter, view);
+	XMVECTOR matDeter;
+	XMMATRIX mworld = XMMatrixInverse(&matDeter, view);
+	XMFLOAT4X4 mw;
+	XMStoreFloat4x4(&mw, mworld);
 
-	worldPos = XMVector3TransformCoord(viewspacePos, mworld);
-	worldDir = XMVector3TransformCoord(viewspaceDir, mworld);
+	/*worldPos = XMVector3TransformCoord(viewspacePos, mworld);
+	worldDir = XMVector3TransformNormal(viewspaceDir, mworld);*/
+		
+	XMFLOAT3 wpos;
+	wpos.x = mw._41;
+	wpos.y = mw._42;
+	wpos.z = mw._43;
+	worldPos = XMLoadFloat3(&wpos);
+
+	XMFLOAT3 wdir;
+	wdir.x = viewpos.x * mw._11 + viewpos.y * mw._21 + viewpos.z * mw._31;
+	wdir.y = viewpos.x * mw._12 + viewpos.y * mw._22 + viewpos.z * mw._32;
+	wdir.z = viewpos.x * mw._13 + viewpos.y * mw._23 + viewpos.z * mw._33;
+	worldDir = XMLoadFloat3(&wdir);
+	
 }
 
 /*
