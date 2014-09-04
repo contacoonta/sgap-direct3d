@@ -48,8 +48,6 @@ POINT Input::getMousePos()
 void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& world, _In_ XMMATRIX& view, _In_ XMMATRIX& proj)
 {
 	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
-	//int nwidth = GetSystemMetrics(SM_CXFULLSCREEN);
-	//int nheight = GetSystemMetrics(SM_CYFULLSCREEN);
 
 	POINT		ptcursor	= getMousePos();
 	XMFLOAT4X4	mproj		= XMFLOAT4X4();
@@ -62,21 +60,23 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	viewpos.y = -(((2.0f * ptcursor.y) / pd3dsdBackBuffer->Height) - 1) / mproj._22;
 	viewpos.z = 1.0f;
 	
-	XMVECTOR viewspacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR viewspacePos = XMVectorSet(-0.025f, -0.02f, 0.05f, 0.0f);
 	XMVECTOR viewspaceDir = XMVectorSet(viewpos.x, viewpos.y, viewpos.z, 0.0f);
 	viewspaceDir = XMVector3Normalize(viewspaceDir);
+	
 	// 화면 중앙 고정 ( FPS 게임을 위한 )
 	//XMVECTOR viewspaceDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
 	// ViewSpace matrix 의 역행렬로 WorldSpace matrix 구한다.
 	XMVECTOR matDeter;
-	XMMATRIX mworld = XMMatrixInverse(&matDeter, view);
+	XMMATRIX mworld = XMMatrixInverse(nullptr, view);
 	XMFLOAT4X4 mw;
 	XMStoreFloat4x4(&mw, mworld);
 
 	worldPos = XMVector3TransformCoord(viewspacePos, mworld);
-	worldDir = XMVector3TransformCoord(viewspaceDir, mworld);
+	worldDir = XMVector3TransformCoord(viewspaceDir * 10.0f, mworld);
 		
+	// 다른 표현 방식
 	/*XMFLOAT3 wpos;
 	wpos.x = mw._41;
 	wpos.y = mw._42;
@@ -87,8 +87,7 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	wdir.x = viewpos.x * mw._11 + viewpos.y * mw._21 + viewpos.z * mw._31;
 	wdir.y = viewpos.x * mw._12 + viewpos.y * mw._22 + viewpos.z * mw._32;
 	wdir.z = viewpos.x * mw._13 + viewpos.y * mw._23 + viewpos.z * mw._33;
-	worldDir = XMLoadFloat3(&wdir);*/
-	
+	worldDir = XMLoadFloat3(&wdir);*/	
 }
 
 /*

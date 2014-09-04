@@ -47,7 +47,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 	g_input = new Input;
 	g_dwtext = new DwriteText;
 
-	g_ShapePos = GeometricPrimitive::CreateCube(DXUTGetD3D11DeviceContext(), 0.1f, false);
+	g_ShapePos = GeometricPrimitive::CreateSphere(DXUTGetD3D11DeviceContext(), 0.01f, 16, false);
 	g_ShapeDir = GeometricPrimitive::CreateOctahedron(DXUTGetD3D11DeviceContext(), 0.1f, false);
 
 	g_Batch.reset(new PrimitiveBatch<VertexPositionColor>(DXUTGetD3D11DeviceContext()));
@@ -83,7 +83,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 	HRESULT hr;
 
 	float fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
-	g_camera.SetProjParams(XM_PI / 2, fAspectRatio, 0.001f, 1000.0f);
+	g_camera.SetProjParams(XM_PI / 4, fAspectRatio, 0.0001f, 1000.0f);
 	g_camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
 	g_camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_RIGHT_BUTTON);
 
@@ -95,6 +95,9 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 	g_input->Update();
 	if (g_input->isKeyPressed(DIK_ESCAPE))
 		DXUTShutdown();
+
+	/*if (g_input->isKeyPressed(DIK_F1))
+		DXUTToggleFullScreen();*/
 
 	g_camera.FrameMove(fElapsedTime);
 }
@@ -134,8 +137,6 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	WCHAR strformat[256] = {};
 	XMFLOAT3 pos;
 	XMStoreFloat3(&pos, worldPos);
-	pos.x += 1.0f;
-	pos.y += 1.0f;
 	swprintf(strformat, L"pos = %f , %f , %f", pos.x, pos.y, pos.z);
 	g_dwtext->Render(strformat, 0, 10, 30);
 
@@ -145,7 +146,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	*/
 	XMFLOAT3 dir;
 	XMStoreFloat3(&dir, worldDir);
-	
+
 	swprintf(strformat, L"dir = %f , %f , %f", dir.x, dir.y, dir.z);
 	g_dwtext->Render(strformat, 0, 10, 50);
 
@@ -170,16 +171,16 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	swprintf(strformat, L"lookat = %f , %f , %f", flookat.x, flookat.y, flookat.z);
 	g_dwtext->Render(strformat, 0, 10, 110);
 
-
-	XMVECTOR yaxis1 = XMVectorSet( pos.x, pos.y, pos.z, 0.0f);
-	XMVECTOR yaxis2 = XMVectorSet( dir.x, dir.y, dir.z, 0.0f);;
-	DrawCenterGrid(yaxis1, yaxis2);
+	
+	XMVECTOR axis1 = XMVectorSet( pos.x, pos.y, pos.z, 0.0f);
+	XMVECTOR axis2 = XMVectorSet(dir.x, dir.y, dir.z, 0.0f);
+	DrawCenterGrid(axis1, axis2);
 
 	XMMATRIX wpos = XMMatrixTranslation(pos.x, pos.y, pos.z);
-	g_ShapePos->Draw(wpos, mview, mproj, Colors::Red);
+	g_ShapePos->Draw(wpos, mview, mproj, Colors::LawnGreen);
 
 	XMMATRIX wdir = XMMatrixTranslation(dir.x, dir.y, dir.z);
-	g_ShapeDir->Draw(wdir, mview, mproj, Colors::MediumTurquoise);	
+	g_ShapeDir->Draw(wdir, mview, mproj, Colors::OrangeRed);
 	
 }
 
