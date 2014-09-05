@@ -2,10 +2,12 @@
 #include "DXUT.h"
 #include "SDKmisc.h"
 
+#include <DirectXCollision.h>
+
 #include "CompileShader.h"
 #include "MeshObj.h"
 
-
+using namespace DirectX;
 
 
 MeshObj::MeshObj()
@@ -49,7 +51,13 @@ void MeshObj::Render( CompileShader* pshader )
 	if (pshader == nullptr)
 		return;
 
-	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
+	D3D11_PRIMITIVE_TOPOLOGY topotype;
+	DXUTGetD3D11DeviceContext()->IAGetPrimitiveTopology(&topotype);
+
+	if (topotype != m_topology)
+		DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
@@ -79,6 +87,9 @@ void MeshObj::Release()
 	if (m_bClone)
 		return;
 
+	m_vertexArray.clear();
+	m_indexArray.clear();
+
 	SAFE_RELEASE(m_vertexBuff);
 	SAFE_RELEASE(m_indexBuff);
 	m_meshSubsets = 0;
@@ -91,3 +102,5 @@ void MeshObj::Release()
 	for (auto x : m_textures) { SAFE_RELEASE(x); }
 
 }
+
+

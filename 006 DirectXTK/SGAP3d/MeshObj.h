@@ -19,10 +19,12 @@ struct SurfaceMaterial
 
 /*
 */
-class CompileShader;
+
 class MeshObj : public Mesh
 {
+	friend class		CompileShader;
 	friend class		LoaderObj;
+	friend class		Collision;
 
 public:
 	MeshObj();
@@ -47,5 +49,9 @@ private:
 	std::vector<SurfaceMaterial>				m_material;
 	std::vector<ID3D11ShaderResourceView*>		m_textures;
 	std::vector<std::wstring>					m_textureNames;
+
+	// 충돌 처리를 위한 버텍스 인덱스 배열
+	std::vector<XMFLOAT3>	m_vertexArray;
+	std::vector<DWORD>		m_indexArray;
 };
 

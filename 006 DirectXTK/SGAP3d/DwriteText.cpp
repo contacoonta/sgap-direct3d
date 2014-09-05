@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "dxut.h"
 #include "FW1Precompiled.h"
-#include "SDKmisc.cpp"
+#include "SDKmisc.h"
 #include "Mesh.h"
 #include "DwriteText.h"
 

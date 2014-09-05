@@ -45,7 +45,7 @@ POINT Input::getMousePos()
 
 /*
 */
-void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& world, _In_ XMMATRIX& view, _In_ XMMATRIX& proj)
+void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& view, _In_ XMMATRIX& proj, BOOL bVisual )
 {
 	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
 
@@ -60,7 +60,14 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	viewpos.y = -(((2.0f * ptcursor.y) / pd3dsdBackBuffer->Height) - 1) / mproj._22;
 	viewpos.z = 1.0f;
 	
-	XMVECTOR viewspacePos = XMVectorSet(-0.025f, -0.02f, 0.05f, 0.0f);
+	FLOAT	fdist = 1.0f;
+	XMVECTOR viewspacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);;
+	if (bVisual) 
+	{
+		viewspacePos = XMVectorSet(-0.025f, -0.02f, 0.05f, 0.0f);
+		fdist = 10.0f;
+	}
+
 	XMVECTOR viewspaceDir = XMVectorSet(viewpos.x, viewpos.y, viewpos.z, 0.0f);
 	viewspaceDir = XMVector3Normalize(viewspaceDir);
 	
@@ -74,7 +81,7 @@ void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir,
 	XMStoreFloat4x4(&mw, mworld);
 
 	worldPos = XMVector3TransformCoord(viewspacePos, mworld);
-	worldDir = XMVector3TransformCoord(viewspaceDir * 10.0f, mworld);
+	worldDir = XMVector3TransformCoord(viewspaceDir * fdist, mworld);
 		
 	// 다른 표현 방식
 	/*XMFLOAT3 wpos;

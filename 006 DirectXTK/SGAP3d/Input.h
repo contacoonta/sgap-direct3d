@@ -25,8 +25,14 @@ public:
 	//MOUSE
 	POINT					getMousePos();
 	INT*					getMouseDelta();
-	void					getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& world, _In_ XMMATRIX& view, _In_ XMMATRIX& proj);
 	
+	/*
+		bVisual : 예제용 모드
+		- 화면 좌측 하단으로 기준 position 을 이동하여 Ray 발사
+	*/
+	void					getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& view, _In_ XMMATRIX& proj, BOOL bVisual = FALSE);
+	
+
 	BOOL					isLBtnDown()	{ return m_mouseState.rgbButtons[0] & 0x80; }
 	BOOL					isMBtnDown()	{ return m_mouseState.rgbButtons[2] & 0x80; }
 	BOOL					isRBtnDown()	{ return m_mouseState.rgbButtons[1] & 0x80; }

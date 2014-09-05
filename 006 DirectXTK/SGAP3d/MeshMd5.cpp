@@ -39,37 +39,7 @@ HRESULT MeshMd5::Initialize()
 
 void MeshMd5::Update(float deltaTime)
 {
-	int idxAni = 0;	// idle
-
-	if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState('w') & 0x8000)
-	{
-		idxAni = 1;	// walk
-	}
-
-	if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState('a') & 0x8000)
-	{
-		idxAni = 2;	// left
-	}
-
-	if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState('d') & 0x8000)
-	{
-		idxAni = 3;	// right
-	}
-	
-	if (GetAsyncKeyState('1') & 0x8000)
-	{
-		idxAni = 4;	// attack 1
-	}
-	
-	if (GetAsyncKeyState('2') & 0x8000)
-	{
-		idxAni = 5;	// attack 2
-	}
-
-	if (m_bClone)
-		UpdateFrame(deltaTime, m_ani);
-	else
-		UpdateFrame(deltaTime, idxAni);
+	UpdateFrame(deltaTime, AniIndex);
 }
 
 void MeshMd5::Render( CompileShader* pshader )
@@ -77,7 +47,12 @@ void MeshMd5::Render( CompileShader* pshader )
 	if (pshader == nullptr)
 		return;
 
-	DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D11_PRIMITIVE_TOPOLOGY topotype;
+	DXUTGetD3D11DeviceContext()->IAGetPrimitiveTopology(&topotype);
+
+	if ( topotype != m_topology)
+		DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
 
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
@@ -122,7 +97,8 @@ void MeshMd5::Release()
 
 void MeshMd5::UpdateFrame(float deltaTime, int animationIdx)
 {
-	if (m_model.animations.size() <= 0)
+	// 애니메이션 리스트 범위를 벗어나면 리턴
+	if (m_model.animations.size() <= 0 || m_model.animations.size() >= animationIdx )
 		return;
 
 

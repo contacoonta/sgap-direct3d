@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00 FW1FontWrapper", "LibFon
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 PickRay", "004 PickRay\004 PickRay.vcxproj", "{B3897AB0-618C-4F57-8B2E-FF2AD942F95B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005 Collision", "005 Collision\005 Collision.vcxproj", "{501F68F0-1B84-4C9C-B33C-C0087DA189DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -160,6 +162,18 @@ Global
 		{B3897AB0-618C-4F57-8B2E-FF2AD942F95B}.Release|Win32.Build.0 = Release|Win32
 		{B3897AB0-618C-4F57-8B2E-FF2AD942F95B}.Release|x64.ActiveCfg = Release|x64
 		{B3897AB0-618C-4F57-8B2E-FF2AD942F95B}.Release|x64.Build.0 = Release|x64
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Debug|Win32.Build.0 = Debug|Win32
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Debug|x64.ActiveCfg = Debug|x64
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Debug|x64.Build.0 = Debug|x64
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Profile|Win32.ActiveCfg = Profile|Win32
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Profile|Win32.Build.0 = Profile|Win32
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Profile|x64.ActiveCfg = Profile|x64
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Profile|x64.Build.0 = Profile|x64
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|Win32.ActiveCfg = Release|Win32
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|Win32.Build.0 = Release|Win32
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|x64.ActiveCfg = Release|x64
+		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

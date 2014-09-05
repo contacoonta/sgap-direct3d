@@ -16,7 +16,8 @@ private:
 					int& subsetCount, 
 					std::vector<ID3D11ShaderResourceView*>& shaderResourceViewArray,
 					std::vector<std::wstring> texFileNameArray,
-					bool isRHCoordSys, bool computeNormals);
+					bool isRHCoordSys, bool computeNormals,
+					std::vector<XMFLOAT3>& vertexArray, std::vector<DWORD>& IndexArray );
 	
 };
 

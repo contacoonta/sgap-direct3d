@@ -28,6 +28,9 @@
     <ClInclude Include="DwriteText.h">
       <Filter>Miscellaneous</Filter>
     </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompileShader.cpp" />
@@ -48,6 +51,9 @@
       <Filter>Miscellaneous</Filter>
     </ClCompile>
     <ClCompile Include="DwriteText.cpp">
+      <Filter>Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
       <Filter>Miscellaneous</Filter>
     </ClCompile>
   </ItemGroup>

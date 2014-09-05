@@ -20,7 +20,8 @@ Mesh* LoaderObj::BuildMeshFromFile(LPCWSTR wfilename)
 	MeshObj* pobj = static_cast<MeshObj*>(pmesh);
 
 	br = LoadObjModel(wfilename, &(pobj->m_vertexBuff), &(pobj->m_indexBuff), pobj->m_meshSubsetIndexStart, pobj->m_meshSubsetTexture,
-						pobj->m_material, pobj->m_meshSubsets, pobj->m_textures, pobj->m_textureNames, false, false);
+						pobj->m_material, pobj->m_meshSubsets, pobj->m_textures, pobj->m_textureNames, true, true,
+						pobj->m_vertexArray, pobj->m_indexArray);
 	if (br == FALSE)
 	{
 		SAFE_DELETE(pmesh);
@@ -36,7 +37,8 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 					int& subsetCount, 
 					std::vector<ID3D11ShaderResourceView*>& shaderResourceViewArray,
 					std::vector<std::wstring> texFileNameArray, 
-					bool isRHCoordSys, bool computeNormals)
+					bool isRHCoordSys, bool computeNormals,
+					std::vector<XMFLOAT3>& vertexArray, std::vector<DWORD>& IndexArray)
 {
 	HRESULT hr = S_OK;
 
@@ -818,7 +820,11 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 		tempVert.texCoord = vertTexCoord[vertTCIndex[j]];
 
 		vertices.push_back(tempVert);
+
+		vertexArray.push_back(tempVert.pos);
 	}
+
+	IndexArray = indices;
 
 	//////////////////////Compute Normals///////////////////////////
 	//If computeNormals was set to true then we will create our own

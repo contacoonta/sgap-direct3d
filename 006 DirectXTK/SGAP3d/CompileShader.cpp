@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DXUT.h"
-#include "SDKmisc.cpp"
+#include "SDKmisc.h"
 #include "CompileShader.h"
 
 

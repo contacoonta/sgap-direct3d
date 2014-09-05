@@ -23,25 +23,26 @@ class CompileShader;
 class Mesh
 {
 public:
-			Mesh()		{	XMStoreFloat4x4(&m_world, XMMatrixIdentity());	}
+			Mesh()		{	m_world	= XMMatrixIdentity();	}
 	virtual ~Mesh()		{}
 
 public:
 	virtual Mesh*		Clone()							{ return nullptr;	}
 	BOOL				isCloned() const				{ return m_bClone;	}
-
+	
 	virtual HRESULT		Initialize()					{ return S_OK;		}
 	virtual void		Update(float deltaTime)			{}
 	virtual void		Render(CompileShader* pshader)	{}
 	virtual void		Release()						{}
+	
+	void				SetWorld(const XMMATRIX& mat)	{ m_world = mat; }
+	XMMATRIX			World() const					{ return m_world; }
 
-	void				SetWorld(XMFLOAT4X4 mat)		{ m_world = mat;	}
-	XMFLOAT4X4			World() const					{ return m_world;	}
-
-	int m_ani = 0;
+	void				SetTopology(D3D_PRIMITIVE_TOPOLOGY etype) { m_topology = etype; }
 
 protected:
-	XMFLOAT4X4          m_world;
-	BOOL				m_bClone		= false;
+	XMMATRIX					m_world;
+	BOOL						m_bClone	= false;
+	D3D11_PRIMITIVE_TOPOLOGY	m_topology	= D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 };
 
