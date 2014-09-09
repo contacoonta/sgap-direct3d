@@ -9,6 +9,7 @@
 #include "SDKmisc.h"
 
 #include "VertexTypes.h"
+#include "CommonStates.h"
 #include "Effects.h"
 #include "PrimitiveBatch.h"
 
@@ -31,6 +32,7 @@ Input*				g_input;
 DwriteText*			g_dwtext;
 
 ID3D11InputLayout*										g_pBatchInputLayout = nullptr;
+std::unique_ptr<CommonStates>                           g_States;
 std::unique_ptr<BasicEffect>                            g_BatchEffect;
 std::unique_ptr<PrimitiveBatch<VertexPositionColor>>    g_Batch;
 
@@ -64,13 +66,13 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 
 	LoaderObj loaderobj;
 	g_mesh = loaderobj.BuildMeshFromFile(L"models\\teapot.obj");
-	//XMMATRIX matS = XMMatrixScaling(0.1f, 0.1f, 0.1f);
+	XMMATRIX matS = XMMatrixScaling(0.1f, 0.1f, 0.1f);
 	XMMATRIX matT = XMMatrixTranslation(0.f, 0.0f, 0.0f);
-	//XMMATRIX matWorld = matS * matT;
-	g_mesh->SetWorld(matT);
+	XMMATRIX matWorld = matS * matT;
+	g_mesh->SetWorld(matWorld);
 
 
-
+	g_States.reset(new CommonStates(pd3dDevice));
 	g_Batch.reset(new PrimitiveBatch<VertexPositionColor>(DXUTGetD3D11DeviceContext()));
 	g_BatchEffect.reset( new BasicEffect( pd3dDevice ) );
     g_BatchEffect->SetVertexColorEnabled(true);
@@ -87,7 +89,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 
 
 
-	static const XMVECTOR eye = { 2.0f, 5.0f, -5.0f, 0.f };
+	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
 	static const XMVECTOR lookat = { 0.0f, 0.0f, 0.0f, 0.f };
 	g_camera.SetViewParams(eye, lookat);
 	
@@ -102,7 +104,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 	HRESULT hr;
 
 	float fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
-	g_camera.SetProjParams(XM_PI / 4, fAspectRatio, 0.001f, 1000.0f);
+	g_camera.SetProjParams(XM_PI / 4, fAspectRatio, 0.01f, 1000.0f);
 	g_camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
 	g_camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_RIGHT_BUTTON);
 
@@ -142,6 +144,24 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	XMMATRIX mview = g_camera.GetViewMatrix();
 	XMMATRIX mproj = g_camera.GetProjMatrix();
 
+
+	
+
+	/*pd3dImmediateContext->RSSetState(g_States->CullCounterClockwise());
+	pd3dImmediateContext->OMSetBlendState(g_States->Opaque(), nullptr, 0xffffffff);
+	pd3dImmediateContext->OMSetDepthStencilState(g_States->DepthDefault(), 0);*/
+	//pd3dImmediateContext->HSSetSamplers(0, 1, g_States->LinearWrap());
+
+
+	CONSTANTBUFFER cb;
+	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mworld));
+	XMStoreFloat4x4(&cb.view, XMMatrixTranspose(mview));
+	XMStoreFloat4x4(&cb.projection, XMMatrixTranspose(mproj));
+	cb.litDir = XMFLOAT4(1.0f, 5.0f, -5.0f, 0.0f);
+	cb.litCol = XMFLOAT4(0.6f, 0.7f, 0.6f, 1.0f);
+	g_shader->RenderPrepare(&cb);
+	g_mesh->Render(g_shader);
+
 	g_BatchEffect->SetView(mview);
 	g_BatchEffect->SetProjection(mproj);
 
@@ -153,16 +173,8 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	const XMVECTORF32 yaxis1 = { 0.f, 10.f, 0.f };
 	const XMVECTORF32 yaxis2 = { 0.f, -10.f, 0.f };
 	DrawCenterGrid(yaxis1, yaxis2);
-	
 
-	CONSTANTBUFFER cb;
-	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mworld));
-	XMStoreFloat4x4(&cb.view, XMMatrixTranspose(mview));
-	XMStoreFloat4x4(&cb.projection, XMMatrixTranspose(mproj));
-	cb.litDir = XMFLOAT4(1.0f, 5.0f, -5.0f, 0.0f);
-	cb.litCol = XMFLOAT4(0.6f, 0.7f, 0.6f, 1.0f);
-	g_shader->RenderPrepare(&cb);
-	g_mesh->Render(g_shader);
+
 
 	/*
 		Frames Per Seconds
@@ -206,6 +218,7 @@ void CALLBACK OnD3D11DestroyDevice(void* pUserContext)
 
 	g_BatchEffect.reset();
 	g_Batch.reset();
+	g_States.reset();
 	SAFE_RELEASE(g_pBatchInputLayout);
 	SAFE_DELETE(g_input);
 	SAFE_DELETE(g_dwtext);
@@ -267,10 +280,10 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 */
 void DrawGrid( FXMVECTOR xAxis, FXMVECTOR yAxis, FXMVECTOR origin, size_t xdivs, size_t ydivs, GXMVECTOR color )
 {
-    auto context = DXUTGetD3D11DeviceContext();
+   /* auto context = DXUTGetD3D11DeviceContext();
     g_BatchEffect->Apply( context );
 
-    context->IASetInputLayout( g_pBatchInputLayout );
+    context->IASetInputLayout( g_pBatchInputLayout );*/
 
     g_Batch->Begin();
 
@@ -310,9 +323,9 @@ void DrawCenterGrid(FXMVECTOR yAxis1, FXMVECTOR yAxis2)
 	VertexPositionColor v1(yAxis1, Colors::Red);
 	VertexPositionColor v2(yAxis2, Colors::Red);
 
-	DXUTGetD3D11DeviceContext()->IASetInputLayout(g_pBatchInputLayout);
+	/*DXUTGetD3D11DeviceContext()->IASetInputLayout(g_pBatchInputLayout);
 	
-	g_BatchEffect->Apply(DXUTGetD3D11DeviceContext());
+	g_BatchEffect->Apply(DXUTGetD3D11DeviceContext());*/
 
     g_Batch->Begin();
     g_Batch->DrawLine( v1, v2 );

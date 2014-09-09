@@ -12,7 +12,7 @@
 using namespace DirectX;
 
 
-const int cnt = 10;
+const int cnt = 100;
 
 CModelViewerCamera	g_camera;
 CompileShader*		g_shader	= nullptr;

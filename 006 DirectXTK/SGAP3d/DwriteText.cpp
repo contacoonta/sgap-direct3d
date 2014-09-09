@@ -52,7 +52,7 @@ void DwriteText::Render(std::wstring wtext, INT numex, int x, int y, float fsize
 							x,// X position
 							y,// Y position
 							0xff0099ff,// Text color, 0xAaBbGgRr
-							FW1_NOGEOMETRYSHADER // Flags	
+							FW1_NOGEOMETRYSHADER | FW1_RESTORESTATE // Flags	
 							);
 	
 }

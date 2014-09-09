@@ -20,7 +20,7 @@ Mesh* LoaderObj::BuildMeshFromFile(LPCWSTR wfilename)
 	MeshObj* pobj = static_cast<MeshObj*>(pmesh);
 
 	br = LoadObjModel(wfilename, &(pobj->m_vertexBuff), &(pobj->m_indexBuff), pobj->m_meshSubsetIndexStart, pobj->m_meshSubsetTexture,
-						pobj->m_material, pobj->m_meshSubsets, pobj->m_textures, pobj->m_textureNames, true, true,
+						pobj->m_material, pobj->m_meshSubsets, pobj->m_textures, pobj->m_textureNames, false, false,
 						pobj->m_vertexArray, pobj->m_indexArray);
 	if (br == FALSE)
 	{
