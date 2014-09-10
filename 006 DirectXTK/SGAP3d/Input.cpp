@@ -44,66 +44,52 @@ POINT Input::getMousePos()
 }
 
 /*
-*/
-void Input::getMousePosWorld(_Out_ XMVECTOR& worldPos, _Out_ XMVECTOR& worldDir, _In_ XMMATRIX& view, _In_ XMMATRIX& proj, BOOL bVisual )
-{
-	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
-
-	POINT		ptcursor	= getMousePos();
-	XMFLOAT4X4	mproj		= XMFLOAT4X4();
-	XMFLOAT3	viewpos		= XMFLOAT3();
-
-	XMStoreFloat4x4(&mproj, proj);
-
-	// 마우스 위치 화면좌표(Screen Space) -> 뷰좌표(View Space) 로 변환
-	viewpos.x = (((2.0f * ptcursor.x) / pd3dsdBackBuffer->Width) - 1) / mproj._11;
-	viewpos.y = -(((2.0f * ptcursor.y) / pd3dsdBackBuffer->Height) - 1) / mproj._22;
-	viewpos.z = 1.0f;
-	
-	FLOAT	fdist = 1.0f;
-	XMVECTOR viewspacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);;
-	if (bVisual) 
-	{
-		viewspacePos = XMVectorSet(-0.025f, -0.02f, 0.05f, 0.0f);
-		fdist = 10.0f;
-	}
-
-	XMVECTOR viewspaceDir = XMVectorSet(viewpos.x, viewpos.y, viewpos.z, 0.0f);
-	viewspaceDir = XMVector3Normalize(viewspaceDir);
-	
-	// 화면 중앙 고정 ( FPS 게임을 위한 )
-	//XMVECTOR viewspaceDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-
-	// ViewSpace matrix 의 역행렬로 WorldSpace matrix 구한다.
-	XMVECTOR matDeter;
-	XMMATRIX mworld = XMMatrixInverse(nullptr, view);
-	XMFLOAT4X4 mw;
-	XMStoreFloat4x4(&mw, mworld);
-
-	worldPos = XMVector3TransformCoord(viewspacePos, mworld);
-	worldDir = XMVector3TransformCoord(viewspaceDir * fdist, mworld);
-		
-	// 다른 표현 방식
-	/*XMFLOAT3 wpos;
-	wpos.x = mw._41;
-	wpos.y = mw._42;
-	wpos.z = mw._43;
-	worldPos = XMLoadFloat3(&wpos);
-
-	XMFLOAT3 wdir;
-	wdir.x = viewpos.x * mw._11 + viewpos.y * mw._21 + viewpos.z * mw._31;
-	wdir.y = viewpos.x * mw._12 + viewpos.y * mw._22 + viewpos.z * mw._32;
-	wdir.z = viewpos.x * mw._13 + viewpos.y * mw._23 + viewpos.z * mw._33;
-	worldDir = XMLoadFloat3(&wdir);*/	
-}
-
-/*
 	마우스 변화량
 */
 INT* Input::getMouseDelta()
 {
 	return m_mouseDelta;
 }
+
+
+void Input::Pick(_Out_ XMVECTOR& rayPos, _Out_ XMVECTOR& rayDir, _In_ XMMATRIX& world, _In_ XMMATRIX& view, _In_ XMMATRIX& proj)
+{
+	const DXGI_SURFACE_DESC* pd3dsdBackBuffer = DXUTGetDXGIBackBufferSurfaceDesc();
+
+	POINT ptcursor = getMousePos();
+
+	// Compute the vector of the pick ray in screen space
+	XMFLOAT4X4	mproj = XMFLOAT4X4();
+	XMStoreFloat4x4(&mproj, proj);
+
+	XMFLOAT3 v;
+	v.x = (((2.0f * ptcursor.x) / pd3dsdBackBuffer->Width) - 1) / mproj._11;
+	v.y = -(((2.0f * ptcursor.y) / pd3dsdBackBuffer->Height) - 1) / mproj._22;
+	v.z = 1.0f;
+
+	// Get the inverse view matrix	
+	XMMATRIX mWorldView = world * view;
+	//XMVECTOR determin;
+	XMMATRIX mInv = XMMatrixInverse(NULL, mWorldView);
+
+	XMFLOAT4X4	m = XMFLOAT4X4();
+	XMStoreFloat4x4(&m, mInv);
+
+	// Transform the screen space pick ray into 3D space
+	XMFLOAT3 pickRayDir;
+	pickRayDir.x = v.x * m._11 + v.y * m._21 + v.z * m._31;
+	pickRayDir.y = v.x * m._12 + v.y * m._22 + v.z * m._32;
+	pickRayDir.z = v.x * m._13 + v.y * m._23 + v.z * m._33;
+	rayDir = XMLoadFloat3(&pickRayDir);
+
+	XMFLOAT3 pickRayOrig;
+	pickRayOrig.x = m._41;
+	pickRayOrig.y = m._42;
+	pickRayOrig.z = m._43;
+	rayPos = XMLoadFloat3(&pickRayOrig);
+}
+
+
 
 /*
 */

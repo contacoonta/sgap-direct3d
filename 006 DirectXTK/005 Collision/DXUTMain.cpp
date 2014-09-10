@@ -12,6 +12,7 @@
 #include "CommonStates.h"
 #include "Effects.h"
 #include "PrimitiveBatch.h"
+#include "GeometricPrimitive.h"
 
 #include "Input.h"
 #include "DwriteText.h"
@@ -35,6 +36,7 @@ ID3D11InputLayout*										g_pBatchInputLayout = nullptr;
 std::unique_ptr<CommonStates>                           g_States;
 std::unique_ptr<BasicEffect>                            g_BatchEffect;
 std::unique_ptr<PrimitiveBatch<VertexPositionColor>>    g_Batch;
+std::unique_ptr<GeometricPrimitive>                     g_ShapePos;
 
 CompileShader*		g_shader = nullptr;
 Mesh*				g_mesh = nullptr;
@@ -66,6 +68,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 
 	LoaderObj loaderobj;
 	g_mesh = loaderobj.BuildMeshFromFile(L"models\\teapot.obj");
+	
 	XMMATRIX matS = XMMatrixScaling(0.1f, 0.1f, 0.1f);
 	XMMATRIX matT = XMMatrixTranslation(0.f, 0.0f, 0.0f);
 	XMMATRIX matWorld = matS * matT;
@@ -86,7 +89,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
             return hr;
     }
 
-
+	g_ShapePos = GeometricPrimitive::CreateOctahedron(DXUTGetD3D11DeviceContext(), 1.0f, false);
 
 
 	static const XMVECTOR eye = { 20.0f, 50.0f, -50.0f, 0.f };
@@ -115,7 +118,7 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
 	g_camera.FrameMove(fElapsedTime);
 
-	if (g_input == nullptr) 
+	if (g_input == NULL) 
 		return;
 
 	g_input->Update();
@@ -125,11 +128,16 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 	
 	if (g_input->isLBtnDown())
 	{
+		XMMATRIX mworld = g_camera.GetWorldMatrix();
 		XMMATRIX mview = g_camera.GetViewMatrix();
 		XMMATRIX mproj = g_camera.GetProjMatrix();
 
-		g_input->getMousePosWorld(worldPickPos, worldPickDir, mview, mproj);
-		g_pickDist = Collision::PickFromRay(g_mesh, worldPickPos, worldPickDir);
+		g_input->Pick(worldPickPos, worldPickDir, mworld, mview, mproj);
+
+		if (Collision::pickHit(g_mesh, worldPickPos, worldPickDir, g_pickDist, worldPickPos))
+		{
+			
+		}
 	}
 }
 
@@ -174,7 +182,8 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	const XMVECTORF32 yaxis2 = { 0.f, -10.f, 0.f };
 	DrawCenterGrid(yaxis1, yaxis2);
 
-
+	XMMATRIX wpos = XMMatrixTranslation(worldPickPos.m128_f32[0], worldPickPos.m128_f32[1], worldPickPos.m128_f32[2]);
+	g_ShapePos->Draw(wpos, mview, mproj, Colors::LawnGreen);
 
 	/*
 		Frames Per Seconds
@@ -215,12 +224,14 @@ void CALLBACK OnD3D11DestroyDevice(void* pUserContext)
 {
 	SAFE_DELETE(g_mesh);
 	CompileShader::Delete(&g_shader);
+	
+	SAFE_DELETE(g_input);
 
 	g_BatchEffect.reset();
 	g_Batch.reset();
 	g_States.reset();
+	g_ShapePos.reset();
 	SAFE_RELEASE(g_pBatchInputLayout);
-	SAFE_DELETE(g_input);
 	SAFE_DELETE(g_dwtext);
 	
 }
@@ -268,7 +279,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
     DXUTCreateWindow( L"005 DxUTK - Collision" );
-    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
+    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 1920, 1200 );
 
     DXUTMainLoop();
 

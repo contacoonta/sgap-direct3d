@@ -4,7 +4,10 @@ class Collision
 {
 
 public:
-	static float PickFromRay(_In_ Mesh* pmesh, _In_ XMVECTOR raypos, _In_ XMVECTOR raydir);
-	static bool PointInTriangle(XMVECTOR& triV1, XMVECTOR& triV2, XMVECTOR& triV3, XMVECTOR& point);
+	static bool pickHit(_In_ Mesh* pmesh, _In_ XMVECTOR raypos, _In_ XMVECTOR raydir, _Out_ FLOAT& fdist, _Out_ XMVECTOR& hitpos);
+private:
+	static bool IntersectTriangle(const XMVECTOR& orig, const XMVECTOR& dir,
+									XMVECTOR& v0, XMVECTOR& v1, XMVECTOR& v2,
+									FLOAT& t, FLOAT& u, FLOAT& v);
 };
 

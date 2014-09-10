@@ -9,7 +9,7 @@ using std::wstring;
 struct SurfaceMaterial
 {
 	std::wstring matName;
-	XMFLOAT4 difColor;
+	//XMFLOAT4 difColor;
 	int texArrayIndex;
 	int normMapTexArrayIndex;
 	bool hasNormMap;

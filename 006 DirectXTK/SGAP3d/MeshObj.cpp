@@ -67,16 +67,19 @@ void MeshObj::Render( CompileShader* pshader )
 		DXUTGetD3D11DeviceContext()->IASetIndexBuffer(m_indexBuff, DXGI_FORMAT_R32_UINT, 0);
 		DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuff, &stride, &offset);
 
-		if (m_material[m_meshSubsetTexture[i]].hasTexture)
-			DXUTGetD3D11DeviceContext()->PSSetShaderResources(0, 1, &m_textures[m_material[m_meshSubsetTexture[i]].texArrayIndex]);
-		if (m_material[m_meshSubsetTexture[i]].hasNormMap)
-			DXUTGetD3D11DeviceContext()->PSSetShaderResources(1, 1, &m_textures[m_material[m_meshSubsetTexture[i]].normMapTexArrayIndex]);
-		
-		DXUTGetD3D11DeviceContext()->PSSetSamplers(0, 1, &pshader->m_samplerLinear);
+		if (m_textures.size() > 0)
+		{
+			if (m_material[m_meshSubsetTexture[i]].hasTexture)
+				DXUTGetD3D11DeviceContext()->PSSetShaderResources(0, 1, &m_textures[m_material[m_meshSubsetTexture[i]].texArrayIndex]);
+			if (m_material[m_meshSubsetTexture[i]].hasNormMap)
+				DXUTGetD3D11DeviceContext()->PSSetShaderResources(1, 1, &m_textures[m_material[m_meshSubsetTexture[i]].normMapTexArrayIndex]);
+			
+			DXUTGetD3D11DeviceContext()->PSSetSamplers(0, 1, &pshader->m_samplerLinear);
+		}
 
 		int indexStart = m_meshSubsetIndexStart[i];
 		int indexDrawAmount = m_meshSubsetIndexStart[i + 1] - m_meshSubsetIndexStart[i];
-		if (!m_material[m_meshSubsetTexture[i]].transparent)
+		//if (!m_material[m_meshSubsetTexture[i]].transparent)
 			DXUTGetD3D11DeviceContext()->DrawIndexed(indexDrawAmount, indexStart, 0);
 	}
 

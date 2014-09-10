@@ -20,7 +20,7 @@ Mesh* LoaderObj::BuildMeshFromFile(LPCWSTR wfilename)
 	MeshObj* pobj = static_cast<MeshObj*>(pmesh);
 
 	br = LoadObjModel(wfilename, &(pobj->m_vertexBuff), &(pobj->m_indexBuff), pobj->m_meshSubsetIndexStart, pobj->m_meshSubsetTexture,
-						pobj->m_material, pobj->m_meshSubsets, pobj->m_textures, pobj->m_textureNames, false, false,
+						pobj->m_material, pobj->m_meshSubsets, pobj->m_textures, pobj->m_textureNames,
 						pobj->m_vertexArray, pobj->m_indexArray);
 	if (br == FALSE)
 	{
@@ -36,8 +36,7 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 					std::vector<int>& subsetIndexStart, std::vector<int>& subsetMaterialArray, std::vector<SurfaceMaterial>& material,
 					int& subsetCount, 
 					std::vector<ID3D11ShaderResourceView*>& shaderResourceViewArray,
-					std::vector<std::wstring> texFileNameArray, 
-					bool isRHCoordSys, bool computeNormals,
+					std::vector<std::wstring> texFileNameArray,
 					std::vector<XMFLOAT3>& vertexArray, std::vector<DWORD>& IndexArray)
 {
 	HRESULT hr = S_OK;
@@ -98,20 +97,14 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 					float vz, vy, vx;
 					fileIn >> vx >> vy >> vz;	//Store the next three types
 
-					if(isRHCoordSys)	//If model is from an RH Coord System
-						vertPos.push_back(XMFLOAT3( vx, vy, vz * -1.0f));	//Invert the Z axis
-					else
-						vertPos.push_back(XMFLOAT3( vx, vy, vz));
+					vertPos.push_back(XMFLOAT3( vx, vy, vz));
 				}
 				if(checkChar == 't')	//vt - vert tex coords
 				{			
 					float vtcu, vtcv;
 					fileIn >> vtcu >> vtcv;		//Store next two types
 
-					if(isRHCoordSys)	//If model is from an RH Coord System
-						vertTexCoord.push_back(XMFLOAT2(vtcu, 1.0f-vtcv));	//Reverse the "v" axis
-					else
-						vertTexCoord.push_back(XMFLOAT2(vtcu, vtcv));	
+					vertTexCoord.push_back(XMFLOAT2(vtcu, vtcv));	
 
 					hasTexCoord = true;	//We know the model uses texture coords
 				}
@@ -122,10 +115,7 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 					float vnx, vny, vnz;
 					fileIn >> vnx >> vny >> vnz;	//Store next three types
 
-					if(isRHCoordSys)	//If model is from an RH Coord System
-						vertNorm.push_back(XMFLOAT3( vnx, vny, vnz * -1.0f ));	//Invert the Z axis
-					else
-						vertNorm.push_back(XMFLOAT3( vnx, vny, vnz ));	
+					vertNorm.push_back(XMFLOAT3( vnx, vny, vnz ));	
 
 					hasNorm = true;	//We know the model defines normals
 				}
@@ -518,67 +508,6 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 					checkChar = fileIn.get();
 				break;
 
-				//Set diffuse color
-			case 'K':
-				checkChar = fileIn.get();
-				if(checkChar == 'd')	//Diffuse Color
-				{
-					checkChar = fileIn.get();	//remove space
-
-					fileIn >> material[matCount-1].difColor.x;
-					fileIn >> material[matCount-1].difColor.y;
-					fileIn >> material[matCount-1].difColor.z;
-
-					kdset = true;
-				}
-
-				//Ambient Color (We'll store it in diffuse if there isn't a diffuse already)
-				if(checkChar == 'a')	
-				{					
-					checkChar = fileIn.get();	//remove space
-					if(!kdset)
-					{
-						fileIn >> material[matCount-1].difColor.x;
-						fileIn >> material[matCount-1].difColor.y;
-						fileIn >> material[matCount-1].difColor.z;
-					}
-				}
-				break;
-
-				//Check for transparency
-			case 'T':
-				checkChar = fileIn.get();
-				if(checkChar == 'r')
-				{
-					checkChar = fileIn.get();	//remove space
-					float Transparency;
-					fileIn >> Transparency;
-
-					material[matCount-1].difColor.w = Transparency;
-
-					if(Transparency > 0.0f)
-						material[matCount-1].transparent = true;
-				}
-				break;
-
-				//Some obj files specify d for transparency
-			case 'd':
-				checkChar = fileIn.get();
-				if(checkChar == ' ')
-				{
-					float Transparency;
-					fileIn >> Transparency;
-
-					//'d' - 0 being most transparent, and 1 being opaque, opposite of Tr
-					Transparency = 1.0f - Transparency;
-
-					material[matCount-1].difColor.w = Transparency;
-
-					if(Transparency > 0.0f)
-						material[matCount-1].transparent = true;					
-				}
-				break;
-
 				//Get the diffuse map (texture)
 			case 'm':
 				checkChar = fileIn.get();
@@ -820,286 +749,38 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 		tempVert.texCoord = vertTexCoord[vertTCIndex[j]];
 
 		vertices.push_back(tempVert);
-
 		vertexArray.push_back(tempVert.pos);
 	}
 
 	IndexArray = indices;
 
-	//////////////////////Compute Normals///////////////////////////
-	//If computeNormals was set to true then we will create our own
-	//normals, if it was set to false we will use the obj files normals
-	if(computeNormals)
-	{
-		std::vector<XMFLOAT3> tempNormal;
 
-		//normalized and unnormalized normals
-		XMFLOAT3 unnormalized = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-		//tangent stuff
-		std::vector<XMFLOAT3> tempTangent;
-		XMFLOAT3 tangent = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		float tcU1, tcV1, tcU2, tcV2;
-
-		//Used to get vectors (sides) from the position of the verts
-		float vecX, vecY, vecZ;
-
-		//Two edges of our triangle
-		XMVECTOR edge1 = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		XMVECTOR edge2 = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-
-		//Compute face normals
-		//And Tangents
-		for(int i = 0; i < meshTriangles; ++i)
-		{
-			//Get the vector describing one edge of our triangle (edge 0,2)
-			vecX = vertices[indices[(i*3)]].pos.x - vertices[indices[(i*3)+2]].pos.x;
-			vecY = vertices[indices[(i*3)]].pos.y - vertices[indices[(i*3)+2]].pos.y;
-			vecZ = vertices[indices[(i*3)]].pos.z - vertices[indices[(i*3)+2]].pos.z;		
-			edge1 = XMVectorSet(vecX, vecY, vecZ, 0.0f);	//Create our first edge
-
-			//Get the vector describing another edge of our triangle (edge 2,1)
-			vecX = vertices[indices[(i*3)+2]].pos.x - vertices[indices[(i*3)+1]].pos.x;
-			vecY = vertices[indices[(i*3)+2]].pos.y - vertices[indices[(i*3)+1]].pos.y;
-			vecZ = vertices[indices[(i*3)+2]].pos.z - vertices[indices[(i*3)+1]].pos.z;		
-			edge2 = XMVectorSet(vecX, vecY, vecZ, 0.0f);	//Create our second edge
-
-			//Cross multiply the two edge vectors to get the un-normalized face normal
-			XMStoreFloat3(&unnormalized, XMVector3Cross(edge1, edge2));
-
-			tempNormal.push_back(unnormalized);
-
-			//Find first texture coordinate edge 2d vector
-			tcU1 = vertices[indices[(i*3)]].texCoord.x - vertices[indices[(i*3)+2]].texCoord.x;
-			tcV1 = vertices[indices[(i*3)]].texCoord.y - vertices[indices[(i*3)+2]].texCoord.y;
-
-			//Find second texture coordinate edge 2d vector
-			tcU2 = vertices[indices[(i*3)+2]].texCoord.x - vertices[indices[(i*3)+1]].texCoord.x;
-			tcV2 = vertices[indices[(i*3)+2]].texCoord.y - vertices[indices[(i*3)+1]].texCoord.y;
-
-			//Find tangent using both tex coord edges and position edges
-			tangent.x = (tcV1 * XMVectorGetX(edge1) - tcV2 * XMVectorGetX(edge2)) * (1.0f / (tcU1 * tcV2 - tcU2 * tcV1));
-			tangent.y = (tcV1 * XMVectorGetY(edge1) - tcV2 * XMVectorGetY(edge2)) * (1.0f / (tcU1 * tcV2 - tcU2 * tcV1));
-			tangent.z = (tcV1 * XMVectorGetZ(edge1) - tcV2 * XMVectorGetZ(edge2)) * (1.0f / (tcU1 * tcV2 - tcU2 * tcV1));
-
-			tempTangent.push_back(tangent);
-		}
-
-		//Compute vertex normals (normal Averaging)
-		XMVECTOR normalSum = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		XMVECTOR tangentSum = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		int facesUsing = 0;
-		float tX, tY, tZ;	//temp axis variables
-
-		//Go through each vertex
-		for(int i = 0; i < totalVerts; ++i)
-		{
-			//Check which triangles use this vertex
-			for(int j = 0; j < meshTriangles; ++j)
-			{
-				if(indices[j*3] == i ||
-					indices[(j*3)+1] == i ||
-					indices[(j*3)+2] == i)
-				{
-					tX = XMVectorGetX(normalSum) + tempNormal[j].x;
-					tY = XMVectorGetY(normalSum) + tempNormal[j].y;
-					tZ = XMVectorGetZ(normalSum) + tempNormal[j].z;
-
-					normalSum = XMVectorSet(tX, tY, tZ, 0.0f);	//If a face is using the vertex, add the unormalized face normal to the normalSum
-
-					//We can reuse tX, tY, tZ to sum up tangents
-					tX = XMVectorGetX(tangentSum) + tempTangent[j].x;
-					tY = XMVectorGetY(tangentSum) + tempTangent[j].y;
-					tZ = XMVectorGetZ(tangentSum) + tempTangent[j].z;
-
-					tangentSum = XMVectorSet(tX, tY, tZ, 0.0f); //sum up face tangents using this vertex
-
-					facesUsing++;
-				}
-			}
-
-			//Get the actual normal by dividing the normalSum by the number of faces sharing the vertex
-			normalSum = normalSum / facesUsing;
-			tangentSum = tangentSum / facesUsing;
-
-			//Normalize the normalSum vector and tangent
-			normalSum = XMVector3Normalize(normalSum);
-			tangentSum =  XMVector3Normalize(tangentSum);
-
-			//Store the normal and tangent in our current vertex
-			vertices[i].normal.x = XMVectorGetX(normalSum);
-			vertices[i].normal.y = XMVectorGetY(normalSum);
-			vertices[i].normal.z = XMVectorGetZ(normalSum);
-
-			vertices[i].tangent.x = XMVectorGetX(tangentSum);
-			vertices[i].tangent.y = XMVectorGetY(tangentSum);
-			vertices[i].tangent.z = XMVectorGetZ(tangentSum);
-
-			//Clear normalSum, tangentSum and facesUsing for next vertex
-			normalSum = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			tangentSum = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			facesUsing = 0;
-
-		}
-	}
 
 	//Create index buffer
 	D3D11_BUFFER_DESC indexBufferDesc;
 	ZeroMemory( &indexBufferDesc, sizeof(indexBufferDesc) );
-
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.ByteWidth = sizeof(DWORD) * meshTriangles*3;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.MiscFlags = 0;
-
 	D3D11_SUBRESOURCE_DATA iinitData;
-
 	iinitData.pSysMem = &indices[0];
 	DXUTGetD3D11Device()->CreateBuffer(&indexBufferDesc, &iinitData, indexBuff);
+
 
 	//Create Vertex Buffer
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	ZeroMemory( &vertexBufferDesc, sizeof(vertexBufferDesc) );
-
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof( VERTEX ) * totalVerts;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
-
 	D3D11_SUBRESOURCE_DATA vertexBufferData; 
-
 	ZeroMemory( &vertexBufferData, sizeof(vertexBufferData) );
 	vertexBufferData.pSysMem = &vertices[0];
 	hr = DXUTGetD3D11Device()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, vertBuff);
 
 	return true;
-}
-
-
-Mesh* LoaderObj::BuildCube()
-{
-	HRESULT hr = S_OK;
-
-
-	/*
-		LAYOUT 등 메시 초기화
-	*/
-	Mesh* mesh = new Mesh;
-	hr = mesh->Initialize();
-	if (FAILED(hr))
-	{
-		delete mesh;
-		return nullptr;
-	}
-
-
-	//VERTEXpn cubevertices[] =
-	//{
-	//	{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-	//	{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-	//	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-	//	{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-	//	{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-	//	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-	//	{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-	//	{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-	//	{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-	//	{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-	//	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
-	//	{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
-
-	//	{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
-	//	{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
-	//	{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
-	//};
-
-
-	//WORD cubeindices[] =
-	//{
-	//	3, 1, 0,
-	//	2, 1, 3,
-
-	//	6, 4, 5,
-	//	7, 4, 6,
-
-	//	11, 9, 8,
-	//	10, 9, 11,
-
-	//	14, 12, 13,
-	//	15, 12, 14,
-
-	//	19, 17, 16,
-	//	18, 17, 19,
-
-	//	22, 20, 21,
-	//	23, 20, 22
-	//};
-
-	///*
-	//	VERTEX LIST 로 VERTEX BUFFER 만들기
-	//*/
-	//UINT numVertices = ARRAYSIZE(cubevertices);
-
-	//D3D11_BUFFER_DESC buffdesc;
-	//ZeroMemory(&buffdesc, sizeof(buffdesc));
-	//buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	//buffdesc.ByteWidth = sizeof(VERTEXpn)* numVertices;
-	//buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//buffdesc.CPUAccessFlags = 0;
-	//D3D11_SUBRESOURCE_DATA initData;
-	//ZeroMemory(&initData, sizeof(initData));
-	//initData.pSysMem = cubevertices;
-
-	//hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_vertexbuffer));
-	//if (FAILED(hr))
-	//{
-	//	delete mesh;
-	//	return nullptr;
-	//}
-
-	//UINT stride = sizeof(VERTEXpn);
-	//UINT offset = 0;
-	//DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(mesh->m_vertexbuffer), &stride, &offset);
-
-
-	///*
-	//	INDEX LIST 로 INDEX BUFFER 버퍼 만들기
-	//*/
-	//mesh->m_indexCnt = ARRAYSIZE(cubeindices);
-
-	//buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	//buffdesc.ByteWidth = sizeof(WORD)* mesh->m_indexCnt;
-	//buffdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	//buffdesc.CPUAccessFlags = 0;
-	//initData.pSysMem = cubeindices;
-	//// 인덱스 버퍼 생성
-	//hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(mesh->m_indexbuffer));
-	//if (FAILED(hr))
-	//{
-	//	delete mesh;
-	//	return nullptr;
-	//}
-
-
-	//// 인풋 어셈블러에 인덱스 버퍼 설정
-	//DXUTGetD3D11DeviceContext()->IASetIndexBuffer(mesh->m_indexbuffer, DXGI_FORMAT_R16_UINT, 0);
-	//
-	//DXUTGetD3D11DeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return mesh;
 }

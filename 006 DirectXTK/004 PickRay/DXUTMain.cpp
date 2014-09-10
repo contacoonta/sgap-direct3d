@@ -129,7 +129,8 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	XMVECTOR worldPos;
 	XMVECTOR worldDir;
 	
-	g_input->getMousePosWorld(worldPos, worldDir, mview, mproj, TRUE);
+	//g_input->getMousePosWorld(worldPos, worldDir, mview, mproj, TRUE);
+	g_input->Pick(worldPos, worldDir, mworld, mview, mproj);
 
 
 	/*
