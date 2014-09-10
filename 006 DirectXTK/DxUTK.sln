@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 PickRay", "004 PickRay\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005 Collision", "005 Collision\005 Collision.vcxproj", "{501F68F0-1B84-4C9C-B33C-C0087DA189DD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006 BoundingBox", "006 BoundingBox\006 BoundingBox.vcxproj", "{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -174,6 +176,18 @@ Global
 		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|Win32.Build.0 = Release|Win32
 		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|x64.ActiveCfg = Release|x64
 		{501F68F0-1B84-4C9C-B33C-C0087DA189DD}.Release|x64.Build.0 = Release|x64
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Debug|Win32.Build.0 = Debug|Win32
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Debug|x64.ActiveCfg = Debug|x64
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Debug|x64.Build.0 = Debug|x64
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Profile|Win32.ActiveCfg = Profile|Win32
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Profile|Win32.Build.0 = Profile|Win32
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Profile|x64.ActiveCfg = Profile|x64
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Profile|x64.Build.0 = Profile|x64
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Release|Win32.ActiveCfg = Release|Win32
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Release|Win32.Build.0 = Release|Win32
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Release|x64.ActiveCfg = Release|x64
+		{EFF56E89-AF9D-450D-A4B4-817ACADF37A3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

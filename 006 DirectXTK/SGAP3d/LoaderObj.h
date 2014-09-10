@@ -7,6 +7,7 @@ class LoaderObj
 {
 public:
 	Mesh*				BuildMeshFromFile(LPCWSTR wfilename);
+	void				ComputeBoundingBox(Mesh& mesh);
 
 private:
 	

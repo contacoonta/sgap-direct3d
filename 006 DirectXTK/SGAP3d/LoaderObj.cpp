@@ -2,6 +2,7 @@
 #include "DXUT.h"
 #include "SDKmisc.h"
 
+#include <DirectXCollision.h>
 #include "LoaderObj.h"
 
 #include <fstream>
@@ -783,4 +784,15 @@ bool LoaderObj::LoadObjModel(LPCWSTR wfilename, ID3D11Buffer** vertBuff, ID3D11B
 	hr = DXUTGetD3D11Device()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, vertBuff);
 
 	return true;
+}
+
+
+void LoaderObj::ComputeBoundingBox(Mesh& mesh)
+{
+	MeshObj* pobj = dynamic_cast<MeshObj*>(&mesh);
+	if (pobj == nullptr)
+		return;
+
+	BoundingOrientedBox obb;
+	BoundingOrientedBox::CreateFromPoints(obb, pobj->m_vertexArray.size(), &(pobj->m_vertexArray[0]), 
 }
