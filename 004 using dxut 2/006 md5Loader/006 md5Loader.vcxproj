@@ -27,8 +27,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>005 ResourceManager</ProjectName>
-    <ProjectGuid>{F1B32063-03B8-4796-A0E5-135D0871F204}</ProjectGuid>
+    <ProjectName>006 Md5Loader</ProjectName>
+    <ProjectGuid>{24970677-D824-461C-BFD8-559C715E3FC6}</ProjectGuid>
     <RootNamespace>Tutorial08</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -381,16 +381,28 @@
   <ItemGroup>
     <ClCompile Include="CompileShader.cpp" />
     <ClCompile Include="DXUTMain.cpp" />
+    <ClCompile Include="LoaderMd5.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="LoaderObj.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshSkeletal.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="MeshStatic.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base.h" />
     <ClInclude Include="CompileShader.h" />
+    <ClInclude Include="LoaderMd5.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="LoaderObj.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshSkeletal.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="MeshStatic.h" />
     <ClInclude Include="ResourceManager.h" />
   </ItemGroup>

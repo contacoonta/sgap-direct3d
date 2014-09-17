@@ -28,7 +28,7 @@ SINGLETON(ResourceManager);
 //textures
 public:
 	ID3D11ShaderResourceView*	GetTexture(wstring key);
-	ID3D11ShaderResourceView*	AddTextureFromFile(wstring key/*, ID3D11ShaderResourceView* srv*/);
+	ID3D11ShaderResourceView*	AddTextureFromFile(wstring key);
 	void						RemoveTexture(wstring key);
 	void						RemoveTextureAll();
 

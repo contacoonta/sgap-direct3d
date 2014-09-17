@@ -22,8 +22,8 @@ typedef struct vertexFormat
 typedef struct pixelFormat
 {
 	float4 pos		: SV_POSITION;
-	float3 nor		: TEXCOORD0;
-	float2 tex		: TEXCOORD1;
+	float3 nor		: NORMAL;
+	float2 tex		: TEXCOORD0;
 }PIXELFORM;
 
 

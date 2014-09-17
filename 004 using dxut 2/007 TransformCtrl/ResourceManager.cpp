@@ -36,7 +36,7 @@ ID3D11ShaderResourceView* ResourceManager::GetTexture(wstring key)
 	return x->second;
 }
 
-ID3D11ShaderResourceView* ResourceManager::AddTextureFromFile(wstring key/*, ID3D11ShaderResourceView* srv*/)
+ID3D11ShaderResourceView* ResourceManager::AddTextureFromFile(wstring key)
 {
 	// 기존 texture 가 있다면, texture 리턴
 	ID3D11ShaderResourceView* psrv = GetTexture(key);
@@ -52,7 +52,6 @@ ID3D11ShaderResourceView* ResourceManager::AddTextureFromFile(wstring key/*, ID3
 		return nullptr;
 
 	// 새로운 texture 라면 , 
-	//m_textures.insert(make_pair(key, srv));
 	m_textures[key] = psrv;
 
 	return psrv;

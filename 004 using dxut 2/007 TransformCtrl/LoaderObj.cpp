@@ -126,7 +126,7 @@ Mesh* LoaderObj::BuildMeshFromFile(LPCWSTR wfilename, LPCWSTR wtexname)
 	/*
 		버텍스 버퍼 만들기
 	*/
-	VERTEX* vertices = new VERTEX[faceList.size()];
+	VERTEXSTATIC* vertices = new VERTEXSTATIC[faceList.size()];
 	{
 		// range based for
 		UINT u = 0;
@@ -142,7 +142,7 @@ Mesh* LoaderObj::BuildMeshFromFile(LPCWSTR wfilename, LPCWSTR wtexname)
 		D3D11_BUFFER_DESC buffdesc;
 		ZeroMemory(&buffdesc, sizeof(buffdesc));
 		buffdesc.Usage = D3D11_USAGE_DEFAULT;
-		buffdesc.ByteWidth = sizeof(VERTEX)* numVertices;
+		buffdesc.ByteWidth = sizeof(VERTEXSTATIC)* numVertices;
 		buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		buffdesc.CPUAccessFlags = 0;
 		D3D11_SUBRESOURCE_DATA initData;
@@ -213,7 +213,7 @@ Mesh* LoaderObj::BuildCube()
 	/*
 		Vertex List -> Vertex Buffer 로 만들기
 	*/
-	VERTEX vertices[] =
+	VERTEXSTATIC vertices[] =
 	{
 		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
@@ -251,7 +251,7 @@ Mesh* LoaderObj::BuildCube()
 	D3D11_BUFFER_DESC buffdesc;
 	ZeroMemory(&buffdesc, sizeof(buffdesc));
 	buffdesc.Usage = D3D11_USAGE_DEFAULT;
-	buffdesc.ByteWidth = sizeof(VERTEX)* numVertices;
+	buffdesc.ByteWidth = sizeof(VERTEXSTATIC)* numVertices;
 	buffdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	buffdesc.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA initData;
@@ -260,7 +260,7 @@ Mesh* LoaderObj::BuildCube()
 	//버텍스 버퍼 생성
 	hr = DXUTGetD3D11Device()->CreateBuffer(&buffdesc, &initData, &(ms->m_vertexBuff));
 
-	UINT stride = sizeof(VERTEX);
+	UINT stride = sizeof(VERTEXSTATIC);
 	UINT offset = 0;
 	//버텍스 버퍼를 IA 에 연결
 	DXUTGetD3D11DeviceContext()->IASetVertexBuffers(0, 1, &(ms->m_vertexBuff), &stride, &offset);

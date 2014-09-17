@@ -13,6 +13,13 @@
     <ClCompile Include="MeshStatic.cpp">
       <Filter>mesh</Filter>
     </ClCompile>
+    <ClCompile Include="MeshSkeletal.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="LoaderMd5.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompileShader.h" />
@@ -27,6 +34,13 @@
     <ClInclude Include="MeshStatic.h">
       <Filter>mesh</Filter>
     </ClInclude>
+    <ClInclude Include="MeshSkeletal.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="LoaderMd5.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="mesh">
