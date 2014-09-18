@@ -52,15 +52,16 @@ HRESULT CALLBACK OnD3D11DeviceCreated(_In_ ID3D11Device* pd3dDevice, _In_ const 
 
 	LoaderMd5 loadermd5;
 	g_marine = loadermd5.BuildMeshFromFile(L"Models\\zealot.md5mesh");
+	g_marine->setPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	
 	
-	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	/*XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX mtrans = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 	XMMATRIX world = mscale * mtrans;
 	XMFLOAT4X4 fworld;
-	XMStoreFloat4x4(&fworld, world);	
+	XMStoreFloat4x4(&fworld, world);
 	g_ground->setWorld(fworld);
-	g_marine->setWorld(fworld);
+	g_marine->setWorld(fworld);*/
 
 	return S_OK;
 }
@@ -90,15 +91,26 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 
 void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ void* pUserContext)
 {
-	static float rot = 0.0f;
+	/*static float rot = 0.0f;
 	rot += fElapsedTime;
 	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX mrot	= XMMatrixRotationRollPitchYaw(0.0f, 0.0f, rot);
-	XMMATRIX mtrans = XMMatrixTranslation(20.0f, 50.0f, 0.0f);
+	XMMATRIX mtrans = XMMatrixTranslation(20.0f, 50.0f, 0.0f);*/
 
 	// gmesh 의 월드 매트릭스 -> XMMATRIX
-	XMMATRIX mParent = XMLoadFloat4x4(&g_marine->getWorld());
+	//XMMATRIX mParent = XMLoadFloat4x4(&g_marine->getWorld());
 	
+	if (GetAsyncKeyState(0x41) & 0x8000)
+	{
+		g_marine->moveFoward(10.0f * fElapsedTime);
+	}
+	if (GetAsyncKeyState(0x42) & 0x8000)
+	{
+		g_marine->moveFoward(-10.0f * fElapsedTime);
+	}
+
+	g_marine->UpdateMatrix();
+
 	g_camera.FrameMove(fElapsedTime);
 }
 
