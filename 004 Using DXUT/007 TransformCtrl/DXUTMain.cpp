@@ -100,14 +100,33 @@ void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ v
 	// gmesh 의 월드 매트릭스 -> XMMATRIX
 	//XMMATRIX mParent = XMLoadFloat4x4(&g_marine->getWorld());
 	
-	if (GetAsyncKeyState(0x41) & 0x8000)
+	if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState('w') & 0x8000)
 	{
 		g_marine->moveFoward(10.0f * fElapsedTime);
 	}
-	if (GetAsyncKeyState(0x42) & 0x8000)
+	if (GetAsyncKeyState('S') & 0x8000 || GetAsyncKeyState('s') & 0x8000)
 	{
 		g_marine->moveFoward(-10.0f * fElapsedTime);
 	}
+	if (GetAsyncKeyState('Q') & 0x8000 || GetAsyncKeyState('q') & 0x8000)
+	{
+		g_marine->moveStrafe(-10.0f * fElapsedTime);
+	}
+	if (GetAsyncKeyState('E') & 0x8000 || GetAsyncKeyState('e') & 0x8000)
+	{
+		g_marine->moveStrafe(10.0f * fElapsedTime);
+	}
+
+	if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState('a') & 0x8000)
+	{
+		g_marine->rotateYaw(-10.0f * fElapsedTime);
+	}
+	if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState('d') & 0x8000)
+	{
+		g_marine->rotateYaw(10.0f * fElapsedTime);
+	}
+
+
 
 	g_marine->UpdateMatrix();
 
@@ -124,7 +143,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 	
 	CONSTANTBUFFER cb;
 	ZeroMemory(&cb, sizeof(CONSTANTBUFFER));
-	XMMATRIX mat = XMLoadFloat4x4(&(g_marine->getWorld()));	
+	XMMATRIX mat = XMLoadFloat4x4(&(g_ground->getWorld()));
 	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
 
 	//cb.world =  g_mesh->getWorld();
@@ -147,6 +166,10 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 
 	g_shader->RenderPrepare(&cb);
 	g_ground->Render(g_shader);
+
+	mat = XMLoadFloat4x4(&(g_marine->getWorld()));
+	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
+	g_shader->RenderPrepare(&cb);
 	g_marine->Render(g_shader);
 	
 }
