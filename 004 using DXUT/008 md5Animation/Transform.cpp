@@ -25,7 +25,6 @@ void Transform::updateMatrix()
 
 	XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
 
-
 	XMVECTOR vright		= XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR vup		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR vforward	= XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -137,8 +136,8 @@ void Transform::setTarget(XMFLOAT3 f3)
 	//Matrix -> Quaternion
 	XMVECTOR q = XMQuaternionRotationMatrix(mworld);
 
+	// 쿼터니언에서 오일러 각을 구한다.
 	XMFLOAT4 euler = quaternionToEuler(q);
-
 	yawAngle_ = euler.x;
 	pitchAngle_ = euler.y;
 	

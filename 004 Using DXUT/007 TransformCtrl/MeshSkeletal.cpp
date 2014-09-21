@@ -18,17 +18,22 @@ MeshSkeletal::~MeshSkeletal()
 
 Mesh* MeshSkeletal::Clone()
 {
-	Mesh* pmesh = new MeshSkeletal;
+	Mesh* mesh = new MeshSkeletal;
 
-	/*
-		원본의 인덱스 , 버텍스 버퍼를 공유한다.
-	*/
-	/*pmesh->m_vertexbuffer = m_vertexbuffer;
-	pmesh->m_indexbuffer = m_indexbuffer;
-	pmesh->m_indexCnt = m_indexCnt;
-	pmesh->m_bClone = true;*/
+	// 동적 형변환 - 실패시 NULL 반환
+	MeshSkeletal* ms = dynamic_cast<MeshSkeletal*>(mesh);
+	if (ms == nullptr)
+	{
+		delete mesh;
+		return nullptr;
+	}
 
-	return pmesh;
+	ms->m_model = m_model;
+	ms->m_textures = m_textures;
+	ms->m_textureNames = m_textureNames;
+	ms->m_bCloned = TRUE;
+
+	return mesh;
 }
 
 HRESULT MeshSkeletal::Initialize()
