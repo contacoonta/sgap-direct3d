@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "007 TransformCtrl", "007 Tr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "008 Md5Animation", "008 md5Animation\008 md5Animation.vcxproj", "{6B81C9E0-E272-4D1B-9953-68BE78E457DD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "009 StrategyCamera", "009 StrategyCamera\009 StrategyCamera.vcxproj", "{10B905C8-0896-49E7-B245-7242291C01D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -153,6 +155,18 @@ Global
 		{6B81C9E0-E272-4D1B-9953-68BE78E457DD}.Release|Win32.Build.0 = Release|Win32
 		{6B81C9E0-E272-4D1B-9953-68BE78E457DD}.Release|x64.ActiveCfg = Release|x64
 		{6B81C9E0-E272-4D1B-9953-68BE78E457DD}.Release|x64.Build.0 = Release|x64
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Debug|Win32.Build.0 = Debug|Win32
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Debug|x64.ActiveCfg = Debug|x64
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Debug|x64.Build.0 = Debug|x64
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Profile|Win32.ActiveCfg = Profile|Win32
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Profile|Win32.Build.0 = Profile|Win32
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Profile|x64.ActiveCfg = Profile|x64
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Profile|x64.Build.0 = Profile|x64
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Release|Win32.ActiveCfg = Release|Win32
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Release|Win32.Build.0 = Release|Win32
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Release|x64.ActiveCfg = Release|x64
+		{10B905C8-0896-49E7-B245-7242291C01D2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

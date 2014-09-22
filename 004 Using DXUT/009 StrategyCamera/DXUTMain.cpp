@@ -67,6 +67,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 {
 	HRESULT hr;
 
+
 	//view 매트릭스 설정
 	XMVECTOR eye		= { 5.0f, 5.0f, -5.0f, 0.0f };
 	XMVECTOR lookat		= { 0.0f, 0.0f, 0.0f, 0.0f };

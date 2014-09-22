@@ -175,3 +175,18 @@ XMFLOAT4 Transform::quaternionToEuler(const XMVECTOR q)
 
 	return euler;
 }
+
+/*
+	나와 타겟의 거리 구하기
+*/
+float Transform::lengthTarget(XMFLOAT3 f3)
+{
+	// 타겟 위치
+	XMVECTOR vtarget = XMLoadFloat3(&f3);
+	// 나의 위치
+	XMVECTOR vpos	= getPositionXM();
+	// 거리 구하기
+	XMVECTOR vlength = XMVector3Length(vtarget - vpos);
+
+	return XMVectorGetX(vlength);
+}
