@@ -92,8 +92,8 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\..\Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DXUT</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
@@ -108,8 +108,8 @@
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\..\Bin\Desktop_2012\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\..\Bin\Desktop_2012\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DXUT</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">

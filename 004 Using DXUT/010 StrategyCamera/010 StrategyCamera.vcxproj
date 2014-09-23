@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>009 StrategyCamera</ProjectName>
+    <ProjectName>010 StrategyCamera</ProjectName>
     <ProjectGuid>{10B905C8-0896-49E7-B245-7242291C01D2}</ProjectGuid>
     <RootNamespace>Tutorial08</RootNamespace>
     <Keyword>Win32Proj</Keyword>

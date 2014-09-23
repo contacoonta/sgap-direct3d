@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns:atg="http://atg.xbox.com" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DXUTMain.cpp" />
+    <ClCompile Include="LoaderObj.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshStatic.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="LoaderMd5.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshSkeletal.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CompileShader.cpp">
+      <Filter>manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="DwriteText.cpp">
+      <Filter>manager</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LoaderObj.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshStatic.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="LoaderMd5.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshSkeletal.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="CompileShader.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="base.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="DwriteText.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="mesh">
+      <UniqueIdentifier>{47e99d0b-f784-4678-82fb-7d662c7257d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="manager">
+      <UniqueIdentifier>{a40f787a-63e1-458f-8993-01847e93ea7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{49ab104d-f8b8-4b71-a119-a6044b9b802c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
