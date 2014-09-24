@@ -23,7 +23,7 @@ void Transform::updateMatrix()
 	XMFLOAT4X4 frot;
 	XMStoreFloat4x4(&frot, mrot);
 
-	//XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
+	XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
 
 	XMVECTOR vright		= XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR vup		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);

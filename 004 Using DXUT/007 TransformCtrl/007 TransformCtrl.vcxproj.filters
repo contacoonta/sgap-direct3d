@@ -2,6 +2,8 @@
 <Project ToolsVersion="4.0" xmlns:atg="http://atg.xbox.com" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="DXUTMain.cpp" />
+    <ClCompile Include="CompileShader.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="LoaderObj.cpp">
       <Filter>mesh</Filter>
     </ClCompile>
@@ -17,17 +19,12 @@
     <ClCompile Include="LoaderMd5.cpp">
       <Filter>mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>manager</Filter>
-    </ClCompile>
-    <ClCompile Include="CompileShader.cpp">
-      <Filter>manager</Filter>
-    </ClCompile>
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CompileShader.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="base.h" />
     <ClInclude Include="LoaderObj.h">
       <Filter>mesh</Filter>
     </ClInclude>
@@ -43,28 +40,11 @@
     <ClInclude Include="LoaderMd5.h">
       <Filter>mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="base.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>manager</Filter>
-    </ClInclude>
-    <ClInclude Include="CompileShader.h">
-      <Filter>manager</Filter>
-    </ClInclude>
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="mesh">
       <UniqueIdentifier>{47e99d0b-f784-4678-82fb-7d662c7257d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="common">
-      <UniqueIdentifier>{6d406975-26f7-4343-a516-5bb6afefea0e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="manager">
-      <UniqueIdentifier>{0339ce78-dc12-4b2f-881e-645b88a24f66}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

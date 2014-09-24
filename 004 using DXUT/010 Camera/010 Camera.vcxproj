@@ -27,8 +27,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>010 StrategyCamera</ProjectName>
-    <ProjectGuid>{10B905C8-0896-49E7-B245-7242291C01D2}</ProjectGuid>
+    <ProjectName>010 Camera</ProjectName>
+    <ProjectGuid>{ABB3BBD0-0159-4E32-8371-6535DE46660D}</ProjectGuid>
     <RootNamespace>Tutorial08</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -128,7 +128,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>..\DXUT\Core;..\DXUT\Optional;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\DXUT\Core;..\DXUT\Optional;..\LibFont\FW1FontWrapper\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -211,7 +211,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>..\DXUT\Core;..\DXUT\Optional;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\DXUT\Core;..\DXUT\Optional;..\LibFont\FW1FontWrapper\\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -377,10 +377,14 @@
     <ProjectReference Include="..\DXUT\Optional\DXUTOpt_2012.vcxproj">
       <Project>{61b333c2-c4f7-4cc1-a9bf-83f6d95588eb}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\LibFont\FW1FontWrapper\FW1FontWrapper.vcxproj">
+      <Project>{9f62db07-ea42-4388-82ab-e6faa371f353}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CompileShader.cpp" />
+    <ClCompile Include="DwriteText.cpp" />
     <ClCompile Include="DXUTMain.cpp" />
     <ClCompile Include="LoaderMd5.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -396,6 +400,7 @@
     <ClInclude Include="base.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CompileShader.h" />
+    <ClInclude Include="DwriteText.h" />
     <ClInclude Include="LoaderMd5.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>

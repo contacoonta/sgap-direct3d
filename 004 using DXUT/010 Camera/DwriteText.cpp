@@ -40,12 +40,12 @@ void DwriteText::SetColor(_In_ const XMVECTOR color)
 	// (Red / Green / Blue / Alpha)
 	//m_color = color;
 
-	/*float colR = (color.m128_f32[0]);
+	float colR = (color.m128_f32[0]);
 	float colG = (color.m128_f32[1]);
 	float colB = (color.m128_f32[2]);
 	float colA = (color.m128_f32[3]);
 
-	UINT m_color;*/	
+	
 }
 
 void DwriteText::SetFontSize(_In_ FLOAT fontsize)

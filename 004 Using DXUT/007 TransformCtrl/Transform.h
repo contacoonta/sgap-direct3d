@@ -1,3 +1,9 @@
+/*
+	ws	: 앞뒤
+	ad	: 사이드
+	qe	: 회전
+	zx	: Pitch , Yaw
+*/
 #pragma once
 
 using namespace DirectX;
@@ -8,9 +14,10 @@ public:
 	Transform();
 	virtual ~Transform();
 
+	virtual void	UpdateMatrix();
+
 	void			setWorld(XMFLOAT4X4 m)		{ m_world = m; }
-	XMFLOAT4X4		getWorld() const			{ return m_world; }
-	XMMATRIX		getWorldXM() const			{ return XMLoadFloat4x4(&m_world);	}
+	XMFLOAT4X4		getWorld()					{ return m_world; }
 
 	//position
 	XMVECTOR		getPositionXM() const;
@@ -26,24 +33,15 @@ public:
 	void			rotatePitch(float angle);
 	void			rotateYaw(float angle);
 
-	//target
-	void			setTarget(XMFLOAT3 f3);
-
 	//scale	
 
-private:
-	void		updateMatrix();
-	XMFLOAT4	quaternionToEuler(const XMVECTOR q);
-
 protected:
-	XMFLOAT3	m_lookat	= XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT3	m_position	= XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT4X4	m_world;
+	XMFLOAT3		m_position	= XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT4X4		m_world		= XMFLOAT4X4();
 
 private:
-	XMFLOAT3	posDelta_	= XMFLOAT3(0, 0, 0);		// 상대적 위치 변화값
-	FLOAT		pitchAngle_ = 0.0f;						// pitch angle ( Euler Angle )
-	FLOAT		yawAngle_	= 0.0f;						// yaw angle ( Euler Angle )
-	XMVECTOR	quaternion_ = XMVectorSet(0, 0, 0, 0);	// 정확한 회전을 위한 Quaternion 저장
+	XMFLOAT3		m_right		= XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3		m_up		= XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3		m_lookat	= XMFLOAT3(0.0f, 0.0f, 1.0f);
 };
 

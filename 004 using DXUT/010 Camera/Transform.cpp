@@ -20,10 +20,6 @@ void Transform::updateMatrix()
 	XMVECTOR quaternion_ = XMQuaternionRotationRollPitchYaw(pitchAngle_, yawAngle_, 0.0f);
 	XMMATRIX mrot = XMMatrixRotationQuaternion(quaternion_);
 	
-	XMFLOAT4X4 frot;
-	XMStoreFloat4x4(&frot, mrot);
-
-	//XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
 
 	XMVECTOR vright		= XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR vup		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -46,13 +42,24 @@ void Transform::updateMatrix()
 	//forward 벡터로 바라볼 곳의 위치를 구한다.
 	XMVECTOR vlookat	= vpos + vforward;
 	XMStoreFloat3(&m_lookat, vlookat);
-
+	
 	//현재 오브젝트 기준의 View 행렬을 만들고
 	XMMATRIX mview = XMMatrixLookAtLH(vpos, vlookat, vup);
 
 	//View 의 역행렬을 이용해 , World 행렬을 구한다.
 	XMMATRIX mworld = XMMatrixInverse(nullptr, mview);
 	XMStoreFloat4x4(&m_world, mworld);
+}
+
+
+XMVECTOR Transform::getLookatXM() const
+{
+	return XMLoadFloat3(&m_lookat);
+}
+
+XMFLOAT3 Transform::getLookat() const
+{
+	return m_lookat;
 }
 
 
@@ -164,7 +171,7 @@ XMFLOAT4 Transform::quaternionToEuler(const XMVECTOR q)
 
 	//pitch
 	euler.y = asinf(2.0f * (w*x - y*z)); // rotation about x-axis 
-
+	
 	//yaw
 	euler.x = atan2f(2.0f * (x*z + w*y), (-sqx - sqy + sqz + sqw)); // rotation about y-axis 
 
@@ -174,19 +181,4 @@ XMFLOAT4 Transform::quaternionToEuler(const XMVECTOR q)
 	euler.w = 0.0f;
 
 	return euler;
-}
-
-/*
-	나와 타겟의 거리 구하기
-*/
-float Transform::lengthTarget(XMFLOAT3 f3)
-{
-	// 타겟 위치
-	XMVECTOR vtarget = XMLoadFloat3(&f3);
-	// 나의 위치
-	XMVECTOR vpos	= getPositionXM();
-	// 거리 구하기
-	XMVECTOR vlength = XMVector3Length(vtarget - vpos);
-
-	return XMVectorGetX(vlength);
 }

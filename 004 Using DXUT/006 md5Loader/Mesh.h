@@ -3,7 +3,7 @@
 	Static Mesh ( .obj )
 	- 배경 , 장식품 , 고정 오브젝트
 
-	Animated Mash ( .md5mesh .md5anim )
+	Animated Mesh ( .md5mesh .md5anim )
 	- 캐릭터
 */
 

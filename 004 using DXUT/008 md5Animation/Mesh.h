@@ -26,7 +26,7 @@ public:
 	
 public:
 	virtual HRESULT		Initialize()							{ return S_OK; }
-	virtual void		Update(float deltaTime)					{}
+	virtual	void		Update(float deltaTime)					{}
 	virtual void		Render( CompileShader* pshader )		{}
 	virtual void		Release()								{}
 

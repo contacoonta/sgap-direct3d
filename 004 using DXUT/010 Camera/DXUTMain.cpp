@@ -1,20 +1,18 @@
-/*
-	Mesh Å¬·¡½º¸¦ ¸¸µé±â ]  with DXUT
-
-	- 1. Box ¹öÅØ½º Á¤º¸ ¸¸µé±â
-	- 2. VertexBuffer , IndexBuffer ¸¸µé±â
-	- 3. Shader ¸¦ ¸¸µé°í ¿¬°áÇÏ±â
-	- 4. È­¸é Rendering
+ï»¿/*
+	Direct Write ë¡œ í°íŠ¸ ì¶œë ¥í•˜ê¸°
 */
 
 
 #include "DXUT.h"
+#include "FW1Precompiled.h"
 #include "SDKmisc.h"
 #include "DXUTcamera.h"
 #include <DirectXMath.h>
+#include "DwriteText.h"
 
 #include "CompileShader.h"
 #include "Transform.h"
+#include "Camera.h"
 #include "Mesh.h"
 #include "MeshStatic.h"
 #include "MeshSkeletal.h"
@@ -25,8 +23,9 @@
 #pragma warning( disable : 4100 )
 
 
-CModelViewerCamera	g_camera;
+//CModelViewerCamera	g_camera;
 
+Camera*				g_camera = nullptr;
 CompileShader*		g_shader = nullptr;
 
 Mesh*				g_ground = nullptr;
@@ -44,18 +43,28 @@ HRESULT CALLBACK OnD3D11DeviceCreated(_In_ ID3D11Device* pd3dDevice, _In_ const 
 {
 	HRESULT hr = S_OK;
 
-	// ÃÊ±âÈ­ ÄÚµå ÀÛ¼º...
+	g_camera = new Camera;
 
+	// ì´ˆê¸°í™” ì½”ë“œ ì‘ì„±...
 	CompileShader::Create(&g_shader, L"Shaders\\lightShader.fx");
 
 	LoaderObj loaderobj;
-	g_ground = loaderobj.BuildMeshFromFile(L"Models\\ground.obj", L"Textures\\grass.jpg");
+	g_ground = loaderobj.BuildMeshFromFile(L"Models\\ground.obj", L"Textures\\ground_weeds.jpg");
 
 	LoaderMd5 loadermd5;
+	// ì§ˆëŸ¿ ë©”ì‹œ
 	g_zealot = loadermd5.BuildMeshFromFile(L"Models\\zealot.md5mesh");
 	g_zealot->setPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
+	// ì§ˆëŸ¿ ì• ë‹ˆë©”ì´ì…˜
 	loadermd5.BuildAnimationFromFile(L"Models\\zealot_idle.md5anim", g_zealot);
 	loadermd5.BuildAnimationFromFile(L"Models\\zealot_walk.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_turnleft.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_turnright.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_attack1.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_attack2.md5anim", g_zealot);
+	
+	TEXT.SetColor(Colors::Aqua);
+	
 
 	return S_OK;
 }
@@ -67,17 +76,16 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 {
 	HRESULT hr;
 
+	g_camera->setEye(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	
+	//ë°±ë·° ì‹œì  ( 3ì¸ì¹¨ ê²Œì„ )
+	g_camera->setOffset(XMFLOAT3(-0.5f, 2.0f, 2.5f));
+	//ì¿¼í„°ë·° ì‹œì  ( ë””ì•„ë¸”ë¡œ )
+	//g_camera->setOffset(XMFLOAT3(1.0f, 4.0f, -1.0f));
+	
+	g_camera->setLookat(XMFLOAT3(0.0f, 1.0f, -1.0f));
 
-	//view ¸ÅÆ®¸¯½º ¼³Á¤
-	XMVECTOR eye		= { 5.0f, 5.0f, -5.0f, 0.0f };
-	XMVECTOR lookat		= { 0.0f, 0.0f, 0.0f, 0.0f };
-	g_camera.SetViewParams(eye, lookat);	
-
-	//proj ¸ÅÆ®¸¯½º ¼³Á¤
-	float fratio = pBackBufferSurfaceDesc->Width / pBackBufferSurfaceDesc->Height;
-	g_camera.SetProjParams(XM_PI / 4, fratio, 0.1f, 1000.0f);
-	g_camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
-	g_camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_RIGHT_BUTTON);
+	g_camera->computeProjMat();
 	
     return S_OK;
 }
@@ -86,7 +94,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ void* pUserContext)
 {
 
-	// ¾ÕµÚ
+	// ì•ë’¤
 	if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState('w') & 0x8000)
 	{
 		g_zealot->moveForward(5.0f * fElapsedTime);
@@ -98,14 +106,14 @@ void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ v
 
 	if (GetAsyncKeyState('Q') & 0x8000 || GetAsyncKeyState('q') & 0x8000)
 	{
-		g_zealot->moveStrafe(5.0f * fElapsedTime);
+		g_zealot->moveStrafe(-5.0f * fElapsedTime);
 	}
 	if (GetAsyncKeyState('E') & 0x8000 || GetAsyncKeyState('e') & 0x8000)
 	{
-		g_zealot->moveStrafe(-5.0f * fElapsedTime);
+		g_zealot->moveStrafe(5.0f * fElapsedTime);
 	}
 
-	// ÁÂ¿ì È¸Àü
+	// ì¢Œìš° íšŒì „
 	if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState('a') & 0x8000)
 	{
 		g_zealot->rotateYaw(-5.0f * fElapsedTime);
@@ -115,15 +123,25 @@ void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ v
 		g_zealot->rotateYaw(5.0f * fElapsedTime);
 	}
 
-	// Å¸°Ù ¹Ù¶óº¸±â
+
+	//íƒ€ê²Ÿ ë°”ë¼ë³´ê¸°
 	if (GetAsyncKeyState('R') & 0x8000 || GetAsyncKeyState('r') & 0x8000)
 	{
-		XMFLOAT3 target = XMFLOAT3(0.0f, 0.25f, 0.0f);
-		g_zealot->setTarget(target);
+		XMFLOAT3 ftarget = XMFLOAT3(0, 0.25f, 0);
+		g_zealot->setTarget(ftarget);
 	}
 	
+
 	g_zealot->Update(fElapsedTime);
-	g_camera.FrameMove(fElapsedTime);
+
+
+	// ì „ëµ ì‹œì  ë·°
+	/*g_camera->setEye(g_zealot->getPosition());
+	g_camera->setLookat(g_zealot->getPosition());*/
+
+	// 1ì¸ì¹­ ì‹œì  ë·°
+	g_camera->AttachTarget(g_zealot);
+
 }
 
 void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
@@ -137,9 +155,9 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 	CONSTANTBUFFER cb;
 	ZeroMemory(&cb, sizeof(CONSTANTBUFFER));
 	XMMATRIX mat = XMLoadFloat4x4(&(g_ground->getWorld()));
-	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
-	XMStoreFloat4x4(&cb.view, XMMatrixTranspose(g_camera.GetViewMatrix()));
-	XMStoreFloat4x4(&cb.projection, XMMatrixTranspose(g_camera.GetProjMatrix()));
+	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));	
+	XMStoreFloat4x4(&cb.view, XMMatrixTranspose(g_camera->getViewXM()));
+	XMStoreFloat4x4(&cb.projection, XMMatrixTranspose(g_camera->getProjXM()));
 
 	/*
 		1 0 0 0	Side (Right)
@@ -158,12 +176,14 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 	g_shader->RenderPrepare(&cb);
 	g_ground->Render(g_shader);
 
-	//marine
+	//zealot
 	mat = XMLoadFloat4x4(&(g_zealot->getWorld()));
 	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
 	g_shader->RenderPrepare(&cb);
 	g_zealot->Render(g_shader);
+
 	
+	TEXT.RenderStrings();
 }
 
 void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
@@ -177,15 +197,14 @@ void CALLBACK OnD3D11DeviceDestroyed(void* pUserContext)
 	SAFE_DELETE(g_zealot);
 
 	CompileShader::Delete(&g_shader);
-
+	
+	SAFE_DELETE(g_camera);
 }
 
 
 LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
                           bool* pbNoFurtherProcessing, void* pUserContext )
 {
-
-	g_camera.HandleMessages(hWnd, uMsg, wParam, lParam);
 
     return 0;
 }
@@ -194,32 +213,32 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow )
 {
-    // µğ¹ÙÀÌ½º »ı¼ºÈÄ »èÁ¦¸¦ ¾ÈÇÏ¸é, °æ°í
+    // ë””ë°”ì´ìŠ¤ ìƒì„±í›„ ì‚­ì œë¥¼ ì•ˆí•˜ë©´, ê²½ê³ 
 #ifdef _DEBUG
     _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
-	// ¾÷µ¥ÀÌÆ®
+	// ì—…ë°ì´íŠ¸
 	DXUTSetCallbackFrameMove(OnFrameMove);
-	// Å°º¸µå
+	// í‚¤ë³´ë“œ
 	//DXUTSetCallbackKeyboard();
-	// ¸Ş½ÃÁö ÇÁ·Î½ÃÁ®
+	// ë©”ì‹œì§€ í”„ë¡œì‹œì ¸
 	DXUTSetCallbackMsgProc(MsgProc);
 
 
 	DXUTSetCallbackD3D11DeviceCreated(OnD3D11DeviceCreated);
-	// È­¸é Å©±â º¯È¯, ÀÌµ¿ , ÀüÈ¯ È£ÃâµÇ´Â ÇÔ¼ö
+	// í™”ë©´ í¬ê¸° ë³€í™˜, ì´ë™ , ì „í™˜ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	DXUTSetCallbackD3D11SwapChainResized(OnD3D11ResizedSwapChain);
 	DXUTSetCallbackD3D11FrameRender(OnD3D11FrameRender);
-	// È­¸é Å©±â º¯È¯, ÀÌµ¿ , ÀüÈ¯ È£ÃâµÇ´Â ÇÔ¼ö
+	// í™”ë©´ í¬ê¸° ë³€í™˜, ì´ë™ , ì „í™˜ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	DXUTSetCallbackD3D11SwapChainReleasing(OnD3D11ReleasingSwapChain);
 	DXUTSetCallbackD3D11DeviceDestroyed(OnD3D11DeviceDestroyed);
     
 
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
-    DXUTCreateWindow( L"006 MD5Animation" );
-    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 1024, 768 );
+    DXUTCreateWindow( L"010 Camera" );
+    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
     DXUTMainLoop();
 	
     return DXUTGetExitCode();

@@ -34,11 +34,6 @@ Mesh* LoaderObj::BuildMeshFromFile(LPCWSTR wfilename, LPCWSTR wtexname)
 	// 파일 읽기 실패
 	if (fin.fail())
 	{
-		std::wstring message = L"Could not open: ";
-		message += wfilename;
-
-		MessageBox(0, message.c_str(), L"Error", MB_OK);
-
 		SAFE_DELETE(mesh);
 		return nullptr;
 	}

@@ -37,7 +37,7 @@ HRESULT MeshSkeletal::Initialize()
 
 
 void MeshSkeletal::Update(float deltaTime)
-{
+{	
 	UpdateFrame(deltaTime, 1);
 }
 

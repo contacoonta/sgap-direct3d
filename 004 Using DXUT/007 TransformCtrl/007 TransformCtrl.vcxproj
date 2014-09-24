@@ -28,7 +28,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>007 TransformCtrl</ProjectName>
-    <ProjectGuid>{C653E088-CF81-49DD-9C1D-E9D3A1F70C56}</ProjectGuid>
+    <ProjectGuid>{BF07D38D-1A4D-4ADB-B231-32087235A652}</ProjectGuid>
     <RootNamespace>Tutorial08</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

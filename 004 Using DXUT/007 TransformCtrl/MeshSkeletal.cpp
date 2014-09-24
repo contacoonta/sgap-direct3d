@@ -19,7 +19,6 @@ MeshSkeletal::~MeshSkeletal()
 Mesh* MeshSkeletal::Clone()
 {
 	Mesh* mesh = new MeshSkeletal;
-
 	// 동적 형변환 - 실패시 NULL 반환
 	MeshSkeletal* ms = dynamic_cast<MeshSkeletal*>(mesh);
 	if (ms == nullptr)
@@ -28,10 +27,14 @@ Mesh* MeshSkeletal::Clone()
 		return nullptr;
 	}
 
+	/*
+		원본의 인덱스 , 버텍스 버퍼를 공유한다.
+	*/
 	ms->m_model = m_model;
 	ms->m_textures = m_textures;
 	ms->m_textureNames = m_textureNames;
-	ms->m_bCloned = TRUE;
+	
+	ms->m_bCloned = true;
 
 	return mesh;
 }

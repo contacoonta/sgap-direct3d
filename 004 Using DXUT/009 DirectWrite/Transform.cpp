@@ -23,7 +23,7 @@ void Transform::updateMatrix()
 	XMFLOAT4X4 frot;
 	XMStoreFloat4x4(&frot, mrot);
 
-	//XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
+	XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
 
 	XMVECTOR vright		= XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR vup		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -164,7 +164,7 @@ XMFLOAT4 Transform::quaternionToEuler(const XMVECTOR q)
 
 	//pitch
 	euler.y = asinf(2.0f * (w*x - y*z)); // rotation about x-axis 
-
+	
 	//yaw
 	euler.x = atan2f(2.0f * (x*z + w*y), (-sqx - sqy + sqz + sqw)); // rotation about y-axis 
 

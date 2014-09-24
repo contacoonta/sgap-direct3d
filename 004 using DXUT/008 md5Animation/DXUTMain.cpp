@@ -52,11 +52,17 @@ HRESULT CALLBACK OnD3D11DeviceCreated(_In_ ID3D11Device* pd3dDevice, _In_ const 
 	g_ground = loaderobj.BuildMeshFromFile(L"Models\\ground.obj", L"Textures\\grass.jpg");
 
 	LoaderMd5 loadermd5;
+	// 질럿 메시
 	g_zealot = loadermd5.BuildMeshFromFile(L"Models\\zealot.md5mesh");
 	g_zealot->setPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
+	// 질럿 애니메이션
 	loadermd5.BuildAnimationFromFile(L"Models\\zealot_idle.md5anim", g_zealot);
 	loadermd5.BuildAnimationFromFile(L"Models\\zealot_walk.md5anim", g_zealot);
-
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_turnleft.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_turnright.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_attack1.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_attack2.md5anim", g_zealot);
+	
 	return S_OK;
 }
 
@@ -66,6 +72,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 										  void* pUserContext )
 {
 	HRESULT hr;
+
 
 	//view 매트릭스 설정
 	XMVECTOR eye		= { 5.0f, 5.0f, -5.0f, 0.0f };
@@ -114,14 +121,17 @@ void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ v
 		g_zealot->rotateYaw(5.0f * fElapsedTime);
 	}
 
-	// 타겟 바라보기
+
+	//타겟 바라보기
 	if (GetAsyncKeyState('R') & 0x8000 || GetAsyncKeyState('r') & 0x8000)
 	{
-		XMFLOAT3 target = XMFLOAT3(0.0f, 0.25f, 0.0f);
-		g_zealot->setTarget(target);
+		XMFLOAT3 ftarget = XMFLOAT3(0, 0.25f, 0);
+		g_zealot->setTarget(ftarget);
 	}
 	
+
 	g_zealot->Update(fElapsedTime);
+	
 	g_camera.FrameMove(fElapsedTime);
 }
 
@@ -217,8 +227,8 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
-    DXUTCreateWindow( L"006 MD5Animation" );
-    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 1024, 768 );
+    DXUTCreateWindow( L"006 MD5Mesh" );
+    DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
     DXUTMainLoop();
 	
     return DXUTGetExitCode();

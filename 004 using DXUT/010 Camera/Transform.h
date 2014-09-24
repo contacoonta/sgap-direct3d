@@ -12,6 +12,10 @@ public:
 	XMFLOAT4X4		getWorld() const			{ return m_world; }
 	XMMATRIX		getWorldXM() const			{ return XMLoadFloat4x4(&m_world);	}
 
+	//lookat
+	XMVECTOR		getLookatXM() const;
+	XMFLOAT3		getLookat() const;
+
 	//position
 	XMVECTOR		getPositionXM() const;
 	XMFLOAT3		getPosition() const;
@@ -28,7 +32,6 @@ public:
 
 	//target
 	void			setTarget(XMFLOAT3 f3);
-	float			lengthTarget(XMFLOAT3 f3);
 
 	//scale	
 

@@ -14,6 +14,7 @@
 #include <DirectXMath.h>
 
 #include "CompileShader.h"
+#include "Transform.h"
 #include "Mesh.h"
 #include "MeshStatic.h"
 #include "MeshSkeletal.h"
@@ -30,6 +31,7 @@ CompileShader*		g_shader = nullptr;
 
 Mesh*				g_ground = nullptr;
 Mesh*				g_marine = nullptr;
+Mesh*				g_marineClone = nullptr;
 XMMATRIX			g_matLight;
 
 
@@ -52,7 +54,23 @@ HRESULT CALLBACK OnD3D11DeviceCreated(_In_ ID3D11Device* pd3dDevice, _In_ const 
 
 	LoaderMd5 loadermd5;
 	g_marine = loadermd5.BuildMeshFromFile(L"Models\\zealot.md5mesh");
+	g_marineClone = g_marine->Clone();
 	
+	
+	/*XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	XMMATRIX mtrans = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	XMMATRIX world = mscale * mtrans;
+	XMFLOAT4X4 fworld;
+	XMStoreFloat4x4(&fworld, world);	
+	g_ground->setWorld(fworld);
+	g_marine->setWorld(fworld);*/
+	
+	/*XMMATRIX mtrans2 = XMMatrixTranslation(2.0f, 0.0f, 0.0f);
+	world = mscale * mtrans2;
+	XMFLOAT4X4 fworld2;
+	XMStoreFloat4x4(&fworld2, world);
+	g_marineClone->setWorld(fworld2);*/
+
 	return S_OK;
 }
 
@@ -81,47 +99,38 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 
 void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ void* pUserContext)
 {
-	
+
+	// 앞뒤
 	if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState('w') & 0x8000)
 	{
-		g_marine->moveForward(10.0f * fElapsedTime);
+		g_marine->moveForward(5.0f * fElapsedTime);
 	}
 	if (GetAsyncKeyState('S') & 0x8000 || GetAsyncKeyState('s') & 0x8000)
 	{
-		g_marine->moveForward(-10.0f * fElapsedTime);
+		g_marine->moveForward(-5.0f * fElapsedTime);
 	}
+
 	if (GetAsyncKeyState('Q') & 0x8000 || GetAsyncKeyState('q') & 0x8000)
 	{
-		g_marine->moveStrafe(-10.0f * fElapsedTime);
+		g_marine->moveStrafe(5.0f * fElapsedTime);
 	}
 	if (GetAsyncKeyState('E') & 0x8000 || GetAsyncKeyState('e') & 0x8000)
 	{
-		g_marine->moveStrafe(10.0f * fElapsedTime);
+		g_marine->moveStrafe(-5.0f * fElapsedTime);
 	}
 
+	// 좌우 회전
 	if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState('a') & 0x8000)
 	{
-		g_marine->rotateYaw(-10.0f * fElapsedTime);
+		g_marine->rotateYaw(-5.0f * fElapsedTime);
 	}
 	if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState('d') & 0x8000)
 	{
-		g_marine->rotateYaw(10.0f * fElapsedTime);
+		g_marine->rotateYaw(5.0f * fElapsedTime);
 	}
-
-	if (GetAsyncKeyState('Z') & 0x8000 || GetAsyncKeyState('z') & 0x8000)
-	{
-		g_marine->rotatePitch(-10.0f * fElapsedTime);
-	}
-	if (GetAsyncKeyState('X') & 0x8000 || GetAsyncKeyState('x') & 0x8000)
-	{
-		g_marine->rotatePitch(10.0f * fElapsedTime);
-	}
-
-	if (GetAsyncKeyState('R') & 0x8000 || GetAsyncKeyState('r') & 0x8000)
-	{
-		XMFLOAT3 target = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_marine->setTarget(target);
-	}
+	
+	//g_marine->rotateYaw(1.0f * fElapsedTime);
+	g_marine->UpdateMatrix();
 
 	g_camera.FrameMove(fElapsedTime);
 }
@@ -133,27 +142,38 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::DeepSkyBlue);
 	pd3dImmediateContext->ClearDepthStencilView(DXUTGetD3D11DepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	/*
-		조명 설정
-	*/
-	XMVECTOR v = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
-	XMVECTOR litpos = XMVector4Transform(v, g_matLight);
-	litpos = XMVector4Normalize(litpos);
 	
 	CONSTANTBUFFER cb;
 	ZeroMemory(&cb, sizeof(CONSTANTBUFFER));
+	XMMATRIX mat = XMLoadFloat4x4(&(g_marine->getWorld()));	
+	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
+
+	//cb.world =  g_mesh->getWorld();
 	XMStoreFloat4x4(&cb.view, XMMatrixTranspose(g_camera.GetViewMatrix()));
 	XMStoreFloat4x4(&cb.projection, XMMatrixTranspose(g_camera.GetProjMatrix()));
-	XMStoreFloat4(&cb.litDir, litpos);
-	cb.litCol = XMFLOAT4(0.8f, 0.9f, 0.8f, 1.0f);
+
+	/*
+		1 0 0 0	Side (Right)
+		0 1 0 0	Up
+		0 0 1 0 Forward
+		x y z 1 Position
+	*/
 	
-	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(g_ground->getWorldXM()));
+	//1. XMMATRIX -> FLOAT4X4 
+	XMVECTOR v = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+	XMVECTOR litpos = XMVector4Transform(v, g_matLight);
+	litpos = XMVector4Normalize(litpos);
+	XMStoreFloat4(&cb.litDir, litpos);
+	cb.litCol = XMFLOAT4(0.7f, 0.7f, 0.6f, 1.0f);
+
 	g_shader->RenderPrepare(&cb);
 	g_ground->Render(g_shader);
-
-	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(g_marine->getWorldXM()));
-	g_shader->RenderPrepare(&cb);
 	g_marine->Render(g_shader);
+
+	mat = XMLoadFloat4x4(&(g_marineClone->getWorld()));
+	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
+	g_shader->RenderPrepare(&cb);
+	g_marineClone->Render(g_shader);
 	
 }
 
@@ -164,8 +184,9 @@ void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
 
 void CALLBACK OnD3D11DeviceDestroyed(void* pUserContext)
 {
-	SAFE_DELETE(g_marine);
 	SAFE_DELETE(g_ground);
+	SAFE_DELETE(g_marine);
+	SAFE_DELETE(g_marineClone);
 
 	CompileShader::Delete(&g_shader);
 
@@ -209,7 +230,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
-    DXUTCreateWindow( L"007 Transform Controller" );
+    DXUTCreateWindow( L"006 MD5Mesh" );
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
     DXUTMainLoop();
 	

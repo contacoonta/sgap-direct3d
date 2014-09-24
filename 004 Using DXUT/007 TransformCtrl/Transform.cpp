@@ -1,9 +1,6 @@
 #include "DXUT.h"
 #include "Transform.h"
 
-#include <math.h>
-using namespace DirectX;
-
 
 Transform::Transform()
 {
@@ -14,46 +11,64 @@ Transform::~Transform()
 {
 }
 
-void Transform::updateMatrix()
+void Transform::UpdateMatrix()
 {
-	//XMMATRIX mrot = XMMatrixRotationRollPitchYaw(pitchAngle_, yawAngle_, 0.0f);
-	XMVECTOR quaternion_ = XMQuaternionRotationRollPitchYaw(pitchAngle_, yawAngle_, 0.0f);
-	XMMATRIX mrot = XMMatrixRotationQuaternion(quaternion_);
-	
-	XMFLOAT4X4 frot;
-	XMStoreFloat4x4(&frot, mrot);
+	XMVECTOR R = XMLoadFloat3(&m_right);
+	XMVECTOR U = XMLoadFloat3(&m_up);
+	XMVECTOR L = XMLoadFloat3(&m_lookat);
+	XMVECTOR P = XMLoadFloat3(&m_position);
 
-	XMFLOAT4 eulerQ = quaternionToEuler(quaternion_);
+	/*
+		각 벡터들 직교화
+	*/
+
+	// lookat 벡터를 단위벡터로 만든다.
+	L = XMVector3Normalize(L);
+
+	// up 벡터를 단위벡터로 만든다.
+	U = XMVector3Normalize(XMVector3Cross(L, R));
+
+	// right 벡터를 단위벡터로 만든다.
+	R = XMVector3Cross(U, L);
+
+	/*
+		행렬 성분 채우기
+	*/
+	float x = -XMVectorGetX(XMVector3Dot(P, R));
+	float y = -XMVectorGetX(XMVector3Dot(P, U));
+	float z = -XMVectorGetX(XMVector3Dot(P, L));
+
+	XMStoreFloat3(&m_right, R);
+	XMStoreFloat3(&m_up, U);
+	XMStoreFloat3(&m_lookat, L);
 
 
-	XMVECTOR vright		= XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	XMVECTOR vup		= XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR vforward	= XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	/*
+		1 0 0 0	Side (Right)
+		0 1 0 0	Up
+		0 0 1 0 Forward
+		x y z 1 Position
+	*/
 
-	vright				= XMVector3TransformCoord(vright, mrot);
-	vup					= XMVector3TransformCoord(vup, mrot);
-	vforward			= XMVector3TransformCoord(vforward, mrot);
-	XMVECTOR vdelta		= XMLoadFloat3(&posDelta_);
-	vdelta				= XMVector3TransformCoord(vdelta, mrot);
-	
-	// 포지션의 변화값은 초기화 한다.
-	posDelta_			= XMFLOAT3(0,0,0);
+	m_world(0, 0) = m_right.x;
+	m_world(1, 0) = m_right.y;
+	m_world(2, 0) = m_right.z;
+	m_world(3, 0) = x;
 
-	// 포지션의 월드 좌표를 계산한다.
-	XMVECTOR vpos		= XMLoadFloat3(&m_position);
-	vpos				+= vdelta;
-	XMStoreFloat3(&m_position, vpos);
+	m_world(0, 1) = m_up.x;
+	m_world(1, 1) = m_up.y;
+	m_world(2, 1) = m_up.z;
+	m_world(3, 1) = y;
 
-	//forward 벡터로 바라볼 곳의 위치를 구한다.
-	XMVECTOR vlookat	= vpos + vforward;
-	XMStoreFloat3(&m_lookat, vlookat);
+	m_world(0, 2) = m_lookat.x;
+	m_world(1, 2) = m_lookat.y;
+	m_world(2, 2) = m_lookat.z;
+	m_world(3, 2) = z;
 
-	//현재 오브젝트 기준의 View 행렬을 만들고
-	XMMATRIX mview = XMMatrixLookAtLH(vpos, vlookat, vup);
-
-	//View 의 역행렬을 이용해 , World 행렬을 구한다.
-	XMMATRIX mworld = XMMatrixInverse(nullptr, mview);
-	XMStoreFloat4x4(&m_world, mworld);
+	m_world(0, 3) = 0.0f;
+	m_world(1, 3) = 0.0f;
+	m_world(2, 3) = 0.0f;
+	m_world(3, 3) = 1.0f;
 }
 
 
@@ -70,30 +85,34 @@ XMFLOAT3 Transform::getPosition() const
 void Transform::setPositionXM(XMVECTOR v)
 {
 	XMStoreFloat3(&m_position, v);
-
-	updateMatrix();
 }
 
 void Transform::setPosition(XMFLOAT3 f3)
 {
 	m_position = f3;
-
-	updateMatrix();
 }
 
 
 void Transform::moveForward(float value)
 {
-	posDelta_.z -= value;
+	// m_position += value * lookat
+	//XMVECTOR s = XMVectorReplicate(value);
+	XMVECTOR s = XMVectorSet(0.0f, 0.0f, value, 0.0f);
+	XMVECTOR l = XMLoadFloat3(&m_lookat);
+	XMVECTOR p = XMLoadFloat3(&m_position);
 
-	updateMatrix();
+	XMStoreFloat3(&m_position, XMVectorMultiplyAdd(s, l, p));
 }
 
 void Transform::moveStrafe(float value)
 {
-	posDelta_.x -= value;
+	// m_position += value * right
+	//XMVECTOR s = XMVectorReplicate(value);
+	XMVECTOR s = XMVectorSet(value, 0.0f, 0.0f, 0.0f);
+	XMVECTOR r = XMLoadFloat3(&m_right);
+	XMVECTOR p = XMLoadFloat3(&m_position);
 
-	updateMatrix();
+	XMStoreFloat3(&m_position, XMVectorMultiplyAdd(s, r, p));
 }
 
 
@@ -101,78 +120,26 @@ void Transform::moveStrafe(float value)
 //rotation
 void Transform::rotatePitch(float angle)
 {
-	pitchAngle_ += angle;
+	// RIGHT 벡터를 기준으로 회전 매트릭스를 만든다.
+	XMMATRIX r = XMMatrixRotationAxis(XMLoadFloat3(&m_right), angle);
 
-	//피치 한계값
-	pitchAngle_ = std::max(-XM_PI * 0.5f, pitchAngle_);
-	pitchAngle_ = std::min(+XM_PI * 0.5f, pitchAngle_);
-
-	updateMatrix();
+	// 회전한 매트릭스 기준으로 up 벡터 만든다.
+	XMStoreFloat3(&m_up, XMVector3TransformNormal(XMLoadFloat3(&m_up), r));
+	// 회전한 매트릭스 기준으로 lookat 벡터 만든다.
+	XMStoreFloat3(&m_lookat, XMVector3TransformNormal(XMLoadFloat3(&m_lookat), r));
 }
 
 void Transform::rotateYaw(float angle)
 {
-	yawAngle_ += angle;
+	// Y축 기준으로 회전 매트릭스 만든다.
+	XMMATRIX r = XMMatrixRotationY(angle);
 
-	updateMatrix();
-}
+	// 회전한 매트릭스 기준으로 right 벡터 만든다.
+	XMStoreFloat3(&m_right, XMVector3TransformNormal(XMLoadFloat3(&m_right), r));
+	// 회전한 매트릭스 기준으로 up 벡터 만든다.
+	XMStoreFloat3(&m_up, XMVector3TransformNormal(XMLoadFloat3(&m_up), r));
+	// 회전한 매트릭스 기준으로 lookat 벡터 만든다.
+	XMStoreFloat3(&m_lookat, XMVector3TransformNormal(XMLoadFloat3(&m_lookat), r));
 
-
-//target
-void Transform::setTarget(XMFLOAT3 f3)
-{
-	m_lookat = f3;
-		 
-	XMVECTOR veye = XMLoadFloat3(&m_position);
-	XMVECTOR vlookat = XMLoadFloat3(&f3);
-	XMVECTOR vup = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	// eye 와 lookat 을 바꿔서 정면이 타겟을 바라보게 만든다.
-	XMMATRIX mview = XMMatrixLookAtLH(vlookat, veye, vup);
-
-	//View 의 역행렬을 이용해 , World 행렬을 구한다.
-	XMMATRIX mworld = XMMatrixInverse(nullptr, mview);
-	XMStoreFloat4x4(&m_world, mworld);
-
-	//Matrix -> Quaternion
-	XMVECTOR q = XMQuaternionRotationMatrix(mworld);
-
-	XMFLOAT4 euler = quaternionToEuler(q);
-
-	yawAngle_ = euler.x;
-	pitchAngle_ = euler.y;
-	
-	updateMatrix();
-}
-
-
-XMFLOAT4 Transform::quaternionToEuler(const XMVECTOR q)
-{
-	XMFLOAT4 euler;
-	XMStoreFloat4(&euler, q);	
-
-	double x, y, z, w;
-
-	x = euler.x;
-	y = euler.y;
-	z = euler.z;
-	w = euler.w;
-	
-	double sqx = x*x;
-	double sqy = y*y;
-	double sqz = z*z;
-	double sqw = w*w;
-
-	//pitch
-	euler.y = asinf(2.0f * (w*x - y*z)); // rotation about x-axis 
-
-	//yaw
-	euler.x = atan2f(2.0f * (x*z + w*y), (-sqx - sqy + sqz + sqw)); // rotation about y-axis 
-
-	//roll
-	//euler.z = atan2f(2.0f * (x*y + w*z), (-sqx + sqy - sqz + sqw)); // rotation about z-axis 
-	euler.z = 0.0f;
-	euler.w = 0.0f;
-
-	return euler;
+	XMStoreFloat3(&m_position, XMVector3TransformNormal(XMLoadFloat3(&m_position), r));
 }

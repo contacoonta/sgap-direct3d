@@ -113,8 +113,11 @@ typedef struct Model3D
 	int numSubsets;
 	int numJoints;
 
+	// .md5mesh
 	std::vector<Joint> joints;				// Bones
 	std::vector<ModelSubset> subsets;		// Meshes
+
+	// .md5anim
 	std::vector<ModelAnimation> animations;	// Animations
 
 }MODEL3D, *LPMODEL3D;

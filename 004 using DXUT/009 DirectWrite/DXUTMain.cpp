@@ -1,19 +1,17 @@
-/*
-	Mesh Å¬·¡½º¸¦ ¸¸µé±â ]  with DXUT
-
-	- 1. Box ¹öÅØ½º Á¤º¸ ¸¸µé±â
-	- 2. VertexBuffer , IndexBuffer ¸¸µé±â
-	- 3. Shader ¸¦ ¸¸µé°í ¿¬°áÇÏ±â
-	- 4. È­¸é Rendering
+ï»¿/*
+	Direct Write ë¡œ í°íŠ¸ ì¶œë ¥í•˜ê¸°
 */
 
 
 #include "DXUT.h"
+#include "FW1Precompiled.h"
 #include "SDKmisc.h"
 #include "DXUTcamera.h"
 #include <DirectXMath.h>
+#include "DwriteText.h"
 
 #include "CompileShader.h"
+#include "Transform.h"
 #include "Mesh.h"
 #include "MeshStatic.h"
 #include "MeshSkeletal.h"
@@ -25,12 +23,12 @@
 
 
 CModelViewerCamera	g_camera;
+//DwriteText*			g_text	 = nullptr;
 
 CompileShader*		g_shader = nullptr;
 
 Mesh*				g_ground = nullptr;
-Mesh*				g_marine = nullptr;
-Mesh*				g_marineClone = nullptr;
+Mesh*				g_zealot = nullptr;
 XMMATRIX			g_matLight;
 
 
@@ -44,7 +42,8 @@ HRESULT CALLBACK OnD3D11DeviceCreated(_In_ ID3D11Device* pd3dDevice, _In_ const 
 {
 	HRESULT hr = S_OK;
 
-	// ÃÊ±âÈ­ ÄÚµå ÀÛ¼º...
+	// ì´ˆê¸°í™” ì½”ë“œ ì‘ì„±...
+	//g_text = new DwriteText;
 
 	CompileShader::Create(&g_shader, L"Shaders\\lightShader.fx");
 
@@ -52,24 +51,21 @@ HRESULT CALLBACK OnD3D11DeviceCreated(_In_ ID3D11Device* pd3dDevice, _In_ const 
 	g_ground = loaderobj.BuildMeshFromFile(L"Models\\ground.obj", L"Textures\\grass.jpg");
 
 	LoaderMd5 loadermd5;
-	g_marine = loadermd5.BuildMeshFromFile(L"Models\\zealot.md5mesh");
-	g_marineClone = g_marine->Clone();
+	// ì§ˆëŸ¿ ë©”ì‹œ
+	g_zealot = loadermd5.BuildMeshFromFile(L"Models\\zealot.md5mesh");
+	g_zealot->setPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
+	// ì§ˆëŸ¿ ì• ë‹ˆë©”ì´ì…˜
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_idle.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_walk.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_turnleft.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_turnright.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_attack1.md5anim", g_zealot);
+	loadermd5.BuildAnimationFromFile(L"Models\\zealot_attack2.md5anim", g_zealot);
 	
-	
-	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	XMMATRIX mtrans = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-	XMMATRIX world = mscale * mtrans;
-	XMFLOAT4X4 fworld;
-	XMStoreFloat4x4(&fworld, world);	
-	g_ground->setWorld(fworld);
-	g_marine->setWorld(fworld);
-
-
-	XMMATRIX mtrans2 = XMMatrixTranslation(2.0f, 0.0f, 0.0f);
-	world = mscale * mtrans2;
-	XMFLOAT4X4 fworld2;
-	XMStoreFloat4x4(&fworld2, world);
-	g_marineClone->setWorld(fworld2);
+	TEXT.SetColor(Colors::Aqua);
+	TEXT.AddString(L"í…ŒìŠ¤íŠ¸1");
+	TEXT.AddString(L"í…ŒìŠ¤íŠ¸2");
+	TEXT.AddString(L"í…ŒìŠ¤íŠ¸3");
 
 	return S_OK;
 }
@@ -82,12 +78,12 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 	HRESULT hr;
 
 
-	//view ¸ÅÆ®¸¯½º ¼³Á¤
+	//view ë§¤íŠ¸ë¦­ìŠ¤ ì„¤ì •
 	XMVECTOR eye		= { 5.0f, 5.0f, -5.0f, 0.0f };
 	XMVECTOR lookat		= { 0.0f, 0.0f, 0.0f, 0.0f };
 	g_camera.SetViewParams(eye, lookat);	
 
-	//proj ¸ÅÆ®¸¯½º ¼³Á¤
+	//proj ë§¤íŠ¸ë¦­ìŠ¤ ì„¤ì •
 	float fratio = pBackBufferSurfaceDesc->Width / pBackBufferSurfaceDesc->Height;
 	g_camera.SetProjParams(XM_PI / 4, fratio, 0.1f, 1000.0f);
 	g_camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
@@ -99,14 +95,46 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 
 void CALLBACK OnFrameMove(_In_ double fTime, _In_ float fElapsedTime, _In_opt_ void* pUserContext)
 {
-	//static float rot = 0.0f;
-	//rot += fElapsedTime;
-	//XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	//XMMATRIX mrot	= XMMatrixRotationRollPitchYaw(0.0f, 0.0f, rot);
-	//XMMATRIX mtrans = XMMatrixTranslation(20.0f, 50.0f, 0.0f);
 
-	//// gmesh ÀÇ ¿ùµå ¸ÅÆ®¸¯½º -> XMMATRIX
-	//XMMATRIX mParent = XMLoadFloat4x4(&g_marine->getWorld());
+	// ì•ë’¤
+	if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState('w') & 0x8000)
+	{
+		g_zealot->moveForward(5.0f * fElapsedTime);
+	}
+	if (GetAsyncKeyState('S') & 0x8000 || GetAsyncKeyState('s') & 0x8000)
+	{
+		g_zealot->moveForward(-5.0f * fElapsedTime);
+	}
+
+	if (GetAsyncKeyState('Q') & 0x8000 || GetAsyncKeyState('q') & 0x8000)
+	{
+		g_zealot->moveStrafe(5.0f * fElapsedTime);
+	}
+	if (GetAsyncKeyState('E') & 0x8000 || GetAsyncKeyState('e') & 0x8000)
+	{
+		g_zealot->moveStrafe(-5.0f * fElapsedTime);
+	}
+
+	// ì¢Œìš° íšŒì „
+	if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState('a') & 0x8000)
+	{
+		g_zealot->rotateYaw(-5.0f * fElapsedTime);
+	}
+	if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState('d') & 0x8000)
+	{
+		g_zealot->rotateYaw(5.0f * fElapsedTime);
+	}
+
+
+	//íƒ€ê²Ÿ ë°”ë¼ë³´ê¸°
+	if (GetAsyncKeyState('R') & 0x8000 || GetAsyncKeyState('r') & 0x8000)
+	{
+		XMFLOAT3 ftarget = XMFLOAT3(0, 0.25f, 0);
+		g_zealot->setTarget(ftarget);
+	}
+	
+
+	g_zealot->Update(fElapsedTime);
 	
 	g_camera.FrameMove(fElapsedTime);
 }
@@ -121,17 +149,15 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 	
 	CONSTANTBUFFER cb;
 	ZeroMemory(&cb, sizeof(CONSTANTBUFFER));
-	XMMATRIX mat = XMLoadFloat4x4(&(g_marine->getWorld()));	
+	XMMATRIX mat = XMLoadFloat4x4(&(g_ground->getWorld()));
 	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
-
-	//cb.world =  g_mesh->getWorld();
 	XMStoreFloat4x4(&cb.view, XMMatrixTranspose(g_camera.GetViewMatrix()));
 	XMStoreFloat4x4(&cb.projection, XMMatrixTranspose(g_camera.GetProjMatrix()));
 
 	/*
 		1 0 0 0	Side (Right)
 		0 1 0 0	Up
-		0 0 1 0 Foward
+		0 0 1 0 Forward
 		x y z 1 Position
 	*/
 	
@@ -144,13 +170,28 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 
 	g_shader->RenderPrepare(&cb);
 	g_ground->Render(g_shader);
-	g_marine->Render(g_shader);
 
-	mat = XMLoadFloat4x4(&(g_marineClone->getWorld()));
+	//marine
+	mat = XMLoadFloat4x4(&(g_zealot->getWorld()));
 	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(mat));
 	g_shader->RenderPrepare(&cb);
-	g_marineClone->Render(g_shader);
+	g_zealot->Render(g_shader);
+
+
+	/*g_text->print(L"line01");
+	g_text->print(L"line02");
+	g_text->print(L"line03");
+	g_text->print(L"line04");
+	g_text->print(L"line05");
+
+	g_text->Renderlist();*/
+
+	/*
+		Direct Write
+	*/
+	//g_text->Render(L"Bonjour ~â™¡ ", 45, 10, 10, 24.0f);
 	
+	TEXT.RenderStrings();
 }
 
 void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
@@ -161,11 +202,11 @@ void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
 void CALLBACK OnD3D11DeviceDestroyed(void* pUserContext)
 {
 	SAFE_DELETE(g_ground);
-	SAFE_DELETE(g_marine);
-	SAFE_DELETE(g_marineClone);
+	SAFE_DELETE(g_zealot);
 
 	CompileShader::Delete(&g_shader);
-
+	
+	//SAFE_DELETE(g_text);
 }
 
 
@@ -182,31 +223,31 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow )
 {
-    // µğ¹ÙÀÌ½º »ı¼ºÈÄ »èÁ¦¸¦ ¾ÈÇÏ¸é, °æ°í
+    // ë””ë°”ì´ìŠ¤ ìƒì„±í›„ ì‚­ì œë¥¼ ì•ˆí•˜ë©´, ê²½ê³ 
 #ifdef _DEBUG
     _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
-	// ¾÷µ¥ÀÌÆ®
+	// ì—…ë°ì´íŠ¸
 	DXUTSetCallbackFrameMove(OnFrameMove);
-	// Å°º¸µå
+	// í‚¤ë³´ë“œ
 	//DXUTSetCallbackKeyboard();
-	// ¸Ş½ÃÁö ÇÁ·Î½ÃÁ®
+	// ë©”ì‹œì§€ í”„ë¡œì‹œì ¸
 	DXUTSetCallbackMsgProc(MsgProc);
 
 
 	DXUTSetCallbackD3D11DeviceCreated(OnD3D11DeviceCreated);
-	// È­¸é Å©±â º¯È¯, ÀÌµ¿ , ÀüÈ¯ È£ÃâµÇ´Â ÇÔ¼ö
+	// í™”ë©´ í¬ê¸° ë³€í™˜, ì´ë™ , ì „í™˜ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	DXUTSetCallbackD3D11SwapChainResized(OnD3D11ResizedSwapChain);
 	DXUTSetCallbackD3D11FrameRender(OnD3D11FrameRender);
-	// È­¸é Å©±â º¯È¯, ÀÌµ¿ , ÀüÈ¯ È£ÃâµÇ´Â ÇÔ¼ö
+	// í™”ë©´ í¬ê¸° ë³€í™˜, ì´ë™ , ì „í™˜ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	DXUTSetCallbackD3D11SwapChainReleasing(OnD3D11ReleasingSwapChain);
 	DXUTSetCallbackD3D11DeviceDestroyed(OnD3D11DeviceDestroyed);
     
 
     DXUTInit( true, true, nullptr );
     DXUTSetCursorSettings( true, true );
-    DXUTCreateWindow( L"006 MD5Mesh" );
+    DXUTCreateWindow( L"009 DirectWrite" );
     DXUTCreateDevice( D3D_FEATURE_LEVEL_10_0, true, 800, 600 );
     DXUTMainLoop();
 	
