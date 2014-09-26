@@ -8,8 +8,8 @@ public:
 	Camera();
 	~Camera();
 
-	XMMATRIX getViewXM() const { return m_view; }
-	XMMATRIX getProjXM() const { return m_proj; }
+	XMMATRIX getViewXM() const;
+	XMMATRIX getProjXM() const;
 
 	void setEye(XMFLOAT3 eye);
 	void setOffset(XMFLOAT3 offset);
@@ -34,10 +34,7 @@ private:
 	// 카메라의 윗부분이 어디인지 ( UpVector )
 	XMFLOAT3 m_up		= XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-	XMMATRIX m_view;
-	XMMATRIX m_proj;
-
-	XMFLOAT4X4 world_;
-	XMFLOAT4X4 proj_;
+	XMFLOAT4X4 m_view;
+	XMFLOAT4X4 m_proj;
 };
 

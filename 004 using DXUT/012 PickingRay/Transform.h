@@ -45,7 +45,7 @@ private:
 	XMFLOAT3	posDelta_	= XMFLOAT3(0, 0, 0);		// 상대적 위치 변화값
 	FLOAT		pitchAngle_ = 0.0f;						// pitch angle ( Euler Angle )
 	FLOAT		yawAngle_	= 0.0f;						// yaw angle ( Euler Angle )
-	XMVECTOR	quaternion_ = XMVectorSet(0, 0, 0, 0);	// 정확한 회전을 위한 Quaternion 저장
+	XMFLOAT4	quaternion_ = XMFLOAT4(0, 0, 0, 0);	// 정확한 회전을 위한 Quaternion 저장
 
 	XMFLOAT3	scale_		= XMFLOAT3(1, 1, 1);
 };

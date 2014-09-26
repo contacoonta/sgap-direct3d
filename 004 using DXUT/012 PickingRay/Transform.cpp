@@ -16,7 +16,7 @@ Transform::~Transform()
 
 void Transform::updateMatrix()
 {
-	//XMMATRIX mrot = XMMatrixRotationRollPitchYaw(pitchAngle_, yawAngle_, 0.0f);
+	//정확한 회전값 저장을 위해 쿼터니언을 사용한다.
 	XMVECTOR quaternion_ = XMQuaternionRotationRollPitchYaw(pitchAngle_, yawAngle_, 0.0f);
 	XMMATRIX mrot = XMMatrixRotationQuaternion(quaternion_);
 	

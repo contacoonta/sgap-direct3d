@@ -30,7 +30,7 @@ public:
 	virtual void		Render( CompileShader* pshader )		{}
 	virtual void		Release()								{}
 
-protected:	
+protected:
 	
 	XMFLOAT4		m_color			= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	BOOL			m_bCloned		= FALSE;

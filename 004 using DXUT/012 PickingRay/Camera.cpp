@@ -7,12 +7,22 @@ using namespace DirectX;
 
 Camera::Camera()
 {
-	m_view = XMMatrixIdentity();
-	m_proj = XMMatrixIdentity();
+	XMStoreFloat4x4(&m_view, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_proj, XMMatrixIdentity());
 }
 
 Camera::~Camera()
 {
+}
+
+XMMATRIX Camera::getViewXM() const
+{ 
+	return XMLoadFloat4x4(&m_view); 
+}
+
+XMMATRIX Camera::getProjXM() const
+{
+	return XMLoadFloat4x4(&m_proj);
 }
 
 /*
@@ -56,7 +66,7 @@ void Camera::computeViewMat()
 	XMVECTOR l = XMLoadFloat3(&m_lookat);
 	XMVECTOR up = XMLoadFloat3(&m_up);
 	
-	m_view = XMMatrixLookAtLH(e, l, up);
+	XMStoreFloat4x4(&m_view, XMMatrixLookAtLH(e, l, up));
 }
 
 void Camera::computeProjMat()
@@ -64,7 +74,7 @@ void Camera::computeProjMat()
 	UINT width = DXUTGetDXGIBackBufferSurfaceDesc()->Width;
 	UINT height = DXUTGetDXGIBackBufferSurfaceDesc()->Width;
 
-	m_proj = XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / (FLOAT)height, 0.01f, 1000.0f);
+	XMStoreFloat4x4(&m_proj, XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / (FLOAT)height, 0.01f, 1000.0f));
 }
 
 // 물체에 부착시킬 타겟
@@ -86,7 +96,7 @@ void Camera::attachTarget(Transform* target)
 	vbackward = XMVector3TransformCoord(vbackward, mtarget);
 
 	// 카메라의 View matrix 구하기
-	m_view = XMMatrixLookAtLH(vforward, vbackward, vup);
+	XMStoreFloat4x4(&m_view, XMMatrixLookAtLH(vforward, vbackward, vup));
 }
 
 /*
@@ -101,17 +111,14 @@ void Camera::Pick(_Out_ XMFLOAT3& rayPos, _Out_ XMFLOAT3& rayDir)
 	GetCursorPos(&pt);
 	ScreenToClient(DXUTGetHWND(), &pt);
 	
-	XMFLOAT4X4 mproj;
-	XMStoreFloat4x4(&mproj, m_proj);
-
 	// Projection Space -> View Space 의 좌표를 구한다.
 	XMFLOAT3 v;
-	v.x = (((2.0f * pt.x) / pd3dsdBackBuffer->Width) - 1) / mproj._11;
-	v.y = -(((2.0f * pt.y) / pd3dsdBackBuffer->Height) - 1) / mproj._22;
+	v.x = (((2.0f * pt.x) / pd3dsdBackBuffer->Width) - 1) / m_proj._11;
+	v.y = -(((2.0f * pt.y) / pd3dsdBackBuffer->Height) - 1) / m_proj._22;
 	v.z = 1.0f;
 
 	// View Matrix 의 역행렬로 World Matrix 를 구한다.
-	XMMATRIX mworld = XMMatrixInverse(NULL, m_view);
+	XMMATRIX mworld = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_view));
 
 	XMFLOAT4X4 m;
 	XMStoreFloat4x4(&m, mworld);
