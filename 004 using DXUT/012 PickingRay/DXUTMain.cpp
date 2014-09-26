@@ -1,8 +1,4 @@
-﻿/*
-	Direct Write 로 폰트 출력하기
-*/
-
-
+﻿
 #include "DXUT.h"
 #include "FW1Precompiled.h"
 #include "SDKmisc.h"
@@ -171,7 +167,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 				ID3D11DeviceContext* pd3dImmediateContext,
 				double fTime, float fElapsedTime, void* pUserContext)
 {
-	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::DeepSkyBlue);
+	pd3dImmediateContext->ClearRenderTargetView(DXUTGetD3D11RenderTargetView(), Colors::DarkBlue);
 	pd3dImmediateContext->ClearDepthStencilView(DXUTGetD3D11DepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 		
 
@@ -215,7 +211,6 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice,
 	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(g_zealot->getWorldXM()));
 	g_shader->RenderPrepare(&cb);
 	g_zealot->Render(g_shader);
-
 	
 	/*
 		텍스트 출력
