@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 char double pointer", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 void double pointer", "002 void double pointer\002 void double pointer.vcxproj", "{C5CD18D3-041C-441D-82B8-ADBFBC37BE92}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 in class double pointer", "003 in class double pointer\003 in class double pointer.vcxproj", "{516AB6F2-58C3-444F-8E4C-0163703494A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{C5CD18D3-041C-441D-82B8-ADBFBC37BE92}.Debug|Win32.Build.0 = Debug|Win32
 		{C5CD18D3-041C-441D-82B8-ADBFBC37BE92}.Release|Win32.ActiveCfg = Release|Win32
 		{C5CD18D3-041C-441D-82B8-ADBFBC37BE92}.Release|Win32.Build.0 = Release|Win32
+		{516AB6F2-58C3-444F-8E4C-0163703494A5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{516AB6F2-58C3-444F-8E4C-0163703494A5}.Debug|Win32.Build.0 = Debug|Win32
+		{516AB6F2-58C3-444F-8E4C-0163703494A5}.Release|Win32.ActiveCfg = Release|Win32
+		{516AB6F2-58C3-444F-8E4C-0163703494A5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
