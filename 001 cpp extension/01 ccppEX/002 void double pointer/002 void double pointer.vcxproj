@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{516AB6F2-58C3-444F-8E4C-0163703494A5}</ProjectGuid>
+    <ProjectGuid>{4184FA39-E480-487B-8732-66A044E5CA3E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>My003inclassdoublepointer</RootNamespace>
+    <RootNamespace>My002voiddoublepointer</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

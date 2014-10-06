@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 char double pointer", "001 char double pointer\001 char double pointer.vcxproj", "{2199029E-6072-494B-A0CF-06DAD5B092B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 void double pointer", "002 void double pointer\002 void double pointer.vcxproj", "{4184FA39-E480-487B-8732-66A044E5CA3E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 class double pointer", "003 class double pointer\003 class double pointer.vcxproj", "{070C403D-D976-441A-849F-86F370BE1DAF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 function pointer", "004 function pointer\004 function pointer.vcxproj", "{06B430B2-97B7-40D2-BD35-B811B3810B29}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006 event callbakc _ manager", "006 event callbakc _ manager\006 event callbakc _ manager.vcxproj", "{FBE399DC-0E5F-4B1B-8777-98B5BB1AC6D9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005 event callback _ function", "005 event callback _ function\005 event callback _ function.vcxproj", "{4F8ED331-CB8D-46AB-ACEA-0822C878A629}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "007 event callback _ class", "007 event callback _ class\007 event callback _ class.vcxproj", "{01D94F8D-64F2-4C40-9574-CA91AF044D61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2199029E-6072-494B-A0CF-06DAD5B092B2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2199029E-6072-494B-A0CF-06DAD5B092B2}.Debug|Win32.Build.0 = Debug|Win32
+		{2199029E-6072-494B-A0CF-06DAD5B092B2}.Release|Win32.ActiveCfg = Release|Win32
+		{2199029E-6072-494B-A0CF-06DAD5B092B2}.Release|Win32.Build.0 = Release|Win32
+		{4184FA39-E480-487B-8732-66A044E5CA3E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4184FA39-E480-487B-8732-66A044E5CA3E}.Debug|Win32.Build.0 = Debug|Win32
+		{4184FA39-E480-487B-8732-66A044E5CA3E}.Release|Win32.ActiveCfg = Release|Win32
+		{4184FA39-E480-487B-8732-66A044E5CA3E}.Release|Win32.Build.0 = Release|Win32
+		{070C403D-D976-441A-849F-86F370BE1DAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{070C403D-D976-441A-849F-86F370BE1DAF}.Debug|Win32.Build.0 = Debug|Win32
+		{070C403D-D976-441A-849F-86F370BE1DAF}.Release|Win32.ActiveCfg = Release|Win32
+		{070C403D-D976-441A-849F-86F370BE1DAF}.Release|Win32.Build.0 = Release|Win32
+		{06B430B2-97B7-40D2-BD35-B811B3810B29}.Debug|Win32.ActiveCfg = Debug|Win32
+		{06B430B2-97B7-40D2-BD35-B811B3810B29}.Debug|Win32.Build.0 = Debug|Win32
+		{06B430B2-97B7-40D2-BD35-B811B3810B29}.Release|Win32.ActiveCfg = Release|Win32
+		{06B430B2-97B7-40D2-BD35-B811B3810B29}.Release|Win32.Build.0 = Release|Win32
+		{FBE399DC-0E5F-4B1B-8777-98B5BB1AC6D9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FBE399DC-0E5F-4B1B-8777-98B5BB1AC6D9}.Debug|Win32.Build.0 = Debug|Win32
+		{FBE399DC-0E5F-4B1B-8777-98B5BB1AC6D9}.Release|Win32.ActiveCfg = Release|Win32
+		{FBE399DC-0E5F-4B1B-8777-98B5BB1AC6D9}.Release|Win32.Build.0 = Release|Win32
+		{4F8ED331-CB8D-46AB-ACEA-0822C878A629}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F8ED331-CB8D-46AB-ACEA-0822C878A629}.Debug|Win32.Build.0 = Debug|Win32
+		{4F8ED331-CB8D-46AB-ACEA-0822C878A629}.Release|Win32.ActiveCfg = Release|Win32
+		{4F8ED331-CB8D-46AB-ACEA-0822C878A629}.Release|Win32.Build.0 = Release|Win32
+		{01D94F8D-64F2-4C40-9574-CA91AF044D61}.Debug|Win32.ActiveCfg = Debug|Win32
+		{01D94F8D-64F2-4C40-9574-CA91AF044D61}.Debug|Win32.Build.0 = Debug|Win32
+		{01D94F8D-64F2-4C40-9574-CA91AF044D61}.Release|Win32.ActiveCfg = Release|Win32
+		{01D94F8D-64F2-4C40-9574-CA91AF044D61}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

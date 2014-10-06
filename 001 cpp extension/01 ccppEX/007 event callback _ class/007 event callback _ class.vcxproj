@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{084D5AF8-F532-4510-B43B-F7659369B870}</ProjectGuid>
+    <ProjectGuid>{01D94F8D-64F2-4C40-9574-CA91AF044D61}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>My001functionpointer</RootNamespace>
+    <RootNamespace>My007eventcallback_class</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -76,6 +76,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="callback.h" />
+    <ClInclude Include="EventManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

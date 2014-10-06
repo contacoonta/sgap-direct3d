@@ -11,8 +11,8 @@ public:
 	static void Release(Manager** ppmgr);
 
 public:
-	bool GetActive() const	{ return bActive; }
-	void SetActive(bool b)	{ bActive = b; }
+	bool GetActive() const	{ return bActive;	}
+	void SetActive(bool b)	{ bActive = b;		}
 
 private:
 	bool bActive = true;
@@ -20,10 +20,17 @@ private:
 
 void Manager::Create(Manager** ppmgr)
 {
+	*ppmgr = new Manager;
+
 }
 
 void Manager::Release(Manager** ppmgr)
 {
+	if (*ppmgr == nullptr)
+		return;
+
+	delete *ppmgr;
+	*ppmgr = nullptr;
 }
 
 
@@ -33,7 +40,7 @@ void main()
 {
 	/*
 	Manager* pmgr = new Manager();
-	pmgr->bActive = false;
+	pmgr->bActive = false;	
 	delete pmgr;
 	*/
 
