@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001 vector", "001 vector\001 vector.vcxproj", "{FF3F9D79-1343-45CC-AD3B-E725133E5E3C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002 vector Normalized", "002 vector Normalized\002 vector Normalized.vcxproj", "{E597D9DA-025E-46A4-BDD4-7923B74BF162}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003 vector add sub", "003 vector add sub\003 vector add sub.vcxproj", "{09BEBCF7-23E9-4950-AF17-72D8E807D680}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004 vector dot_cross", "004 vector dot_cross\004 vector dot_cross.vcxproj", "{FB303B8E-047D-4247-AA01-9A064ED25E5B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005 vector angle", "005 vector angle\005 vector angle.vcxproj", "{8A097C26-70E3-43A1-91B7-50B91E810AE2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006 matrices", "006 matrices\006 matrices.vcxproj", "{2036E0F0-AF9C-4FA1-882B-8DFB1A41D01D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "007 matrices rotation", "007 matrices rotation\007 matrices rotation.vcxproj", "{E5EE2B9B-90FD-4646-A3DA-1CB4115F154D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF3F9D79-1343-45CC-AD3B-E725133E5E3C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FF3F9D79-1343-45CC-AD3B-E725133E5E3C}.Debug|Win32.Build.0 = Debug|Win32
+		{FF3F9D79-1343-45CC-AD3B-E725133E5E3C}.Release|Win32.ActiveCfg = Release|Win32
+		{FF3F9D79-1343-45CC-AD3B-E725133E5E3C}.Release|Win32.Build.0 = Release|Win32
+		{E597D9DA-025E-46A4-BDD4-7923B74BF162}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E597D9DA-025E-46A4-BDD4-7923B74BF162}.Debug|Win32.Build.0 = Debug|Win32
+		{E597D9DA-025E-46A4-BDD4-7923B74BF162}.Release|Win32.ActiveCfg = Release|Win32
+		{E597D9DA-025E-46A4-BDD4-7923B74BF162}.Release|Win32.Build.0 = Release|Win32
+		{09BEBCF7-23E9-4950-AF17-72D8E807D680}.Debug|Win32.ActiveCfg = Debug|Win32
+		{09BEBCF7-23E9-4950-AF17-72D8E807D680}.Debug|Win32.Build.0 = Debug|Win32
+		{09BEBCF7-23E9-4950-AF17-72D8E807D680}.Release|Win32.ActiveCfg = Release|Win32
+		{09BEBCF7-23E9-4950-AF17-72D8E807D680}.Release|Win32.Build.0 = Release|Win32
+		{FB303B8E-047D-4247-AA01-9A064ED25E5B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB303B8E-047D-4247-AA01-9A064ED25E5B}.Debug|Win32.Build.0 = Debug|Win32
+		{FB303B8E-047D-4247-AA01-9A064ED25E5B}.Release|Win32.ActiveCfg = Release|Win32
+		{FB303B8E-047D-4247-AA01-9A064ED25E5B}.Release|Win32.Build.0 = Release|Win32
+		{8A097C26-70E3-43A1-91B7-50B91E810AE2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8A097C26-70E3-43A1-91B7-50B91E810AE2}.Debug|Win32.Build.0 = Debug|Win32
+		{8A097C26-70E3-43A1-91B7-50B91E810AE2}.Release|Win32.ActiveCfg = Release|Win32
+		{8A097C26-70E3-43A1-91B7-50B91E810AE2}.Release|Win32.Build.0 = Release|Win32
+		{2036E0F0-AF9C-4FA1-882B-8DFB1A41D01D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2036E0F0-AF9C-4FA1-882B-8DFB1A41D01D}.Debug|Win32.Build.0 = Debug|Win32
+		{2036E0F0-AF9C-4FA1-882B-8DFB1A41D01D}.Release|Win32.ActiveCfg = Release|Win32
+		{2036E0F0-AF9C-4FA1-882B-8DFB1A41D01D}.Release|Win32.Build.0 = Release|Win32
+		{E5EE2B9B-90FD-4646-A3DA-1CB4115F154D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E5EE2B9B-90FD-4646-A3DA-1CB4115F154D}.Debug|Win32.Build.0 = Debug|Win32
+		{E5EE2B9B-90FD-4646-A3DA-1CB4115F154D}.Release|Win32.ActiveCfg = Release|Win32
+		{E5EE2B9B-90FD-4646-A3DA-1CB4115F154D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

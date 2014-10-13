@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{AC2DBC37-40B2-4F01-8378-DC41A3AAD9D3}</ProjectGuid>
+    <ProjectGuid>{09BEBCF7-23E9-4950-AF17-72D8E807D680}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>My004matricesidentity</RootNamespace>
+    <RootNamespace>My003vectoraddsub</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
